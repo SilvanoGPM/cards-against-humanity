@@ -1,7 +1,7 @@
-import { getAny } from './base';
+import { cardsCollection } from '@/firebase/config';
 
-const CARDS_PATH = 'cards';
+import { getAll } from './core';
 
 export function getCards(): Promise<CardType[]> {
-  return getAny<CardType>(CARDS_PATH);
+  return getAll<CardType>(cardsCollection);
 }

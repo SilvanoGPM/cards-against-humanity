@@ -1,7 +1,13 @@
-import { Home } from './screens/Home';
+import { Route, Routes } from 'react-router-dom';
 
-function App(): JSX.Element {
-  return <Home />;
+import { Home } from '@/pages/Home';
+import { Match } from '@/pages/Match';
+
+export function App(): JSX.Element {
+  return (
+    <Routes>
+      <Route path="/" element={<Home />} />
+      <Route path="/match/:id" element={<Match />} />
+    </Routes>
+  );
 }
-
-export default App;

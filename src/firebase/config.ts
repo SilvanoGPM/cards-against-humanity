@@ -1,6 +1,11 @@
 import { initializeApp } from 'firebase/app';
 
-import { getFirestore } from 'firebase/firestore';
+import {
+  DocumentData,
+  getFirestore,
+  collection,
+  CollectionReference,
+} from 'firebase/firestore';
 
 const firebaseConfig = {
   apiKey: 'AIzaSyCJh45lbjhCek0BP30K7YvSK-hG-8SeWa0',
@@ -15,3 +20,12 @@ const firebaseConfig = {
 export const app = initializeApp(firebaseConfig);
 
 export const db = getFirestore(app);
+
+export function createCollection<T = DocumentData>(
+  collectionName: string
+): CollectionReference<T> {
+  return collection(db, collectionName) as CollectionReference<T>;
+}
+
+export const matchesCollection = createCollection<MatchType>('matches');
+export const cardsCollection = createCollection<CardType>('cards');

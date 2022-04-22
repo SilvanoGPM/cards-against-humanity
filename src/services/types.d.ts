@@ -2,6 +2,7 @@ interface MatchType {
   status: 'FINISHED' | 'PLAYING';
   questions: [];
   users: string[];
+  owner: string;
 }
 
 interface CardType {
