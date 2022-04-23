@@ -1,6 +1,13 @@
 import { initializeApp } from 'firebase/app';
 
 import {
+  getAuth,
+  GoogleAuthProvider,
+  signInWithPopup,
+  UserCredential,
+} from 'firebase/auth';
+
+import {
   DocumentData,
   getFirestore,
   collection,
@@ -26,6 +33,12 @@ export function createCollection<T = DocumentData>(
 ): CollectionReference<T> {
   return collection(db, collectionName) as CollectionReference<T>;
 }
-
 export const matchesCollection = createCollection<MatchType>('matches');
 export const cardsCollection = createCollection<CardType>('cards');
+
+export const authProvider = new GoogleAuthProvider();
+export const auth = getAuth();
+
+export async function login(): Promise<UserCredential> {
+  return signInWithPopup(auth, authProvider);
+}

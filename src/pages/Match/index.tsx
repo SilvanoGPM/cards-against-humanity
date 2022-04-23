@@ -1,12 +1,12 @@
 import { useParams } from 'react-router-dom';
 
-import { useUser } from '@/contexts/UserContext';
+import { useAuth } from '@/contexts/AuthContext';
 
 import { useSetupMatch } from './useSetupMatch';
 
 export function Match(): JSX.Element {
   const { id } = useParams<{ id: string }>();
-  const { name } = useUser();
+  const { user } = useAuth();
 
   const { isLoading, match, nextRound } = useSetupMatch(id || '');
 
@@ -23,7 +23,7 @@ export function Match(): JSX.Element {
 
       {round > 0 && <p>{round}° Round</p>}
 
-      {match.owner === name && (
+      {match.owner === user.email && (
         <button type="button" onClick={nextRound}>
           {round === 0 ? 'Iniciar partida' : 'Próximo round'}
         </button>

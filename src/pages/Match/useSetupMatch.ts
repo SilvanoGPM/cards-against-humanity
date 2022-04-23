@@ -9,7 +9,7 @@ import {
   getMatch,
   streamMatch,
 } from '@/services/matches';
-import { useUser } from '@/contexts/UserContext';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface UseFetchMatchReturn {
   match: MatchType;
@@ -20,7 +20,7 @@ interface UseFetchMatchReturn {
 
 export function useSetupMatch(id: string): UseFetchMatchReturn {
   const navigate = useNavigate();
-  const { name } = useUser();
+  const { user } = useAuth();
 
   const [isLoading, , stopLoading] = useBoolean(true);
 
@@ -48,10 +48,12 @@ export function useSetupMatch(id: string): UseFetchMatchReturn {
 
         const cards = await getCards();
 
-        const userIsInTheMatch = match.users.find((user) => user === name);
+        const userIsInTheMatch = match.users.find(
+          (innerUser) => innerUser === user.email
+        );
 
         if (!userIsInTheMatch) {
-          await addUserToMatch(id, name);
+          await addUserToMatch(id, user.email || '');
         }
 
         setCards(cards);
@@ -63,7 +65,7 @@ export function useSetupMatch(id: string): UseFetchMatchReturn {
       }
     }
 
-    if (isLoading && name) {
+    if (isLoading) {
       fetchMatch();
     }
 
@@ -77,7 +79,7 @@ export function useSetupMatch(id: string): UseFetchMatchReturn {
       stopLoading();
       unsubscribePromise.then((unsbscribe) => unsbscribe());
     };
-  }, [id, stopLoading, isLoading, navigate, name]);
+  }, [id, stopLoading, isLoading, navigate, user]);
 
   const nextRound = useCallback(async () => {
     await addRoundToMatch(id);
