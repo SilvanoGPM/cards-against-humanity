@@ -16,7 +16,7 @@ export function PrivateRoute({ children }: CustomRouteProps): JSX.Element {
         to="/login"
         state={{
           path: location.pathname,
-          info: { message: 'Faça login primeiro' },
+          primary: { message: 'Faça login primeiro', icon: 'take-action' },
         }}
       />
     );

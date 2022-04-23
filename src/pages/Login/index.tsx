@@ -6,10 +6,13 @@ import { FcGoogle } from 'react-icons/fc';
 import { useAuth } from '@/contexts/AuthContext';
 import { useBoolean } from '@/hooks/useBoolean';
 import { AppToaster } from '@/components/Toast';
+import { useFlashNotification } from '@/hooks/useFlashNotification';
 
 import styles from './styles.module.scss';
 
 export function Login(): JSX.Element {
+  useFlashNotification('/login');
+
   const location = useLocation();
   const navigate = useNavigate();
   const { handleLogin, authenticated } = useAuth();
