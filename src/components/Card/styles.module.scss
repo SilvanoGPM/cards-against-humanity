@@ -1,0 +1,35 @@
+.card {
+  &.isBlack {
+    --color: #ffffff;
+    --background: #000000;
+  }
+
+  --color: #191919;
+  --background: #ffffff;
+  width: 280px;
+  height: 350px;
+  border: 2px solid var(--color);
+  border-radius: 10px;
+  color: var(--color);
+  background-color: var(--background);
+  font-size: 1.5rem;
+  padding: 2rem 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  svg {
+    width: 60%;
+  }
+}
+
+.message {
+  line-height: 3rem;
+}
+
+.question {
+  display: inline-block;
+  width: 90%;
+  height: 2px;
+  background-color: var(--color);
+}

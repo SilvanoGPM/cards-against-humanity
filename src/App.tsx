@@ -2,9 +2,12 @@ import { Route, Routes } from 'react-router-dom';
 
 import { Home } from '@/pages/Home';
 import { Match } from '@/pages/Match';
+import { Cards } from '@/pages/Cards';
 import { Login } from '@/pages/Login';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { PrivateRoute } from '@/components/PrivateRoute';
+
+import './styles/styles.scss';
 
 export function App(): JSX.Element {
   return (
@@ -23,6 +26,14 @@ export function App(): JSX.Element {
           element={
             <PrivateRoute>
               <Match />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/cards"
+          element={
+            <PrivateRoute>
+              <Cards />
             </PrivateRoute>
           }
         />

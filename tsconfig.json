@@ -45,6 +45,9 @@
       "@/lib/*": [
         "./lib/*"
       ],
+      "@/constants/*": [
+        "./constants/*"
+      ],
     },
   },
   "include": [
