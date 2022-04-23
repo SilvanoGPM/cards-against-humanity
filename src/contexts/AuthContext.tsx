@@ -11,11 +11,13 @@ import {
 import { login } from '@/firebase/config';
 import { useBoolean } from '@/hooks/useBoolean';
 import { useStorage } from '@/hooks/useStorage';
+import { newUser } from '@/services/users';
 
 export interface AuthContextProps {
   user: User;
   authenticated: boolean;
   handleLogin: () => Promise<void>;
+  handleLogout: () => Promise<void>;
 }
 
 export interface AuthProviderProps {
@@ -44,6 +46,8 @@ export function AuthProvider({ children }: AuthProviderProps): JSX.Element {
     try {
       const { user } = await login();
 
+      await newUser(user);
+
       setUser(user);
       setTrueAuth();
     } catch {
@@ -51,9 +55,14 @@ export function AuthProvider({ children }: AuthProviderProps): JSX.Element {
     }
   }, [setFalseAuth, setTrueAuth, setUser]);
 
+  const handleLogout = useCallback(async () => {
+    setUser({} as User);
+    setFalseAuth();
+  }, [setUser, setFalseAuth]);
+
   const value = useMemo(
-    () => ({ user, authenticated, handleLogin }),
-    [user, authenticated, handleLogin]
+    () => ({ user, authenticated, handleLogin, handleLogout }),
+    [user, authenticated, handleLogin, handleLogout]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

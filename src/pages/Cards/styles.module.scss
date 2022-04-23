@@ -1,13 +1,15 @@
-.container {
-  background-color: #aaaaaa;
-  padding: 1rem;
-}
-
 .cards {
-  margin-bottom: 1rem;
-  padding-bottom: 1rem;
-  border-bottom: 2px solid #191919;
+  padding: 1rem;
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;
+  justify-content: center;
+
+  &.whites {
+    background-color: #ffffff;
+  }
+
+  &.blacks {
+    background-color: #000000;
+  }
 }

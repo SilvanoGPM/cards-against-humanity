@@ -15,14 +15,14 @@ export function Cards(): JSX.Element {
   const blacks = cards.filter(({ type }) => type === 'BLACK');
 
   return (
-    <section className={styles.container}>
-      <div className={styles.cards}>
+    <section>
+      <div className={`${styles.cards} ${styles.whites}`}>
         {whites.map(({ id, message, type }) => (
           <Card key={id} message={message} type={type} />
         ))}
       </div>
 
-      <div className={styles.cards}>
+      <div className={`${styles.cards} ${styles.blacks}`}>
         {blacks.map(({ id, message, type }) => (
           <Card key={id} message={message} type={type} />
         ))}

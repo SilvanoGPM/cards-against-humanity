@@ -9,7 +9,7 @@ export function Card({ message, type }: CardProps): JSX.Element {
   const isBlack = type === 'BLACK';
 
   function getFormatedMessage(): string {
-    const text = message.replace(
+    const text = message.replaceAll(
       CARD_TOKEN,
       `<span class="${styles.question}"></span>`
     );

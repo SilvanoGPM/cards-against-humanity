@@ -34,6 +34,7 @@
     "react/function-component-definition": "off",
     "react/react-in-jsx-scope": "off",
     "react/no-danger": "off",
+    "react/button-has-type": "off",
     "@typescript-eslint/no-use-before-define": ["error"],
     "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/no-non-null-assertion": "off",

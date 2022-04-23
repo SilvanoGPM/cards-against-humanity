@@ -3,11 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import { useBoolean } from '@/hooks/useBoolean';
 import { newMatch } from '@/services/matches';
 import { useAuth } from '@/contexts/AuthContext';
+import { Button } from '@/components/Button';
+
 import { EnterInMatch } from './EnternMatch';
 
 export function Home(): JSX.Element {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, handleLogout } = useAuth();
 
   const [creating, startCreate, stopCreate] = useBoolean(false);
 
@@ -29,9 +31,13 @@ export function Home(): JSX.Element {
     <div>
       <h2>Seja bem vindo! {user.displayName}</h2>
 
-      <button disabled={creating} type="button" onClick={handleNewMatch}>
+      <Button disabled={creating} type="button" onClick={handleNewMatch}>
         Criar partida
-      </button>
+      </Button>
+
+      <Button onClick={handleLogout} variant="outlined">
+        Logout
+      </Button>
 
       <EnterInMatch />
 

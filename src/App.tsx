@@ -4,6 +4,7 @@ import { Home } from '@/pages/Home';
 import { Match } from '@/pages/Match';
 import { Cards } from '@/pages/Cards';
 import { Login } from '@/pages/Login';
+import { NewCard } from '@/pages/NewCard';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { PrivateRoute } from '@/components/PrivateRoute';
 
@@ -34,6 +35,14 @@ export function App(): JSX.Element {
           element={
             <PrivateRoute>
               <Cards />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/new-card"
+          element={
+            <PrivateRoute>
+              <NewCard />
             </PrivateRoute>
           }
         />

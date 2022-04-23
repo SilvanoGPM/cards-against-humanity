@@ -1,8 +1,17 @@
+interface UserType {
+  uid: string;
+  displayName: string | null;
+  email: string | null;
+  photoURL: string | null;
+}
+
 interface CardType {
   id: string;
   type: 'BLACK' | 'WHITE';
   message: string;
 }
+
+type CardToCreate = Omit<CardType, 'id'>;
 
 interface AnswersType {
   user: string;

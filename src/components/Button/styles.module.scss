@@ -1,0 +1,38 @@
+.button {
+  --color: #ffffff;
+  --border-color: #191919;
+  --background: #191919;
+
+  border: none;
+  cursor: pointer;
+  background-color: var(--background);
+  color: var(--color);
+  border: var(--border-color) 3px solid;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  padding: 1rem 2rem;
+  font-size: 1rem;
+  transition: 0.2s ease-in-out;
+
+  &:hover {
+    filter: brightness(2);
+    transform: scale(1.1);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+
+  &.outlined {
+    --color: #191919;
+    --background: transparent;
+    border-width: 3px;
+
+    &:hover {
+      --color: #ffffff;
+      --border-color: #191919;
+      --background: #191919;
+      filter: none;
+    }
+  }
+}
