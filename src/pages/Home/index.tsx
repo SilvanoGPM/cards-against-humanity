@@ -1,9 +1,9 @@
 import { useNavigate } from 'react-router-dom';
+import { Button } from '@blueprintjs/core';
 
 import { useBoolean } from '@/hooks/useBoolean';
 import { newMatch } from '@/services/matches';
 import { useAuth } from '@/contexts/AuthContext';
-import { Button } from '@/components/Button';
 
 import { EnterInMatch } from './EnternMatch';
 
@@ -29,15 +29,13 @@ export function Home(): JSX.Element {
 
   return (
     <div>
-      <h2>Seja bem vindo! {user.displayName}</h2>
+      <h2 className="bp4-heading">Seja bem vindo! {user.displayName}</h2>
 
       <Button disabled={creating} type="button" onClick={handleNewMatch}>
         Criar partida
       </Button>
 
-      <Button onClick={handleLogout} variant="outlined">
-        Logout
-      </Button>
+      <Button onClick={handleLogout}>Logout</Button>
 
       <EnterInMatch />
 

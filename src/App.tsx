@@ -1,4 +1,5 @@
 import { Route, Routes } from 'react-router-dom';
+import { FocusStyleManager } from '@blueprintjs/core';
 
 import { Home } from '@/pages/Home';
 import { Match } from '@/pages/Match';
@@ -9,6 +10,8 @@ import { AuthProvider } from '@/contexts/AuthContext';
 import { PrivateRoute } from '@/components/PrivateRoute';
 
 import './styles/styles.scss';
+
+FocusStyleManager.onlyShowFocusOnTabs();
 
 export function App(): JSX.Element {
   return (

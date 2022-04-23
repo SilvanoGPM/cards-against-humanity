@@ -1,8 +1,8 @@
 import { ChangeEvent, FormEvent, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Button } from '@blueprintjs/core';
 
 import { Card } from '@/components/Card';
-import { Button } from '@/components/Button';
 import { newCard } from '@/services/cards';
 
 import styles from './styles.module.scss';
@@ -84,7 +84,6 @@ export function NewCard(): JSX.Element {
         <div>
           <Button
             style={{ width: '100%' }}
-            variant="outlined"
             type="submit"
             onClick={handleNewCard}
           >
