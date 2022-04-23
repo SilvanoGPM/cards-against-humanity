@@ -36,6 +36,12 @@
       "@/pages/*": [
         "./pages/*"
       ],
+      "@/contexts/*": [
+        "./contexts/*"
+      ],
+      "@/utils/*": [
+        "./utils/*"
+      ],
     },
   },
   "include": [

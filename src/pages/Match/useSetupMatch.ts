@@ -1,24 +1,33 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { useBoolean } from '@/hooks/useBoolean';
 import { getCards } from '@/services/cards';
-import { addUserToMatch, getMatch, streamMatch } from '@/services/matches';
+import {
+  addRoundToMatch,
+  addUserToMatch,
+  getMatch,
+  streamMatch,
+} from '@/services/matches';
+import { useUser } from '@/contexts/UserContext';
 
 interface UseFetchMatchReturn {
   match: MatchType;
   cards: CardType[];
   isLoading: boolean;
+  nextRound: () => void;
 }
 
 export function useSetupMatch(id: string): UseFetchMatchReturn {
   const navigate = useNavigate();
+  const { name } = useUser();
 
   const [isLoading, , stopLoading] = useBoolean(true);
 
   const [match, setMatch] = useState<MatchType>({
+    id: '',
     owner: '',
-    questions: [],
+    rounds: [],
     status: 'PLAYING',
     users: [],
   });
@@ -39,9 +48,11 @@ export function useSetupMatch(id: string): UseFetchMatchReturn {
 
         const cards = await getCards();
 
-        const user = `User ${Date.now()}`;
+        const userIsInTheMatch = match.users.find((user) => user === name);
 
-        await addUserToMatch(id, user);
+        if (!userIsInTheMatch) {
+          await addUserToMatch(id, name);
+        }
 
         setCards(cards);
         setMatch(match);
@@ -52,7 +63,7 @@ export function useSetupMatch(id: string): UseFetchMatchReturn {
       }
     }
 
-    if (isLoading) {
+    if (isLoading && name) {
       fetchMatch();
     }
 
@@ -66,11 +77,16 @@ export function useSetupMatch(id: string): UseFetchMatchReturn {
       stopLoading();
       unsubscribePromise.then((unsbscribe) => unsbscribe());
     };
-  }, [id, stopLoading, isLoading, navigate]);
+  }, [id, stopLoading, isLoading, navigate, name]);
+
+  const nextRound = useCallback(async () => {
+    await addRoundToMatch(id);
+  }, [id]);
 
   return {
     isLoading,
     match,
     cards,
+    nextRound,
   };
 }

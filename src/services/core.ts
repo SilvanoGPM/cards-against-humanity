@@ -9,12 +9,14 @@ import {
   DocumentSnapshot,
 } from 'firebase/firestore';
 
-export async function getAll<T>(
+export async function getAll<T extends { id: string }>(
   collection: CollectionReference<T>
 ): Promise<T[]> {
   const data = await getDocs(collection);
 
-  const values = data.docs.map<T>((doc) => ({ ...doc.data() } as T));
+  const values = data.docs.map<T>(
+    (doc) => ({ ...doc.data(), id: doc.id } as T)
+  );
 
   return values;
 }

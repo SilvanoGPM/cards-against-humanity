@@ -5,9 +5,11 @@ import {
   DocumentSnapshot,
 } from 'firebase/firestore';
 
-import { matchesCollection } from '@/firebase/config';
+import { cardsCollection, matchesCollection } from '@/firebase/config';
+import { getRandomItem } from '@/utils/getRandomItem';
 
 import { createAny, getAll, getAny, streamAny } from './core';
+import { getCards } from './cards';
 
 export function getMatches(): Promise<MatchType[]> {
   return getAll<MatchType>(matchesCollection);
@@ -18,8 +20,8 @@ export async function getMatch(id: string): Promise<MatchType> {
 }
 
 export function newMatch(owner: string): Promise<string> {
-  return createAny<MatchType>(matchesCollection, {
-    questions: [],
+  return createAny<Omit<MatchType, 'id'>>(matchesCollection, {
+    rounds: [],
     status: 'PLAYING',
     users: [owner],
     owner,
@@ -27,11 +29,34 @@ export function newMatch(owner: string): Promise<string> {
 }
 
 export async function addUserToMatch(id: string, user: string): Promise<void> {
-  const data = doc(matchesCollection, id);
+  const matchDoc = doc(matchesCollection, id);
 
-  const { users } = await getAny(matchesCollection, id);
+  const { users } = await getMatch(id);
 
-  await updateDoc(data, { users: [user, ...users] });
+  await updateDoc(matchDoc, { users: [user, ...users] });
+}
+
+export async function addRoundToMatch(id: string): Promise<void> {
+  const matchDoc = doc(matchesCollection, id);
+
+  const { rounds } = await getMatch(id);
+
+  const cards = await getCards();
+
+  const { id: cardId } = getRandomItem(
+    cards.filter(({ type }) => type === 'BLACK')
+  );
+
+  await updateDoc(matchDoc, {
+    rounds: [
+      {
+        question: doc(cardsCollection, cardId),
+        answers: [],
+        usersWhoPlayed: [],
+      },
+      ...(rounds as any),
+    ],
+  });
 }
 
 export function streamMatch(
