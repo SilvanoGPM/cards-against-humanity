@@ -48,7 +48,7 @@ export function App(): JSX.Element {
           <Route
             path="/new-card"
             element={
-              <PrivateRoute>
+              <PrivateRoute onlyAdmins>
                 <NewCard />
               </PrivateRoute>
             }

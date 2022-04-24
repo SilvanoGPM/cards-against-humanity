@@ -36,6 +36,7 @@ export function createCollection<T = DocumentData>(
 export const matchesCollection = createCollection<MatchType>('matches');
 export const cardsCollection = createCollection<CardType>('cards');
 export const usersCollection = createCollection<UserType>('users');
+export const adminsCollection = createCollection('admins');
 
 export const authProvider = new GoogleAuthProvider();
 export const auth = getAuth();

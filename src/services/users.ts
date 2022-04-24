@@ -1,4 +1,4 @@
-import { usersCollection } from '@/firebase/config';
+import { adminsCollection, usersCollection } from '@/firebase/config';
 import { User } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
 
@@ -19,4 +19,13 @@ export async function newUser(user: User): Promise<string> {
 
 export function getUser(id: string): Promise<UserType> {
   return getAny<UserType>(usersCollection, id);
+}
+
+export async function isAdmin(id: string): Promise<boolean> {
+  try {
+    const admin = await getAny(adminsCollection, id);
+    return Object.keys(admin).length > 0;
+  } catch {
+    return false;
+  }
 }
