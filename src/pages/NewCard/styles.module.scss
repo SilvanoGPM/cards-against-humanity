@@ -1,5 +1,42 @@
 .container {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
+  flex-wrap: wrap;
   padding: 3rem;
+  max-width: 900px;
+  margin: 0 auto;
+  flex-direction: column;
+
+  @media screen and (min-width: 700px) {
+    justify-content: center;
+    flex-direction: row;
+  }
+}
+
+.form {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 2rem;
+
+  .inputGroup {
+    width: 80%;
+  }
+
+  .textarea {
+    resize: vertical;
+    max-height: 100px;
+    width: 100%;
+  }
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.newCard {
+  width: 100%;
 }

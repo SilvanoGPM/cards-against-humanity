@@ -1,6 +1,13 @@
 import { ChangeEvent, FormEvent, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button } from '@blueprintjs/core';
+import {
+  Button,
+  FormGroup,
+  H3,
+  Radio,
+  RadioGroup,
+  TextArea,
+} from '@blueprintjs/core';
 
 import { Card } from '@/components/Card';
 import { newCard } from '@/services/cards';
@@ -31,8 +38,8 @@ export function NewCard(): JSX.Element {
     setCard({ ...card, message: value });
   }
 
-  function handleRadioChange(event: ChangeEvent<HTMLInputElement>): void {
-    const { value } = event.target;
+  function handleRadioChange(event: FormEvent<HTMLInputElement>): void {
+    const { value } = event.currentTarget;
     setCard({ ...card, type: value as 'BLACK' | 'WHITE' });
   }
 
@@ -45,55 +52,42 @@ export function NewCard(): JSX.Element {
 
   return (
     <section className={styles.container}>
-      <form onSubmit={handleSubmit}>
-        <div className={styles.inputGroup}>
-          <label htmlFor="message">
-            Create new card
-            <textarea
-              id="message"
-              name="message"
-              onChange={handleMessageChange}
-            />
-          </label>
-        </div>
+      <form onSubmit={handleSubmit} className={styles.form}>
+        <FormGroup className={styles.inputGroup} label="Texto da carta:">
+          <TextArea
+            id="message"
+            name="message"
+            onChange={handleMessageChange}
+            className={styles.textarea}
+          />
+        </FormGroup>
 
         <div className={styles.inputGroup}>
-          <label htmlFor="white">
-            White
-            <input
-              id="white"
-              name="type"
-              value="WHITE"
-              type="radio"
-              onChange={handleRadioChange}
-            />
-          </label>
+          <RadioGroup
+            selectedValue={card.type}
+            onChange={handleRadioChange}
+            inline
+            label="Tipo da carta"
+            name="type"
+          >
+            <Radio label="Resposta" value="WHITE" />
 
-          <label htmlFor="black">
-            Black
-            <input
-              id="black"
-              name="type"
-              value="BLACK"
-              type="radio"
-              onChange={handleRadioChange}
-            />
-          </label>
-        </div>
+            <Radio label="Pergunta" value="BLACK" />
+          </RadioGroup>
 
-        <div>
           <Button
-            style={{ width: '100%' }}
+            className={styles.newCard}
+            intent="success"
             type="submit"
             onClick={handleNewCard}
           >
-            Create
+            Criar carta
           </Button>
         </div>
       </form>
 
-      <div>
-        <h3>Preview</h3>
+      <div className={styles.card}>
+        <H3>Preview da carta</H3>
         <Card {...card} />
       </div>
     </section>
