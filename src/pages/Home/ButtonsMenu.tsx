@@ -18,7 +18,7 @@ export function ButtonsMenu(): JSX.Element {
     try {
       startCreate();
 
-      const id = await newMatch(user.email || '');
+      const id = await newMatch(user.uid || '');
 
       navigate(`/match/${id}`);
     } catch (error) {

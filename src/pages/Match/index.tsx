@@ -19,14 +19,16 @@ export function Match(): JSX.Element {
   const { id } = useParams<{ id: string }>();
   const { user } = useAuth();
 
-  const { isLoading, match, nextRound } = useSetupMatch(id || '');
+  const { isLoading, match, nextRound, loadingNext } = useSetupMatch(id || '');
 
   const menuRef = useRef<UsersListHandles>(null);
 
   const round = match?.rounds?.length;
-  const userAlreadyPlayed = match?.rounds?.[0].answers.find(
-    (answers) => answers.user.uid === user.uid
-  );
+  const userAlreadyPlayed =
+    round > 0 &&
+    match?.rounds?.[0]?.answers.find(
+      (answers) => answers.user.uid === user.uid
+    );
 
   return (
     <div className={styles.container}>
@@ -34,9 +36,11 @@ export function Match(): JSX.Element {
 
       {!isLoading && (
         <>
-          <div className={styles.question}>
-            <Card {...match.rounds[0].question} />
-          </div>
+          {round > 0 && (
+            <div className={styles.question}>
+              <Card {...match.rounds[0].question} />
+            </div>
+          )}
 
           <div className={styles.goBack}>
             <GoBack />
@@ -68,12 +72,17 @@ export function Match(): JSX.Element {
           )}
 
           {match.owner.uid === user.uid && (
-            <div className={styles.manageButton}>
+            <div
+              className={`${styles.manageButton} ${
+                round === 0 ? styles.startButton : ''
+              }`}
+            >
               <Button
-                intent="primary"
+                intent={round === 0 ? 'success' : 'primary'}
                 onClick={nextRound}
                 large
-                rightIcon="direction-right"
+                rightIcon={round === 0 ? 'play' : 'direction-right'}
+                loading={loadingNext}
               >
                 {round === 0 ? 'Iniciar partida' : 'Próximo round'}
               </Button>

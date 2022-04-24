@@ -12,11 +12,13 @@ import { useBoolean } from '@/hooks/useBoolean';
 import { getCard, getCards } from '@/services/cards';
 import { useAuth } from '@/contexts/AuthContext';
 import { getUser } from '@/services/users';
+import { AppToaster } from '@/components/Toast';
 
 interface UseFetchMatchReturn {
   match: MatchConvertedType;
   cards: CardType[];
   isLoading: boolean;
+  loadingNext: boolean;
   nextRound: () => void;
 }
 
@@ -25,6 +27,7 @@ export function useSetupMatch(id: string): UseFetchMatchReturn {
   const { user } = useAuth();
 
   const [isLoading, , stopLoading] = useBoolean(true);
+  const [loadingNext, startLoadingNext, stopLoadingNext] = useBoolean(false);
 
   const [match, setMatch] = useState<MatchConvertedType>(
     {} as MatchConvertedType
@@ -127,11 +130,23 @@ export function useSetupMatch(id: string): UseFetchMatchReturn {
   }, [id, stopLoading, isLoading, navigate, user, convertMatch]);
 
   const nextRound = useCallback(async () => {
-    await addRoundToMatch(id);
-  }, [id]);
+    try {
+      startLoadingNext();
+      await addRoundToMatch(id);
+    } catch {
+      AppToaster.show({
+        intent: 'danger',
+        icon: 'error',
+        message: 'Aconteceu um erro ao tentar carregar a próxima rodada',
+      });
+    } finally {
+      stopLoadingNext();
+    }
+  }, [id, startLoadingNext, stopLoadingNext]);
 
   return {
     isLoading,
+    loadingNext,
     match,
     cards,
     nextRound,
