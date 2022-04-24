@@ -8,6 +8,10 @@ Jogo cartas contra a humanidade online em português.
   <img width=100 src="./src/favicon.png" />
 </p>
 
+## Atenção :warning:
+
+Este projeto foi desenvolvido com propósito humorístico, caso você se ofenda facilmente, aconselho a não entrar no site.
+
 ## Tecnologias usadas :rocket:
 
 - [React](https://pt-br.reactjs.org/)
