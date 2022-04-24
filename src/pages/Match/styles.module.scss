@@ -98,3 +98,39 @@
     }
   }
 }
+
+.question {
+  display: flex;
+  justify-content: center;
+}
+
+.cardsToPlay {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+
+  button {
+    border: none;
+    background-color: $white;
+  }
+}
+
+.cardToPlay {
+  cursor: pointer;
+  width: 100px;
+  height: 150px;
+  font-size: 0.8rem;
+  padding: 0.2rem;
+  transition: 0.2s ease-in-out;
+
+  &:hover {
+    transform: translateY(-10px);
+  }
+
+  &Text {
+    line-height: 1rem;
+  }
+}

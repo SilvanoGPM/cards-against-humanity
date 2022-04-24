@@ -9,6 +9,7 @@ import { useSetupMatch } from './useSetupMatch';
 import { CardsPlayedList } from './CardsPlayedList';
 import { UsersList } from './UsersList';
 import styles from './styles.module.scss';
+import { CardsToPlay } from './CardsToPlay';
 
 export function Match(): JSX.Element {
   const { id } = useParams<{ id: string }>();
@@ -24,7 +25,11 @@ export function Match(): JSX.Element {
 
       {!isLoading && (
         <>
-          <Card {...match.rounds[0].question} />
+          <div className={styles.question}>
+            <Card {...match.rounds[0].question} />
+          </div>
+
+          <CardsToPlay match={match} />
 
           <CardsPlayedList match={match} />
           <UsersList match={match} />

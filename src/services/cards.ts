@@ -1,10 +1,36 @@
 import { CARD_TOKEN } from '@/constants/globals';
 import { cardsCollection } from '@/firebase/config';
+import { getRandomItem } from '@/utils/getRandomItem';
 
 import { createAny, getAll, getAny } from './core';
 
 export function getCards(): Promise<CardType[]> {
   return getAll<CardType>(cardsCollection);
+}
+
+export async function getDeck(limit = 4): Promise<CardType[]> {
+  const cards = await getCards();
+  const awnsers = cards.filter(({ type }) => type === 'WHITE');
+
+  const deck: CardType[] = [];
+
+  function getRandomAwnser(): CardType {
+    const random = getRandomItem(awnsers);
+    const hasCard = deck.find(({ id }) => id === random.id);
+
+    if (hasCard) {
+      return getRandomItem(awnsers);
+    }
+
+    return random;
+  }
+
+  for (let i = 0; i < limit; i += 1) {
+    const awnser = getRandomAwnser();
+    deck.push(awnser);
+  }
+
+  return deck;
 }
 
 export function getCard(id: string): Promise<CardType> {

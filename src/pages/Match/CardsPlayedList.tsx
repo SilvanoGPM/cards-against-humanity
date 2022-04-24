@@ -10,8 +10,8 @@ interface CardsPlayedListProps {
 export function CardsPlayedList({ match }: CardsPlayedListProps): JSX.Element {
   function renderAnswers(answer: AnswersConvertedType): JSX.Element {
     return (
-      <div className={styles.cardPlayedWrapper}>
-        <Card key={answer.card.id} {...answer.card} />
+      <div className={styles.cardPlayedWrapper} key={answer.card.id}>
+        <Card {...answer.card} />
         <figure>
           <img
             title={answer.user.displayName || ''}
