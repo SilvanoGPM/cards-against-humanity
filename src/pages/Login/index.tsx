@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '@blueprintjs/core';
 import { FcGoogle } from 'react-icons/fc';
@@ -6,31 +6,32 @@ import { FcGoogle } from 'react-icons/fc';
 import { useAuth } from '@/contexts/AuthContext';
 import { useBoolean } from '@/hooks/useBoolean';
 import { AppToaster } from '@/components/Toast';
-import { useFlashNotification } from '@/hooks/useFlashNotification';
 
 import styles from './styles.module.scss';
 
 export function Login(): JSX.Element {
-  useFlashNotification('/login');
-
   const location = useLocation();
   const navigate = useNavigate();
   const { handleLogin, authenticated } = useAuth();
 
   const [loading, startLoading, stopLoading] = useBoolean(false);
 
+  const navigateTo = useCallback(() => {
+    const { path } = location.state as { path: string };
+    navigate(path || '/');
+  }, [navigate, location]);
+
   useEffect(() => {
     if (authenticated) {
-      const { path } = location.state as { path: string };
-      navigate(path || '/');
+      navigateTo();
     }
-  }, [authenticated, navigate, location]);
+  }, [authenticated, navigateTo]);
 
   async function handleLoginClick(): Promise<void> {
     try {
       startLoading();
       await handleLogin();
-      navigate('/');
+      navigateTo();
     } catch {
       AppToaster.show({
         message: 'Aconteceu um erro ao tentar fazer login.',

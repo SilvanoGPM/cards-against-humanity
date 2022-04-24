@@ -1,9 +1,21 @@
+.goBack {
+  position: absolute;
+  top: 30px;
+  left: 30px;
+}
+
 .cards {
   padding: 1rem;
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;
   justify-content: center;
+  flex: 1;
+
+  &Container {
+    display: flex;
+    flex-direction: column;
+  }
 
   &.whites {
     background-color: #ffffff;
