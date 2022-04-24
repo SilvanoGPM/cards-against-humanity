@@ -19,6 +19,7 @@ interface UseFetchMatchReturn {
   isLoading: boolean;
   nextRound: () => void;
 }
+
 export function useSetupMatch(id: string): UseFetchMatchReturn {
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -110,7 +111,11 @@ export function useSetupMatch(id: string): UseFetchMatchReturn {
 
     const unsubscribePromise = streamMatch(id, async (newMatch) => {
       if (newMatch.exists()) {
-        const convertedMatch = await convertMatch(newMatch.data());
+        const convertedMatch = await convertMatch({
+          ...newMatch.data(),
+          id: newMatch.id,
+        });
+
         setMatch(convertedMatch);
       }
     });

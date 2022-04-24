@@ -5,11 +5,14 @@ import { Button, Tag } from '@blueprintjs/core';
 import { useAuth } from '@/contexts/AuthContext';
 import { SomeLoading } from '@/components/SomeLoading';
 import { Card } from '@/components/Card';
+import { GoBack } from '@/components/GoBack';
 
 import { useSetupMatch } from './useSetupMatch';
 import { CardsPlayedList } from './CardsPlayedList';
-import { UsersList, UsersListHandles } from './UsersList';
+import { UsersListHandles } from './UsersList';
 import { CardsToPlay } from './CardsToPlay';
+import { Menu } from './Menu';
+
 import styles from './styles.module.scss';
 
 export function Match(): JSX.Element {
@@ -18,7 +21,7 @@ export function Match(): JSX.Element {
 
   const { isLoading, match, nextRound } = useSetupMatch(id || '');
 
-  const userListRef = useRef<UsersListHandles>(null);
+  const menuRef = useRef<UsersListHandles>(null);
 
   const round = match?.rounds?.length;
   const userAlreadyPlayed = match?.rounds?.[0].answers.find(
@@ -35,15 +38,20 @@ export function Match(): JSX.Element {
             <Card {...match.rounds[0].question} />
           </div>
 
+          <div className={styles.goBack}>
+            <GoBack />
+          </div>
+
           {!userAlreadyPlayed && <CardsToPlay match={match} />}
 
           <CardsPlayedList match={match} />
 
-          <UsersList ref={userListRef} match={match} />
+          <Menu ref={menuRef} match={match} />
 
           <Button
+            intent="success"
             className={styles.menu}
-            onClick={userListRef.current?.openDrawer}
+            onClick={menuRef.current?.openDrawer}
             icon="user"
           />
 
@@ -60,9 +68,16 @@ export function Match(): JSX.Element {
           )}
 
           {match.owner.uid === user.uid && (
-            <Button intent="primary" onClick={nextRound}>
-              {round === 0 ? 'Iniciar partida' : 'Próximo round'}
-            </Button>
+            <div className={styles.manageButton}>
+              <Button
+                intent="primary"
+                onClick={nextRound}
+                large
+                rightIcon="direction-right"
+              >
+                {round === 0 ? 'Iniciar partida' : 'Próximo round'}
+              </Button>
+            </div>
           )}
         </>
       )}

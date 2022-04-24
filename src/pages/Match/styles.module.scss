@@ -5,9 +5,9 @@
 }
 
 .rounds.rounds {
-  position: fixed;
-  top: 10px;
-  left: 10px;
+  position: absolute;
+  top: 15px;
+  left: 60px;
   z-index: 1;
 }
 
@@ -138,7 +138,7 @@
   padding: 0.2rem;
   transition: 0.2s ease-in-out;
 
-  &:hover {
+  &:hover, &.isSelected {
     transform: translateY(-10px);
   }
 
@@ -151,4 +151,33 @@
   position: fixed;
   top: 10px;
   right: 10px;
+}
+
+.goBack {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+}
+
+.manageButton {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.copyMatchId {
+  display: flex;
+  justify-content: flex-end;
+  margin-left: auto;
+  margin-right: 1rem;
+  margin-top: 1rem;
+
+  input {
+    width: 80%;
+    max-width: 400px;
+  }
+
+  button {
+    flex: 1;
+  }
 }

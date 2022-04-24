@@ -29,7 +29,7 @@ export async function getAny<T>(
 
   const found = await getDoc(data);
 
-  return found.exists() ? found.data() : ({} as T);
+  return found.exists() ? ({ ...found.data(), id } as T) : ({} as T);
 }
 
 export async function createAny<T>(

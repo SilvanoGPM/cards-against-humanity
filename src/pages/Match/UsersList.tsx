@@ -1,8 +1,5 @@
-import { forwardRef, useImperativeHandle } from 'react';
-
 import { getFirstString } from '@/utils/getFirstString';
-import { Card, Colors, Drawer, H3, Icon } from '@blueprintjs/core';
-import { useBoolean } from '@/hooks/useBoolean';
+import { Card, Colors, H3, Icon } from '@blueprintjs/core';
 
 import styles from './styles.module.scss';
 import avatar from '../../assets/avatar.png';
@@ -15,12 +12,7 @@ export interface UsersListHandles {
   openDrawer: () => void;
 }
 
-export function UsersListComponent(
-  { match }: UsersProps,
-  ref: React.ForwardedRef<UsersListHandles>
-): JSX.Element {
-  const [isOpen, openDrawer, closeDrawer] = useBoolean(false);
-
+export function UsersList({ match }: UsersProps): JSX.Element {
   function renderUser(user: UserType): JSX.Element {
     const isOwner = user.uid === match.owner.uid;
     const isStarted = match.rounds.length > 0;
@@ -57,24 +49,14 @@ export function UsersListComponent(
     );
   }
 
-  useImperativeHandle(ref, () => ({
-    openDrawer,
-  }));
-
   const otherUsers = match.users.filter(({ uid }) => uid !== match.owner.uid);
 
   return (
-    <Drawer isOpen={isOpen} onClose={closeDrawer} title="Usuários">
-      <div className={styles.usersListWrapper}>
-        <ul className={styles.usersList}>
-          {renderUser(match.owner)}
-          {otherUsers.map(renderUser)}
-        </ul>
-      </div>
-    </Drawer>
+    <div className={styles.usersListWrapper}>
+      <ul className={styles.usersList}>
+        {renderUser(match.owner)}
+        {otherUsers.map(renderUser)}
+      </ul>
+    </div>
   );
 }
-
-export const UsersList = forwardRef<UsersListHandles, UsersProps>(
-  UsersListComponent
-);

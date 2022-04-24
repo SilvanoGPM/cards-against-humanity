@@ -19,7 +19,7 @@ export async function getDeck(limit = 4): Promise<CardType[]> {
     const hasCard = deck.find(({ id }) => id === random.id);
 
     if (hasCard) {
-      return getRandomItem(awnsers);
+      return getRandomAwnser();
     }
 
     return random;

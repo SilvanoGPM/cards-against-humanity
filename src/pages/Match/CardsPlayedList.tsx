@@ -12,7 +12,7 @@ interface CardsPlayedListProps {
 export function CardsPlayedList({ match }: CardsPlayedListProps): JSX.Element {
   function renderAnswers(answer: AnswersConvertedType): JSX.Element {
     return (
-      <div className={styles.cardPlayedWrapper} key={answer.card.id}>
+      <div className={styles.cardPlayedWrapper} key={answer.user.uid}>
         <Card {...answer.card} />
         <figure>
           <img
@@ -29,9 +29,11 @@ export function CardsPlayedList({ match }: CardsPlayedListProps): JSX.Element {
     return <div />;
   }
 
+  const hasCardsPlayed = match?.rounds?.[0].answers.length > 0;
+
   return (
     <div className={styles.cardsPlayedWrapper}>
-      <H2>Cartas já jogadas:</H2>
+      {hasCardsPlayed && <H2>Cartas já jogadas:</H2>}
       <ul className={styles.cardsPlayed}>
         {match.rounds[0].answers.map(renderAnswers)}
       </ul>

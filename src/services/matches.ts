@@ -15,6 +15,12 @@ import { getRandomItem } from '@/utils/getRandomItem';
 import { createAny, getAll, getAny, streamAny } from './core';
 import { getCards } from './cards';
 
+interface SetAwnserData {
+  awnser: string;
+  user: string;
+  cards: string[];
+}
+
 export function getMatches(): Promise<MatchType[]> {
   return getAll<MatchType>(matchesCollection);
 }
@@ -67,6 +73,42 @@ export async function addRoundToMatch(id: string): Promise<void> {
       },
       ...(rounds as any),
     ],
+  });
+}
+
+export async function setAnswerToLastRound(
+  id: string,
+  { awnser, cards, user }: SetAwnserData
+): Promise<void> {
+  console.log({ awnser, cards, user, id });
+
+  const matchDoc = doc(matchesCollection, id);
+
+  const { rounds } = await getMatch(id);
+
+  const [lastRound, ...otherRounds] = rounds;
+
+  const playedUser = doc(usersCollection, user);
+
+  const answer = {
+    user: playedUser,
+    card: doc(cardsCollection, awnser),
+  };
+
+  const answers = [...lastRound.answers, answer];
+
+  const cardsOfUser = cards.map((card) => doc(cardsCollection, card));
+
+  const userWhoPlayed = { cards: cardsOfUser, user: playedUser };
+
+  const usersWhoPlayed = [...lastRound.usersWhoPlayed, userWhoPlayed];
+
+  const newLastRound = { ...lastRound, answers, usersWhoPlayed };
+
+  const newRounds = [newLastRound, ...otherRounds];
+
+  await updateDoc(matchDoc, {
+    rounds: newRounds,
   });
 }
 
