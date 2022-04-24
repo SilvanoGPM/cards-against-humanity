@@ -14,25 +14,48 @@ interface CardType {
 type CardToCreate = Omit<CardType, 'id'>;
 
 interface AnswersType {
-  user: string;
-  card: CollectionReference<CardType>;
+  user: import('firebase/firestore').DocumentReference<UserType>;
+  card: import('firebase/firestore').DocumentReference<CardType>;
 }
 
 interface UserPlayedType {
-  name: string;
-  cards: CollectionReference<CardType>[];
+  user: import('firebase/firestore').DocumentReference<UserType>;
+  cards: import('firebase/firestore').DocumentReference<CardType>[];
 }
 
 interface RoundType {
-  question: CollectionReference<CardType>;
+  question: import('firebase/firestore').DocumentReference<CardType>;
   answers: AnswersType[];
-  usersWhoPlayed: UserPlayed[];
+  usersWhoPlayed: UserPlayedType[];
 }
 
 interface MatchType {
   id: string;
   status: 'FINISHED' | 'PLAYING';
   rounds: RoundType[];
-  users: string[];
-  owner: string;
+  users: import('firebase/firestore').DocumentReference<UserType>[];
+  owner: import('firebase/firestore').DocumentReference<UserType>;
+}
+
+interface AnswersConvertedType {
+  user: UserType;
+  card: CardType;
+}
+
+interface UserPlayedConvertedType {
+  user: UserType;
+  cards: CardType[];
+}
+
+interface RoundConvertedType {
+  question: CardType;
+  usersWhoPlayed: UserPlayedConvertedType[];
+  answers: AnswersConvertedType[];
+}
+
+interface MatchConvertedType
+  extends Omit<MatchType, 'users' | 'owner' | 'rounds'> {
+  users: UserType[];
+  owner: UserType;
+  rounds: RoundConvertedType[];
 }

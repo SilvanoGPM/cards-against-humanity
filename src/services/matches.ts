@@ -5,7 +5,11 @@ import {
   DocumentSnapshot,
 } from 'firebase/firestore';
 
-import { cardsCollection, matchesCollection } from '@/firebase/config';
+import {
+  cardsCollection,
+  matchesCollection,
+  usersCollection,
+} from '@/firebase/config';
 import { getRandomItem } from '@/utils/getRandomItem';
 
 import { createAny, getAll, getAny, streamAny } from './core';
@@ -19,21 +23,28 @@ export async function getMatch(id: string): Promise<MatchType> {
   return getAny<MatchType>(matchesCollection, id);
 }
 
-export function newMatch(owner: string): Promise<string> {
+export function newMatch(ownerId: string): Promise<string> {
+  const ownerDoc = doc(usersCollection, ownerId);
+
   return createAny<Omit<MatchType, 'id'>>(matchesCollection, {
     rounds: [],
     status: 'PLAYING',
-    users: [owner],
-    owner,
+    users: [ownerDoc],
+    owner: ownerDoc,
   });
 }
 
-export async function addUserToMatch(id: string, user: string): Promise<void> {
+export async function addUserToMatch(
+  id: string,
+  userId: string
+): Promise<void> {
   const matchDoc = doc(matchesCollection, id);
 
   const { users } = await getMatch(id);
 
-  await updateDoc(matchDoc, { users: [user, ...users] });
+  await updateDoc(matchDoc, {
+    users: [doc(usersCollection, userId), ...users],
+  });
 }
 
 export async function addRoundToMatch(id: string): Promise<void> {

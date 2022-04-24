@@ -1,0 +1,100 @@
+@import '~@blueprintjs/core/lib/scss/variables';
+
+.container {
+  padding: 1rem;
+}
+
+.rounds.rounds {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  z-index: 9999;
+}
+
+.usersList {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  gap: 1rem;
+  overflow-y: auto;
+
+  &Wrapper {
+    margin-top: 1rem;
+  }
+}
+
+.userCard {
+  width: 100%;
+
+  figure {
+    width: 100%;
+    height: 50%;
+    margin: 0;
+
+    img {
+      width: 100%;
+      height: 100%;
+    }
+  }
+
+  &.isPlayed {
+    border: 1px solid $green2;
+  }
+
+  &Wrapper {
+    width: 200px;
+    min-height: 200px;
+    min-width: 200px;
+    position: relative;
+  }
+}
+
+.userName {
+  text-align: center;
+  margin-top: 1rem;
+
+  &.isOwner {
+    color: $gold3;
+  }
+}
+
+.crown {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 10;
+}
+
+.cardsPlayed {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  gap: 1rem;
+  overflow-y: auto;
+
+  &Wrapper {
+    margin-top: 1rem;
+  }
+}
+
+.cardPlayed {
+  &Wrapper {
+    position: relative;
+
+    figure {
+      --size: 40px;
+      width: var(--size);
+      height: var(--size);
+      border-radius: 50%;
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      margin: 0;
+
+      img {
+        width: 100%;
+        height: 100%;
+      }
+    }
+  }
+}

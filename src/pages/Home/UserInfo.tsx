@@ -2,7 +2,7 @@ import { WhiteLogo } from '@/components/Card/Logos';
 import { useAuth } from '@/contexts/AuthContext';
 import { getFirstString } from '@/utils/getFirstString';
 
-import avatar from './avatar.png';
+import avatar from '../../assets/avatar.png';
 
 import styles from './styles.module.scss';
 

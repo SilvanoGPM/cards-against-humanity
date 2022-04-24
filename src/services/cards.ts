@@ -1,10 +1,14 @@
 import { CARD_TOKEN } from '@/constants/globals';
 import { cardsCollection } from '@/firebase/config';
 
-import { createAny, getAll } from './core';
+import { createAny, getAll, getAny } from './core';
 
 export function getCards(): Promise<CardType[]> {
   return getAll<CardType>(cardsCollection);
+}
+
+export function getCard(id: string): Promise<CardType> {
+  return getAny<CardType>(cardsCollection, id);
 }
 
 export function newCard(card: CardToCreate): Promise<string> {

@@ -9,7 +9,7 @@ import {
   DocumentSnapshot,
 } from 'firebase/firestore';
 
-export async function getAll<T extends { id: string }>(
+export async function getAll<T>(
   collection: CollectionReference<T>
 ): Promise<T[]> {
   const data = await getDocs(collection);

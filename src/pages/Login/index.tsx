@@ -17,8 +17,8 @@ export function Login(): JSX.Element {
   const [loading, startLoading, stopLoading] = useBoolean(false);
 
   const navigateTo = useCallback(() => {
-    const { path } = location.state as { path: string };
-    navigate(path || '/');
+    const state = location?.state as { path: string };
+    navigate(state?.path || '/');
   }, [navigate, location]);
 
   useEffect(() => {
