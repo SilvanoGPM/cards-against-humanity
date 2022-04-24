@@ -12,6 +12,8 @@ export function Home(): JSX.Element {
       <main className={styles.main}>
         <ButtonsMenu />
         <EnterInMatch />
+
+        <p className={styles.version}>0.1.0 beta</p>
       </main>
     </div>
   );
