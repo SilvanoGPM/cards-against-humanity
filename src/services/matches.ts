@@ -53,6 +53,14 @@ export async function addUserToMatch(
   });
 }
 
+export async function finisMatch(id: string): Promise<void> {
+  const matchDoc = doc(matchesCollection, id);
+
+  await updateDoc(matchDoc, {
+    status: 'FINISHED',
+  });
+}
+
 export async function addRoundToMatch(id: string): Promise<void> {
   const matchDoc = doc(matchesCollection, id);
 

@@ -4,8 +4,14 @@ import { getRandomItem } from '@/utils/getRandomItem';
 
 import { createAny, getAll, getAny } from './core';
 
-export function getCards(): Promise<CardType[]> {
-  return getAll<CardType>(cardsCollection);
+let CARDS_CACHE: CardType[] = [];
+
+export async function getCards(): Promise<CardType[]> {
+  if (!CARDS_CACHE) {
+    CARDS_CACHE = await getAll<CardType>(cardsCollection);
+  }
+
+  return CARDS_CACHE;
 }
 
 export async function getDeck(limit = 4): Promise<CardType[]> {

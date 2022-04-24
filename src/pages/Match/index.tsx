@@ -1,11 +1,14 @@
-import { useRef } from 'react';
-import { useParams } from 'react-router-dom';
-import { Button, Tag } from '@blueprintjs/core';
+import { useEffect, useRef } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { Alert, Button, Tag } from '@blueprintjs/core';
 
 import { useAuth } from '@/contexts/AuthContext';
 import { SomeLoading } from '@/components/SomeLoading';
 import { Card } from '@/components/Card';
 import { GoBack } from '@/components/GoBack';
+import { useBoolean } from '@/hooks/useBoolean';
+import { AppToaster } from '@/components/Toast';
+import { finisMatch } from '@/services/matches';
 
 import { useSetupMatch } from './useSetupMatch';
 import { CardsPlayedList } from './CardsPlayedList';
@@ -17,11 +20,27 @@ import styles from './styles.module.scss';
 
 export function Match(): JSX.Element {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const { user } = useAuth();
 
-  const { isLoading, match, nextRound, loadingNext } = useSetupMatch(id || '');
+  const { isLoading, match, nextRound, loadingNext, reload } = useSetupMatch(
+    id || ''
+  );
+
+  useEffect(() => {
+    if (!isLoading && match.status === 'FINISHED') {
+      navigate('/');
+      AppToaster.show({
+        intent: 'primary',
+        message: 'O dono finalizou a partida!',
+      });
+    }
+  }, [isLoading, match, navigate]);
 
   const menuRef = useRef<UsersListHandles>(null);
+
+  const [alertIsOpen, openAlert, closeAlert] = useBoolean(false);
+  const [finishing, setFinishingTrue, setFinishingFalse] = useBoolean(false);
 
   const round = match?.rounds?.length;
   const userAlreadyPlayed =
@@ -29,6 +48,22 @@ export function Match(): JSX.Element {
     match?.rounds?.[0]?.answers.find(
       (answers) => answers.user.uid === user.uid
     );
+
+  async function handleFinishMatch(): Promise<void> {
+    try {
+      setFinishingTrue();
+      await finisMatch(match.id);
+      reload();
+    } catch {
+      AppToaster.show({
+        intent: 'danger',
+        icon: 'error',
+        message: 'Aconteceu um erro ao tentar finalizar partida!',
+      });
+    } finally {
+      setFinishingFalse();
+    }
+  }
 
   return (
     <div className={styles.container}>
@@ -72,21 +107,48 @@ export function Match(): JSX.Element {
           )}
 
           {match.owner.uid === user.uid && (
-            <div
-              className={`${styles.manageButton} ${
-                round === 0 ? styles.startButton : ''
-              }`}
-            >
-              <Button
-                intent={round === 0 ? 'success' : 'primary'}
-                onClick={nextRound}
-                large
-                rightIcon={round === 0 ? 'play' : 'direction-right'}
-                loading={loadingNext}
+            <>
+              <div className={styles.buttonsToManage}>
+                {round > 0 && (
+                  <div className={styles.close}>
+                    <Button
+                      intent="danger"
+                      onClick={openAlert}
+                      large
+                      rightIcon="menu-closed"
+                      loading={loadingNext}
+                      text="Finalizar partida"
+                    />
+                  </div>
+                )}
+                <div
+                  className={`${styles.manageButton} ${
+                    round === 0 ? styles.startButton : ''
+                  }`}
+                >
+                  <Button
+                    intent={round === 0 ? 'success' : 'primary'}
+                    onClick={nextRound}
+                    large
+                    rightIcon={round === 0 ? 'play' : 'direction-right'}
+                    loading={loadingNext}
+                  >
+                    {round === 0 ? 'Iniciar partida' : 'Próximo round'}
+                  </Button>
+                </div>
+              </div>
+              <Alert
+                isOpen={alertIsOpen}
+                onClose={closeAlert}
+                intent="danger"
+                cancelButtonText="Cancelar"
+                confirmButtonText="Finalizar"
+                loading={finishing}
+                onConfirm={handleFinishMatch}
               >
-                {round === 0 ? 'Iniciar partida' : 'Próximo round'}
-              </Button>
-            </div>
+                <p>Você tem certeza que deseja finalizar a partida?</p>
+              </Alert>
+            </>
           )}
         </>
       )}

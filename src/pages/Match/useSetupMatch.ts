@@ -19,6 +19,7 @@ interface UseFetchMatchReturn {
   cards: CardType[];
   isLoading: boolean;
   loadingNext: boolean;
+  reload: () => void;
   nextRound: () => void;
 }
 
@@ -26,7 +27,7 @@ export function useSetupMatch(id: string): UseFetchMatchReturn {
   const navigate = useNavigate();
   const { user } = useAuth();
 
-  const [isLoading, , stopLoading] = useBoolean(true);
+  const [isLoading, startLoading, stopLoading] = useBoolean(true);
   const [loadingNext, startLoadingNext, stopLoadingNext] = useBoolean(false);
 
   const [match, setMatch] = useState<MatchConvertedType>(
@@ -74,6 +75,10 @@ export function useSetupMatch(id: string): UseFetchMatchReturn {
     } as MatchConvertedType;
   }, []);
 
+  const reload = useCallback(() => {
+    startLoading();
+  }, [startLoading]);
+
   useEffect(() => {
     async function fetchMatch(): Promise<void> {
       try {
@@ -87,8 +92,6 @@ export function useSetupMatch(id: string): UseFetchMatchReturn {
           const message = !match
             ? 'Partida não encontrada!'
             : 'Partida finalizada!';
-
-          console.log(match);
 
           AppToaster.show({ intent: 'primary', message });
 
@@ -132,6 +135,10 @@ export function useSetupMatch(id: string): UseFetchMatchReturn {
           id: newMatch.id,
         });
 
+        if (convertedMatch.status === 'FINISHED') {
+          reload();
+        }
+
         setMatch(convertedMatch);
       }
     });
@@ -140,7 +147,7 @@ export function useSetupMatch(id: string): UseFetchMatchReturn {
       stopLoading();
       unsubscribePromise.then((unsbscribe) => unsbscribe());
     };
-  }, [id, stopLoading, isLoading, navigate, user, convertMatch]);
+  }, [id, stopLoading, isLoading, navigate, user, convertMatch, reload]);
 
   const nextRound = useCallback(async () => {
     try {
@@ -162,6 +169,7 @@ export function useSetupMatch(id: string): UseFetchMatchReturn {
     loadingNext,
     match,
     cards,
+    reload,
     nextRound,
   };
 }

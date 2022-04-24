@@ -116,6 +116,19 @@
   display: flex;
   justify-content: center;
   margin-top: 3rem;
+  animation: appear 1s;
+}
+
+@keyframes appear {
+  from {
+    opacity: 0;
+    transform: scale(0);
+  }
+
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 .cardsToPlay {
@@ -166,7 +179,6 @@
 }
 
 .manageButton {
-  width: 100%;
   display: flex;
   justify-content: flex-end;
 }
@@ -211,4 +223,11 @@
   &.show {
     transform: scale(1);
   }
+}
+
+.buttonsToManage {
+  display: flex;
+  gap: 0.5rem;
+
+  justify-content: flex-end;
 }
