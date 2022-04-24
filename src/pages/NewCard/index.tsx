@@ -12,6 +12,7 @@ import {
 import { Card } from '@/components/Card';
 import { newCard } from '@/services/cards';
 import { GoBack } from '@/components/GoBack';
+import { AppToaster } from '@/components/Toast';
 
 import styles from './styles.module.scss';
 
@@ -48,7 +49,13 @@ export function NewCard(): JSX.Element {
     if (card && card.message && card.type) {
       await newCard(card);
       navigate('/cards');
+      return;
     }
+
+    AppToaster.show({
+      intent: 'primary',
+      message: 'Insira uma mensagem para a carta',
+    });
   }
 
   return (

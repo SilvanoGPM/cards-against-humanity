@@ -1,3 +1,5 @@
+import { AppToaster } from '@/components/Toast';
+import { Button, H2, InputGroup } from '@blueprintjs/core';
 import { FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -13,20 +15,30 @@ export function EnterInMatch(): JSX.Element {
       id: { value: string };
     };
 
-    navigate(`/match/${id.value}`);
+    const formattedId = id.value.trim();
+
+    if (formattedId) {
+      navigate(`/match/${formattedId}`);
+      return;
+    }
+
+    AppToaster.show({ intent: 'primary', message: 'Insira um ID válido' });
   }
 
   return (
     <section className={styles.enterMatch}>
-      <form onSubmit={handleLogin}>
-        <div>
-          <label htmlFor="id">
-            Match id:
-            <input name="id" id="id" placeholder="Id of match" />
-          </label>
-        </div>
+      <H2>Entrar em uma partida</H2>
+      <form onSubmit={handleLogin} className={styles.form}>
+        <InputGroup
+          name="id"
+          id="id"
+          placeholder="Id da partida"
+          className={styles.enterInputMatch}
+        />
 
-        <button type="submit">Enter</button>
+        <Button intent="success" type="submit" rightIcon="key-enter">
+          Entrar
+        </Button>
       </form>
     </section>
   );
