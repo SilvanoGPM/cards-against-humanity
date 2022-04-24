@@ -1,3 +1,4 @@
+import { useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { Button, Tag } from '@blueprintjs/core';
 
@@ -7,9 +8,9 @@ import { Card } from '@/components/Card';
 
 import { useSetupMatch } from './useSetupMatch';
 import { CardsPlayedList } from './CardsPlayedList';
-import { UsersList } from './UsersList';
-import styles from './styles.module.scss';
+import { UsersList, UsersListHandles } from './UsersList';
 import { CardsToPlay } from './CardsToPlay';
+import styles from './styles.module.scss';
 
 export function Match(): JSX.Element {
   const { id } = useParams<{ id: string }>();
@@ -17,7 +18,12 @@ export function Match(): JSX.Element {
 
   const { isLoading, match, nextRound } = useSetupMatch(id || '');
 
+  const userListRef = useRef<UsersListHandles>(null);
+
   const round = match?.rounds?.length;
+  const userAlreadyPlayed = match?.rounds?.[0].answers.find(
+    (answers) => answers.user.uid === user.uid
+  );
 
   return (
     <div className={styles.container}>
@@ -29,10 +35,17 @@ export function Match(): JSX.Element {
             <Card {...match.rounds[0].question} />
           </div>
 
-          <CardsToPlay match={match} />
+          {!userAlreadyPlayed && <CardsToPlay match={match} />}
 
           <CardsPlayedList match={match} />
-          <UsersList match={match} />
+
+          <UsersList ref={userListRef} match={match} />
+
+          <Button
+            className={styles.menu}
+            onClick={userListRef.current?.openDrawer}
+            icon="user"
+          />
 
           {round > 0 && (
             <Tag

@@ -1,3 +1,5 @@
+import { H2 } from '@blueprintjs/core';
+
 import { Card } from '@/components/Card';
 
 import styles from './styles.module.scss';
@@ -29,6 +31,7 @@ export function CardsPlayedList({ match }: CardsPlayedListProps): JSX.Element {
 
   return (
     <div className={styles.cardsPlayedWrapper}>
+      <H2>Cartas já jogadas:</H2>
       <ul className={styles.cardsPlayed}>
         {match.rounds[0].answers.map(renderAnswers)}
       </ul>
