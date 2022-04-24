@@ -19,6 +19,10 @@ export function CardsPlayedList({ match }: CardsPlayedListProps): JSX.Element {
             title={answer.user.displayName || ''}
             alt={answer.user.displayName || ''}
             src={answer.user.photoURL || avatar}
+            onError={(event) => {
+              // eslint-disable-next-line
+              event.currentTarget.src = avatar;
+            }}
           />
         </figure>
       </div>

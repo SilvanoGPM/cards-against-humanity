@@ -1,5 +1,5 @@
-import { ChangeEvent, FormEvent, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { ChangeEvent, FormEvent, useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
 
 import {
   Button,
@@ -17,13 +17,16 @@ import { AppToaster } from '@/components/Toast';
 
 import styles from './styles.module.scss';
 
-export function NewCard(): JSX.Element {
-  const navigate = useNavigate();
+type CardSupportedTypes = 'WHITE' | 'BLACK';
 
-  const [card, setCard] = useState<Omit<CardType, 'id'>>({
-    message: '',
-    type: 'WHITE',
-  });
+const INITIAL_CARD = {
+  message: '',
+  type: 'WHITE' as CardSupportedTypes,
+};
+
+export function NewCard(): JSX.Element {
+  const [card, setCard] = useState<Omit<CardType, 'id'>>(INITIAL_CARD);
+  const formRef = useRef<HTMLFormElement>(null);
 
   function handleSubmit(event: FormEvent): void {
     event.preventDefault();
@@ -33,7 +36,7 @@ export function NewCard(): JSX.Element {
       type: { value: string };
     };
 
-    setCard({ message: message.value, type: type.value as 'BLACK' | 'WHITE' });
+    setCard({ message: message.value, type: type.value as CardSupportedTypes });
   }
 
   function handleMessageChange(event: ChangeEvent<HTMLTextAreaElement>): void {
@@ -43,13 +46,21 @@ export function NewCard(): JSX.Element {
 
   function handleRadioChange(event: FormEvent<HTMLInputElement>): void {
     const { value } = event.currentTarget;
-    setCard({ ...card, type: value as 'BLACK' | 'WHITE' });
+    setCard({ ...card, type: value as CardSupportedTypes });
   }
 
   async function handleNewCard(): Promise<void> {
     if (card && card.message && card.type) {
       await newCard(card);
-      navigate('/cards');
+
+      AppToaster.show({
+        intent: 'success',
+        message: 'Carta adicionada com sucesso!',
+      });
+
+      formRef.current?.reset();
+      setCard(INITIAL_CARD);
+
       return;
     }
 
@@ -65,7 +76,7 @@ export function NewCard(): JSX.Element {
         <GoBack />
       </div>
 
-      <form onSubmit={handleSubmit} className={styles.form}>
+      <form ref={formRef} onSubmit={handleSubmit} className={styles.form}>
         <FormGroup className={styles.inputGroup} label="Texto da carta:">
           <TextArea
             id="message"
@@ -89,13 +100,19 @@ export function NewCard(): JSX.Element {
           </RadioGroup>
 
           <Button
-            className={styles.newCard}
+            className={styles.button}
             intent="success"
             type="submit"
             onClick={handleNewCard}
           >
             Criar carta
           </Button>
+
+          <Link to="/cards">
+            <Button className={styles.button} intent="primary" type="button">
+              Visualizar cartas
+            </Button>
+          </Link>
         </div>
       </form>
 

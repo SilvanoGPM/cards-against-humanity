@@ -36,7 +36,14 @@ export function UsersList({ match }: UsersProps): JSX.Element {
           className={`${styles.userCard} ${userPlayed ? styles.isPlayed : ''}`}
         >
           <figure>
-            <img alt={user.displayName || ''} src={user.photoURL || avatar} />
+            <img
+              alt={user.displayName || ''}
+              src={user.photoURL || avatar}
+              onError={(event) => {
+                // eslint-disable-next-line
+                event.currentTarget.src = avatar;
+              }}
+            />
           </figure>
 
           <H3 className={`${styles.userName} ${isOwner ? styles.isOwner : ''}`}>
