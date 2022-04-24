@@ -1,6 +1,8 @@
 import { FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+import styles from './styles.module.scss';
+
 export function EnterInMatch(): JSX.Element {
   const navigate = useNavigate();
 
@@ -15,15 +17,17 @@ export function EnterInMatch(): JSX.Element {
   }
 
   return (
-    <form onSubmit={handleLogin}>
-      <div>
-        <label htmlFor="id">
-          Match id:
-          <input name="id" id="id" placeholder="Id of match" />
-        </label>
-      </div>
+    <section className={styles.enterMatch}>
+      <form onSubmit={handleLogin}>
+        <div>
+          <label htmlFor="id">
+            Match id:
+            <input name="id" id="id" placeholder="Id of match" />
+          </label>
+        </div>
 
-      <button type="submit">Enter</button>
-    </form>
+        <button type="submit">Enter</button>
+      </form>
+    </section>
   );
 }

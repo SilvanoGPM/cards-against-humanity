@@ -1,3 +1,4 @@
+import { WhiteLogo } from '@/components/Card/Logos';
 import { useAuth } from '@/contexts/AuthContext';
 import { getFirstString } from '@/utils/getFirstString';
 
@@ -14,10 +15,15 @@ export function UserInfo(): JSX.Element {
     'User';
 
   return (
-    <div className={styles.container}>
+    <div className={styles.userInfo}>
+      <div className={styles.logo}>
+        <WhiteLogo />
+      </div>
+
       <p className={styles.logged}>
         Logado como: <span className={styles.userName}>{userName}</span>
       </p>
+
       <figure className={styles.avatar}>
         <img src={user.photoURL || avatar} alt={userName} />
       </figure>
