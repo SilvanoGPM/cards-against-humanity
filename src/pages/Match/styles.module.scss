@@ -140,7 +140,11 @@
   padding: 0.2rem;
   transition: 0.2s ease-in-out;
 
-  &:hover, &.isSelected {
+  &:hover {
+    transform: scale(1.1);
+  }
+
+  &.isSelected {
     transform: translateY(-10px);
   }
 
@@ -189,5 +193,22 @@
 
   button {
     flex: 1;
+  }
+}
+
+.confirmButton {
+  transform: scale(0);
+  transition: 0.2s ease-in-out;
+  max-width: 500px;
+  width: 100%;
+
+  &Wrapper {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+
+  &.show {
+    transform: scale(1);
   }
 }

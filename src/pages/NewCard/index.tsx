@@ -31,6 +31,7 @@ export function NewCard(): JSX.Element {
   const [card, setCard] = useState<Omit<CardType, 'id'>>(INITIAL_CARD);
   const [creating, startCreating, stopCreating] = useBoolean(false);
   const formRef = useRef<HTMLFormElement>(null);
+  const messageRef = useRef<TextArea>(null);
 
   const mutation = useFirestoreCollectionMutation(
     createCollection<CardToCreate>('cards')
@@ -73,6 +74,7 @@ export function NewCard(): JSX.Element {
         });
 
         formRef.current?.reset();
+        messageRef.current?.textareaElement?.focus();
         setCard(INITIAL_CARD);
       } catch {
         AppToaster.show({
@@ -101,6 +103,7 @@ export function NewCard(): JSX.Element {
       <form ref={formRef} onSubmit={handleSubmit} className={styles.form}>
         <FormGroup className={styles.inputGroup} label="Texto da carta:">
           <TextArea
+            ref={messageRef}
             id="message"
             name="message"
             onChange={handleMessageChange}

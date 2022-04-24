@@ -16,7 +16,7 @@ import { createAny, getAll, getAny, streamAny } from './core';
 import { getCards } from './cards';
 
 interface SetAwnserData {
-  awnser: string;
+  awnsers: string[];
   user: string;
   cards: string[];
 }
@@ -78,10 +78,8 @@ export async function addRoundToMatch(id: string): Promise<void> {
 
 export async function setAnswerToLastRound(
   id: string,
-  { awnser, cards, user }: SetAwnserData
+  { awnsers, cards, user }: SetAwnserData
 ): Promise<void> {
-  console.log({ awnser, cards, user, id });
-
   const matchDoc = doc(matchesCollection, id);
 
   const { rounds } = await getMatch(id);
@@ -90,12 +88,12 @@ export async function setAnswerToLastRound(
 
   const playedUser = doc(usersCollection, user);
 
-  const answer = {
+  const newanswers = awnsers.map((awnser) => ({
     user: playedUser,
     card: doc(cardsCollection, awnser),
-  };
+  }));
 
-  const answers = [...lastRound.answers, answer];
+  const answers = [...lastRound.answers, ...newanswers];
 
   const cardsOfUser = cards.map((card) => doc(cardsCollection, card));
 
