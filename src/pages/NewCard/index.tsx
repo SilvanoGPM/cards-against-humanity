@@ -11,6 +11,7 @@ import {
 
 import { Card } from '@/components/Card';
 import { newCard } from '@/services/cards';
+import { GoBack } from '@/components/GoBack';
 
 import styles from './styles.module.scss';
 
@@ -52,6 +53,10 @@ export function NewCard(): JSX.Element {
 
   return (
     <section className={styles.container}>
+      <div className={styles.goBack}>
+        <GoBack />
+      </div>
+
       <form onSubmit={handleSubmit} className={styles.form}>
         <FormGroup className={styles.inputGroup} label="Texto da carta:">
           <TextArea

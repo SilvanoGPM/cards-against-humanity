@@ -6,6 +6,7 @@ import { newMatch } from '@/services/matches';
 import { useAuth } from '@/contexts/AuthContext';
 
 import { EnterInMatch } from './EnternMatch';
+import { UserInfo } from './UserInfo';
 
 export function Home(): JSX.Element {
   const navigate = useNavigate();
@@ -29,7 +30,7 @@ export function Home(): JSX.Element {
 
   return (
     <div>
-      <h2 className="bp4-heading">Seja bem vindo! {user.displayName}</h2>
+      <UserInfo />
 
       <Button disabled={creating} type="button" onClick={handleNewMatch}>
         Criar partida

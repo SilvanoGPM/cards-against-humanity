@@ -2,10 +2,11 @@
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
-  padding: 3rem;
   max-width: 900px;
   margin: 0 auto;
+  margin-top: 50px;
   flex-direction: column;
+  padding: 1rem;
 
   @media screen and (min-width: 700px) {
     justify-content: center;
@@ -39,4 +40,10 @@
 
 .newCard {
   width: 100%;
+}
+
+.goBack {
+  position: absolute;
+  top: 30px;
+  left: 30px;
 }
