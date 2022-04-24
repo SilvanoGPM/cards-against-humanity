@@ -837,6 +837,11 @@
   resolved "https://registry.npmjs.org/@protobufjs/utf8/-/utf8-1.1.0.tgz"
   integrity sha1-p3c2C1s5oaLlEG+OhY8v0tBgxXA=
 
+"@react-query-firebase/firestore@^0.4.2":
+  version "0.4.2"
+  resolved "https://registry.yarnpkg.com/@react-query-firebase/firestore/-/firestore-0.4.2.tgz#6ae52768715aa0a5c0d903dd4fd953ed417ba635"
+  integrity sha512-7eYp905+sfBRcBTdj7W7BAc3bI3V0D0kKca4/juOTnN4gyoNyaCNOCjLPY467dTq325hGs7BX0ol7Pw3JENdHA==
+
 "@rollup/pluginutils@^4.1.1", "@rollup/pluginutils@^4.2.0":
   version "4.2.1"
   resolved "https://registry.npmjs.org/@rollup/pluginutils/-/pluginutils-4.2.1.tgz"

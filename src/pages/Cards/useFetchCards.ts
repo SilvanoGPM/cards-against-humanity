@@ -1,38 +1,38 @@
-import { useBoolean } from '@/hooks/useBoolean';
-import { getCards } from '@/services/cards';
-import { useEffect, useState } from 'react';
+import { useFirestoreQuery } from '@react-query-firebase/firestore';
+
+import { query } from 'firebase/firestore';
+
+import { AppToaster } from '@/components/Toast';
+import { cardsCollection } from '@/firebase/config';
 
 interface UseFetchCardsReturn {
   cards: CardType[];
-  error: Error | undefined;
   isLoading: boolean;
 }
 
 export function useFetchCards(): UseFetchCardsReturn {
-  const [isLoading, , stopLoading] = useBoolean(true);
-  const [cards, setCards] = useState<CardType[]>([]);
-  const [error, setError] = useState(undefined);
+  const ref = query(cardsCollection);
 
-  useEffect(() => {
-    async function fetchCards(): Promise<void> {
-      try {
-        const cards = await getCards();
-        setCards(cards);
-      } catch (error: any) {
-        setError(error);
-      } finally {
-        stopLoading();
-      }
-    }
+  const { data, isLoading, isError } = useFirestoreQuery(['cards'], ref);
 
-    if (isLoading) {
-      fetchCards();
-    }
-  }, [isLoading, stopLoading]);
+  if (isError) {
+    AppToaster.show({
+      intent: 'danger',
+      icon: 'error',
+      message: 'Não foi possível carregar as cartas',
+    });
+
+    return { cards: [], isLoading: false };
+  }
+
+  const cards =
+    data?.docs.map((snapshot) => ({
+      ...snapshot.data(),
+      id: snapshot.id,
+    })) || [];
 
   return {
     cards,
-    error,
     isLoading,
   };
 }

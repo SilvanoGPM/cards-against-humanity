@@ -1,5 +1,6 @@
 import { ChangeEvent, FormEvent, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useFirestoreCollectionMutation } from '@react-query-firebase/firestore';
 
 import {
   Button,
@@ -11,9 +12,11 @@ import {
 } from '@blueprintjs/core';
 
 import { Card } from '@/components/Card';
-import { newCard } from '@/services/cards';
 import { GoBack } from '@/components/GoBack';
 import { AppToaster } from '@/components/Toast';
+import { createCollection } from '@/firebase/config';
+import { CARD_TOKEN } from '@/constants/globals';
+import { useBoolean } from '@/hooks/useBoolean';
 
 import styles from './styles.module.scss';
 
@@ -26,7 +29,12 @@ const INITIAL_CARD = {
 
 export function NewCard(): JSX.Element {
   const [card, setCard] = useState<Omit<CardType, 'id'>>(INITIAL_CARD);
+  const [creating, startCreating, stopCreating] = useBoolean(false);
   const formRef = useRef<HTMLFormElement>(null);
+
+  const mutation = useFirestoreCollectionMutation(
+    createCollection<CardToCreate>('cards')
+  );
 
   function handleSubmit(event: FormEvent): void {
     event.preventDefault();
@@ -51,16 +59,30 @@ export function NewCard(): JSX.Element {
 
   async function handleNewCard(): Promise<void> {
     if (card && card.message && card.type) {
-      await newCard(card);
+      try {
+        startCreating();
+        const cardToCreate: CardToCreate = card.message.includes(CARD_TOKEN)
+          ? { type: 'BLACK', message: card.message }
+          : card;
 
-      AppToaster.show({
-        intent: 'success',
-        message: 'Carta adicionada com sucesso!',
-      });
+        await mutation.mutateAsync(cardToCreate);
 
-      formRef.current?.reset();
-      setCard(INITIAL_CARD);
+        AppToaster.show({
+          intent: 'success',
+          message: 'Carta adicionada com sucesso!',
+        });
 
+        formRef.current?.reset();
+        setCard(INITIAL_CARD);
+      } catch {
+        AppToaster.show({
+          intent: 'danger',
+          icon: 'error',
+          message: 'Aconteceu um erro ao tentar criar a carta.',
+        });
+      } finally {
+        stopCreating();
+      }
       return;
     }
 
@@ -104,6 +126,7 @@ export function NewCard(): JSX.Element {
             intent="success"
             type="submit"
             onClick={handleNewCard}
+            loading={creating}
           >
             Criar carta
           </Button>
