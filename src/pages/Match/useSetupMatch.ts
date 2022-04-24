@@ -79,11 +79,19 @@ export function useSetupMatch(id: string): UseFetchMatchReturn {
       try {
         const match = await getMatch(id);
 
-        const hasMatchNotFinished =
-          !match.status || match.status === 'FINISHED';
+        const matchFinished = match?.status === 'FINISHED';
 
-        if (hasMatchNotFinished) {
+        if (!match || matchFinished) {
           navigate('/');
+
+          const message = !match
+            ? 'Partida não encontrada!'
+            : 'Partida finalizada!';
+
+          console.log(match);
+
+          AppToaster.show({ intent: 'primary', message });
+
           return;
         }
 
@@ -101,7 +109,12 @@ export function useSetupMatch(id: string): UseFetchMatchReturn {
 
         setCards(cards);
         setMatch(convertedMatch);
-      } catch (error: any) {
+      } catch {
+        AppToaster.show({
+          intent: 'primary',
+          message: 'Partida não encontrada!',
+        });
+
         navigate('/');
       } finally {
         stopLoading();

@@ -18,7 +18,7 @@ export function CardsPlayedList({ match }: CardsPlayedListProps): JSX.Element {
           <img
             title={answer.user.displayName || ''}
             alt={answer.user.displayName || ''}
-            src={avatar}
+            src={answer.user.photoURL || avatar}
           />
         </figure>
       </div>
