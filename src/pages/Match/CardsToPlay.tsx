@@ -4,7 +4,7 @@ import { Button, Spinner } from '@blueprintjs/core';
 import { Card } from '@/components/Card';
 import { useAuth } from '@/contexts/AuthContext';
 import { setAnswerToLastRound } from '@/services/matches';
-import { AppToaster } from '@/components/Toast';
+import { AppToaster, BottomToaster } from '@/components/Toast';
 import { CARD_TOKEN } from '@/constants/globals';
 import { countString } from '@/utils/countString';
 import { useBoolean } from '@/hooks/useBoolean';
@@ -24,12 +24,12 @@ export function CardsToPlay({ match }: CardsToPlayProps): JSX.Element {
   const [selectedCardsId, setSelectedCardsId] = useState<string[]>([]);
   const [sending, setTrueSending, setFalseSending] = useBoolean(false);
 
+  const { question } = match.rounds[0];
+
+  const totalOfPlays = countString(question.message, CARD_TOKEN) || 1;
+
   function selectCard(cardId: string): () => void {
     return () => {
-      const { question } = match.rounds[0];
-
-      const totalOfPlays = countString(question.message, CARD_TOKEN) || 1;
-
       if (selectedCardsId.includes(cardId)) {
         const newSelectedCardsId = selectedCardsId.filter(
           (id) => cardId !== id
@@ -47,24 +47,17 @@ export function CardsToPlay({ match }: CardsToPlayProps): JSX.Element {
     };
   }
 
-  function renderCard(card: CardType): JSX.Element {
-    const isSelected = selectedCardsId.includes(card.id);
-
-    return (
-      <button key={card.id} onClick={selectCard(card.id)}>
-        <Card
-          {...card}
-          className={`${styles.cardToPlay} ${
-            isSelected ? styles.isSelected : ''
-          }`}
-          messageClassName={styles.cardToPlayText}
-        />
-      </button>
-    );
-  }
-
   async function confirmPlay(): Promise<void> {
     try {
+      if (selectedCardsId.length !== totalOfPlays) {
+        BottomToaster.show({
+          intent: 'primary',
+          message: `Selecione ${totalOfPlays} cartas para jogar!`,
+        });
+
+        return;
+      }
+
       setTrueSending();
 
       const containsSomeCard = match.rounds[0].answers.find(
@@ -99,6 +92,22 @@ export function CardsToPlay({ match }: CardsToPlayProps): JSX.Element {
     } finally {
       setFalseSending();
     }
+  }
+
+  function renderCard(card: CardType): JSX.Element {
+    const isSelected = selectedCardsId.includes(card.id);
+
+    return (
+      <button key={card.id} onClick={selectCard(card.id)}>
+        <Card
+          {...card}
+          className={`${styles.cardToPlay} ${
+            isSelected ? styles.isSelected : ''
+          }`}
+          messageClassName={styles.cardToPlayText}
+        />
+      </button>
+    );
   }
 
   if (match.rounds.length === 0) {
