@@ -22,9 +22,8 @@ export function Match(): JSX.Element {
   const { id } = useParams<{ id: string }>();
   const { user } = useAuth();
 
-  const { isLoading, match, nextRound, loadingNext, reload } = useSetupMatch(
-    id || ''
-  );
+  const { isLoading, match, nextRound, loadingNext, reload, firstTime } =
+    useSetupMatch(id || '');
 
   const menuRef = useRef<UsersListHandles>(null);
 
@@ -70,7 +69,9 @@ export function Match(): JSX.Element {
             <GoBack />
           </div>
 
-          {matchStarted && !userAlreadyPlayed && <CardsToPlay match={match} />}
+          {matchStarted && !userAlreadyPlayed && !firstTime && (
+            <CardsToPlay match={match} />
+          )}
 
           <CardsPlayedList match={match} />
 

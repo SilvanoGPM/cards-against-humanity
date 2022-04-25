@@ -40,6 +40,10 @@ export function CardsToPlay({ match }: CardsToPlayProps): JSX.Element {
       }
 
       if (selectedCardsId.length === totalOfPlays) {
+        const [, ...otherCardsId] = selectedCardsId;
+
+        setSelectedCardsId([...otherCardsId, cardId]);
+
         return;
       }
 
@@ -129,7 +133,7 @@ export function CardsToPlay({ match }: CardsToPlayProps): JSX.Element {
           intent="success"
           onClick={confirmPlay}
           className={`${styles.confirmButton} ${
-            selectedCardsId.length > 0 ? styles.show : ''
+            selectedCardsId.length === totalOfPlays ? styles.show : ''
           }`}
         />
       </div>

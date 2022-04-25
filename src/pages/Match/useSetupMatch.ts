@@ -19,6 +19,7 @@ interface UseFetchMatchReturn {
   cards: CardType[];
   isLoading: boolean;
   loadingNext: boolean;
+  firstTime: boolean;
   reload: () => void;
   nextRound: () => void;
 }
@@ -29,6 +30,7 @@ export function useSetupMatch(id: string): UseFetchMatchReturn {
 
   const [isLoading, startLoading, stopLoading] = useBoolean(true);
   const [loadingNext, startLoadingNext, stopLoadingNext] = useBoolean(false);
+  const [firstTime, setTrueFirstTime] = useBoolean(false);
 
   const [match, setMatch] = useState<MatchConvertedType>(
     {} as MatchConvertedType
@@ -112,6 +114,7 @@ export function useSetupMatch(id: string): UseFetchMatchReturn {
 
         if (!userIsInTheMatch) {
           await addUserToMatch(id, user.uid);
+          setTrueFirstTime();
         }
 
         const convertedMatch = await convertMatch(match);
@@ -153,7 +156,16 @@ export function useSetupMatch(id: string): UseFetchMatchReturn {
       stopLoading();
       unsubscribePromise.then((unsbscribe) => unsbscribe());
     };
-  }, [id, stopLoading, isLoading, navigate, user, convertMatch, reload]);
+  }, [
+    id,
+    stopLoading,
+    isLoading,
+    navigate,
+    user,
+    convertMatch,
+    reload,
+    setTrueFirstTime,
+  ]);
 
   const nextRound = useCallback(async () => {
     try {
@@ -173,6 +185,7 @@ export function useSetupMatch(id: string): UseFetchMatchReturn {
   return {
     isLoading,
     loadingNext,
+    firstTime,
     match,
     cards,
     reload,

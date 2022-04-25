@@ -159,6 +159,7 @@
 
   &.isSelected {
     transform: translateY(-10px);
+    border-color: $green2;
   }
 
   &Text {
