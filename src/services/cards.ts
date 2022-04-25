@@ -7,7 +7,7 @@ import { createAny, getAll, getAny } from './core';
 let CARDS_CACHE: CardType[] = [];
 
 export async function getCards(): Promise<CardType[]> {
-  if (!CARDS_CACHE) {
+  if (CARDS_CACHE.length === 0) {
     CARDS_CACHE = await getAll<CardType>(cardsCollection);
   }
 

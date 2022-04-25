@@ -43,11 +43,11 @@ export function Match(): JSX.Element {
   const [finishing, setFinishingTrue, setFinishingFalse] = useBoolean(false);
 
   const round = match?.rounds?.length;
-  const userAlreadyPlayed =
-    round > 0 &&
-    match?.rounds?.[0]?.answers.find(
-      (answers) => answers.user.uid === user.uid
-    );
+  const matchStarted = round > 0;
+
+  const userAlreadyPlayed = match?.rounds?.[0]?.answers.find(
+    (answers) => answers.user.uid === user.uid
+  );
 
   async function handleFinishMatch(): Promise<void> {
     try {
@@ -71,7 +71,7 @@ export function Match(): JSX.Element {
 
       {!isLoading && (
         <>
-          {round > 0 && (
+          {matchStarted && (
             <div className={styles.question}>
               <Card {...match.rounds[0].question} />
             </div>
@@ -81,7 +81,7 @@ export function Match(): JSX.Element {
             <GoBack />
           </div>
 
-          {!userAlreadyPlayed && <CardsToPlay match={match} />}
+          {matchStarted && !userAlreadyPlayed && <CardsToPlay match={match} />}
 
           <CardsPlayedList match={match} />
 
@@ -94,7 +94,7 @@ export function Match(): JSX.Element {
             icon="user"
           />
 
-          {round > 0 && (
+          {matchStarted && (
             <Tag
               large
               intent="primary"
@@ -109,7 +109,7 @@ export function Match(): JSX.Element {
           {match.owner.uid === user.uid && (
             <>
               <div className={styles.buttonsToManage}>
-                {round > 0 && (
+                {matchStarted && (
                   <div className={styles.close}>
                     <Button
                       intent="danger"
