@@ -20,13 +20,18 @@ interface AnswersType {
 
 interface UserPlayedType {
   user: import('firebase/firestore').DocumentReference<UserType>;
+}
+
+interface DeckType {
   cards: import('firebase/firestore').DocumentReference<CardType>[];
+  user: import('firebase/firestore').DocumentReference<UserType>;
 }
 
 interface RoundType {
   question: import('firebase/firestore').DocumentReference<CardType>;
   answers: AnswersType[];
   usersWhoPlayed: UserPlayedType[];
+  decks: DeckType[];
 }
 
 interface MatchType {
@@ -44,6 +49,10 @@ interface AnswersConvertedType {
 
 interface UserPlayedConvertedType {
   user: UserType;
+}
+
+interface DeckConvertedType {
+  user: UserType;
   cards: CardType[];
 }
 
@@ -51,6 +60,7 @@ interface RoundConvertedType {
   question: CardType;
   usersWhoPlayed: UserPlayedConvertedType[];
   answers: AnswersConvertedType[];
+  decks: DeckConvertedType[];
 }
 
 interface MatchConvertedType

@@ -7,8 +7,9 @@ import { setAnswerToLastRound } from '@/services/matches';
 import { AppToaster } from '@/components/Toast';
 import { CARD_TOKEN } from '@/constants/globals';
 import { countString } from '@/utils/countString';
+import { useBoolean } from '@/hooks/useBoolean';
 
-import { useRandomDeck } from './useRandomDeck';
+import { useFetchDeck } from './useFetchDeck';
 import styles from './styles.module.scss';
 
 interface CardsToPlayProps {
@@ -18,9 +19,10 @@ interface CardsToPlayProps {
 export function CardsToPlay({ match }: CardsToPlayProps): JSX.Element {
   const { user } = useAuth();
 
-  const { deck, isLoading } = useRandomDeck();
+  const { deck, isLoading } = useFetchDeck(match);
 
   const [selectedCardsId, setSelectedCardsId] = useState<string[]>([]);
+  const [sending, setTrueSending, setFalseSending] = useBoolean(false);
 
   function selectCard(cardId: string): () => void {
     return () => {
@@ -62,30 +64,41 @@ export function CardsToPlay({ match }: CardsToPlayProps): JSX.Element {
   }
 
   async function confirmPlay(): Promise<void> {
-    const containsSomeCard = match.rounds[0].answers.find(
-      (lastAwnser) =>
-        selectedCardsId.some((awnser) => awnser === lastAwnser.card.id) &&
-        user.uid === lastAwnser.user.uid
-    );
+    try {
+      setTrueSending();
 
-    if (containsSomeCard) {
+      const containsSomeCard = match.rounds[0].answers.find(
+        (lastAwnser) =>
+          selectedCardsId.some((awnser) => awnser === lastAwnser.card.id) &&
+          user.uid === lastAwnser.user.uid
+      );
+
+      if (containsSomeCard) {
+        AppToaster.show({
+          intent: 'primary',
+          message: 'Você já adicionou essa carta!',
+        });
+
+        return;
+      }
+
+      const data = {
+        user: user.uid,
+        awnsers: selectedCardsId,
+      };
+
+      await setAnswerToLastRound(match.id, data);
+
+      setSelectedCardsId([]);
+    } catch {
       AppToaster.show({
-        intent: 'primary',
-        message: 'Você já adicionou essa carta!',
+        intent: 'danger',
+        icon: 'error',
+        message: 'Erro ao tentar enviar resposta!',
       });
-
-      return;
+    } finally {
+      setFalseSending();
     }
-
-    const data = {
-      cards: deck.map(({ id }) => id),
-      user: user.uid,
-      awnsers: selectedCardsId,
-    };
-
-    await setAnswerToLastRound(match.id, data);
-
-    setSelectedCardsId([]);
   }
 
   if (match.rounds.length === 0) {
@@ -102,6 +115,7 @@ export function CardsToPlay({ match }: CardsToPlayProps): JSX.Element {
       <div className={styles.confirmButtonWrapper}>
         <Button
           text="Confirmar"
+          loading={sending}
           icon="confirm"
           intent="success"
           onClick={confirmPlay}

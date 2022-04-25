@@ -10,15 +10,21 @@ import {
   matchesCollection,
   usersCollection,
 } from '@/firebase/config';
+
 import { getRandomItem } from '@/utils/getRandomItem';
 
 import { createAny, getAll, getAny, streamAny } from './core';
 import { getCards } from './cards';
+import { getUser } from './users';
 
 interface SetAwnserData {
   awnsers: string[];
   user: string;
-  cards: string[];
+}
+
+interface SortPlayersDecksParams {
+  users: UserType[];
+  cards: CardType[];
 }
 
 export function getMatches(): Promise<MatchType[]> {
@@ -61,23 +67,69 @@ export async function finisMatch(id: string): Promise<void> {
   });
 }
 
+export async function sortPlayersDecks({
+  users,
+  cards,
+}: SortPlayersDecksParams): Promise<DeckType[]> {
+  const CARDS_IN_DECK = 4;
+
+  const awnsers = cards.filter(({ type }) => type === 'WHITE');
+
+  const decks: DeckType[] = [];
+
+  function getRandomAwnser(): CardType {
+    const random = getRandomItem(awnsers);
+    const hasCard = decks.some(({ cards }) =>
+      cards.find(({ id }) => id === random.id)
+    );
+
+    if (hasCard) {
+      return getRandomAwnser();
+    }
+
+    return random;
+  }
+
+  users.forEach((user) => {
+    const cards = Array(CARDS_IN_DECK)
+      .fill('')
+      .map(getRandomAwnser)
+      .map(({ id }) => doc(cardsCollection, id));
+
+    const deck: DeckType = {
+      user: doc(usersCollection, user.uid),
+      cards,
+    };
+
+    decks.push(deck);
+  });
+
+  return decks;
+}
+
 export async function addRoundToMatch(id: string): Promise<void> {
   const matchDoc = doc(matchesCollection, id);
 
-  const { rounds } = await getMatch(id);
+  const { rounds, users: docUsers } = await getMatch(id);
 
   const cards = await getCards();
 
-  const { id: cardId } = getRandomItem(
+  const usersPromises = docUsers.map(async ({ id }) => getUser(id));
+  const users = await Promise.all(usersPromises);
+
+  const decks = await sortPlayersDecks({ users, cards });
+
+  const { id: questionId } = getRandomItem(
     cards.filter(({ type }) => type === 'BLACK')
   );
 
   await updateDoc(matchDoc, {
     rounds: [
       {
-        question: doc(cardsCollection, cardId),
+        question: doc(cardsCollection, questionId),
         answers: [],
         usersWhoPlayed: [],
+        decks,
       },
       ...(rounds as any),
     ],
@@ -86,7 +138,7 @@ export async function addRoundToMatch(id: string): Promise<void> {
 
 export async function setAnswerToLastRound(
   id: string,
-  { awnsers, cards, user }: SetAwnserData
+  { awnsers, user }: SetAwnserData
 ): Promise<void> {
   const matchDoc = doc(matchesCollection, id);
 
@@ -96,18 +148,14 @@ export async function setAnswerToLastRound(
 
   const playedUser = doc(usersCollection, user);
 
-  const newanswers = awnsers.map((awnser) => ({
+  const newAnswers = awnsers.map((awnser) => ({
     user: playedUser,
     card: doc(cardsCollection, awnser),
   }));
 
-  const answers = [...lastRound.answers, ...newanswers];
+  const answers = [...lastRound.answers, ...newAnswers];
 
-  const cardsOfUser = cards.map((card) => doc(cardsCollection, card));
-
-  const userWhoPlayed = { cards: cardsOfUser, user: playedUser };
-
-  const usersWhoPlayed = [...lastRound.usersWhoPlayed, userWhoPlayed];
+  const usersWhoPlayed = [...lastRound.usersWhoPlayed, { user: playedUser }];
 
   const newLastRound = { ...lastRound, answers, usersWhoPlayed };
 

@@ -46,20 +46,26 @@ export function useSetupMatch(id: string): UseFetchMatchReturn {
       }));
 
       const usersWhoPlayedPromises = round.usersWhoPlayed.map(
-        async ({ cards, user }) => ({
-          cards: await Promise.all(cards.map(async ({ id }) => getCard(id))),
+        async ({ user }) => ({
           user: await getUser(user.id),
         })
       );
 
+      const decksPromises = round.decks.map(async ({ cards, user }) => ({
+        cards: await Promise.all(cards.map(async ({ id }) => getCard(id))),
+        user: await getUser(user.id),
+      }));
+
       const question = await getCard(round.question.id);
       const answers = await Promise.all(answersPromises);
       const usersWhoPlayed = await Promise.all(usersWhoPlayedPromises);
+      const decks = await Promise.all(decksPromises);
 
       return {
         answers,
         usersWhoPlayed,
         question,
+        decks,
       };
     });
 
