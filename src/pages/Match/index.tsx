@@ -1,5 +1,5 @@
-import { useEffect, useRef } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useRef } from 'react';
+import { useParams } from 'react-router-dom';
 import { Alert, Button, Tag } from '@blueprintjs/core';
 
 import { useAuth } from '@/contexts/AuthContext';
@@ -20,22 +20,11 @@ import styles from './styles.module.scss';
 
 export function Match(): JSX.Element {
   const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
   const { user } = useAuth();
 
   const { isLoading, match, nextRound, loadingNext, reload } = useSetupMatch(
     id || ''
   );
-
-  useEffect(() => {
-    if (!isLoading && match.status === 'FINISHED') {
-      navigate('/');
-      AppToaster.show({
-        intent: 'primary',
-        message: 'O dono finalizou a partida!',
-      });
-    }
-  }, [isLoading, match, navigate]);
 
   const menuRef = useRef<UsersListHandles>(null);
 
