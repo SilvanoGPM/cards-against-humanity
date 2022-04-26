@@ -1,6 +1,6 @@
 import { useRef } from 'react';
 import { useParams } from 'react-router-dom';
-import { Alert, Button, Tag } from '@blueprintjs/core';
+import { Alert, Button, Callout, Tag, Text } from '@blueprintjs/core';
 
 import { useAuth } from '@/contexts/AuthContext';
 import { SomeLoading } from '@/components/SomeLoading';
@@ -9,6 +9,7 @@ import { GoBack } from '@/components/GoBack';
 import { useBoolean } from '@/hooks/useBoolean';
 import { AppToaster } from '@/components/Toast';
 import { finisMatch } from '@/services/matches';
+import { getFirstString } from '@/utils/getFirstString';
 
 import { useSetupMatch } from './useSetupMatch';
 import { CardsPlayedList } from './CardsPlayedList';
@@ -32,6 +33,7 @@ export function Match(): JSX.Element {
 
   const round = match?.rounds?.length;
   const matchStarted = round > 0;
+  const isOwner = match?.owner?.uid === user.uid;
 
   const userAlreadyPlayed = match?.rounds?.[0]?.answers.find(
     (answers) => answers.user.uid === user.uid
@@ -73,7 +75,7 @@ export function Match(): JSX.Element {
             <CardsToPlay match={match} />
           )}
 
-          <CardsPlayedList match={match} />
+          {matchStarted && <CardsPlayedList match={match} />}
 
           <Menu ref={menuRef} match={match} />
 
@@ -96,7 +98,19 @@ export function Match(): JSX.Element {
             </Tag>
           )}
 
-          {match.owner.uid === user.uid && (
+          {!matchStarted && !isOwner && (
+            <div className={styles.waiting}>
+              <Callout intent="primary" title="Esperando...">
+                Esperando{' '}
+                <Text style={{ fontWeight: 'bold', display: 'inline' }}>
+                  {getFirstString(match.owner.displayName!)}
+                </Text>{' '}
+                (dono da sala) iniciar a partida!
+              </Callout>
+            </div>
+          )}
+
+          {isOwner && (
             <>
               <div className={styles.buttonsToManage}>
                 {matchStarted && (
