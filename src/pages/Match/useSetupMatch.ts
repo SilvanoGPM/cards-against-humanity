@@ -9,14 +9,13 @@ import {
 } from '@/services/matches';
 
 import { useBoolean } from '@/hooks/useBoolean';
-import { getCard, getCards } from '@/services/cards';
+import { getCard } from '@/services/cards';
 import { useAuth } from '@/contexts/AuthContext';
 import { getUser } from '@/services/users';
 import { AppToaster } from '@/components/Toast';
 
 interface UseFetchMatchReturn {
   match: MatchConvertedType;
-  cards: CardType[];
   isLoading: boolean;
   loadingNext: boolean;
   firstTime: boolean;
@@ -35,9 +34,6 @@ export function useSetupMatch(id: string): UseFetchMatchReturn {
   const [match, setMatch] = useState<MatchConvertedType>(
     {} as MatchConvertedType
   );
-
-  const [cards, setCards] = useState<CardType[]>([]);
-
   const convertMatch = useCallback(async (match: MatchType) => {
     const usersPromises = match.users.map(async ({ id }) => getUser(id));
 
@@ -106,8 +102,6 @@ export function useSetupMatch(id: string): UseFetchMatchReturn {
           return;
         }
 
-        const cards = await getCards();
-
         const userIsInTheMatch = match.users.find(
           (innerUser) => innerUser.id === user.uid
         );
@@ -119,7 +113,6 @@ export function useSetupMatch(id: string): UseFetchMatchReturn {
 
         const convertedMatch = await convertMatch(match);
 
-        setCards(cards);
         setMatch(convertedMatch);
       } catch {
         AppToaster.show({
@@ -187,7 +180,6 @@ export function useSetupMatch(id: string): UseFetchMatchReturn {
     loadingNext,
     firstTime,
     match,
-    cards,
     reload,
     nextRound,
   };

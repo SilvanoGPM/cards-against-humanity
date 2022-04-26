@@ -13,8 +13,13 @@ export async function getCards(): Promise<CardType[]> {
   return CARDS_CACHE;
 }
 
-export function getCard(id: string): Promise<CardType> {
-  return getAny<CardType>(cardsCollection, id);
+export async function getCard(id: string): Promise<CardType> {
+  const card =
+    CARDS_CACHE.length === 0
+      ? await getAny<CardType>(cardsCollection, id)
+      : CARDS_CACHE.find((card) => card.id === id)!;
+
+  return card;
 }
 
 export function newCard(card: CardToCreate): Promise<string> {

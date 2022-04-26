@@ -105,7 +105,7 @@ export function Match(): JSX.Element {
                       intent="danger"
                       onClick={openAlert}
                       large
-                      rightIcon="menu-closed"
+                      rightIcon="cross"
                       loading={loadingNext}
                       text="Finalizar partida"
                     />
