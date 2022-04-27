@@ -2,12 +2,11 @@ import { useEffect, useState } from 'react';
 
 import { AppToaster } from '@/components/Toast';
 import { useAuth } from '@/contexts/AuthContext';
+import { MAX_OF_CARDS_IN_DECK } from '@/constants/globals';
 
 interface UseRandomDeckReturn {
   deck: CardType[];
 }
-
-const MAX_OF_CARDS_IN_DECK = 4;
 
 export function useFetchDeck(
   match: MatchConvertedType,
