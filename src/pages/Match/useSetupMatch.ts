@@ -17,8 +17,8 @@ import { AppToaster } from '@/components/Toast';
 interface UseFetchMatchReturn {
   match: MatchConvertedType;
   isLoading: boolean;
+  isFirstTime: boolean;
   loadingNext: boolean;
-  firstTime: boolean;
   reload: () => void;
   nextRound: () => void;
 }
@@ -29,11 +29,12 @@ export function useSetupMatch(id: string): UseFetchMatchReturn {
 
   const [isLoading, startLoading, stopLoading] = useBoolean(true);
   const [loadingNext, startLoadingNext, stopLoadingNext] = useBoolean(false);
-  const [firstTime, setTrueFirstTime] = useBoolean(false);
+  const [isFirstTime, setTrueFirstTime, setFalseFirstTime] = useBoolean(false);
 
   const [match, setMatch] = useState<MatchConvertedType>(
     {} as MatchConvertedType
   );
+
   const convertMatch = useCallback(async (match: MatchType) => {
     const usersPromises = match.users.map(async ({ id }) => getUser(id));
 
@@ -141,6 +142,14 @@ export function useSetupMatch(id: string): UseFetchMatchReturn {
           reload();
         }
 
+        const hasDeck = convertedMatch.rounds[0].decks.find(
+          (deck) => deck.user.uid === user.uid
+        );
+
+        if (hasDeck && isFirstTime) {
+          setFalseFirstTime();
+        }
+
         setMatch(convertedMatch);
       }
     });
@@ -158,6 +167,8 @@ export function useSetupMatch(id: string): UseFetchMatchReturn {
     convertMatch,
     reload,
     setTrueFirstTime,
+    setFalseFirstTime,
+    isFirstTime,
   ]);
 
   const nextRound = useCallback(async () => {
@@ -177,8 +188,8 @@ export function useSetupMatch(id: string): UseFetchMatchReturn {
 
   return {
     isLoading,
+    isFirstTime,
     loadingNext,
-    firstTime,
     match,
     reload,
     nextRound,

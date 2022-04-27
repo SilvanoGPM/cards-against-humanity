@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Button, Spinner } from '@blueprintjs/core';
+import { Button, H3 } from '@blueprintjs/core';
 
 import { Card } from '@/components/Card';
 import { useAuth } from '@/contexts/AuthContext';
@@ -14,12 +14,16 @@ import styles from './styles.module.scss';
 
 interface CardsToPlayProps {
   match: MatchConvertedType;
+  isFirstTime: boolean;
 }
 
-export function CardsToPlay({ match }: CardsToPlayProps): JSX.Element {
+export function CardsToPlay({
+  match,
+  isFirstTime,
+}: CardsToPlayProps): JSX.Element {
   const { user } = useAuth();
 
-  const { deck, isLoading } = useFetchDeck(match);
+  const { deck } = useFetchDeck(match, isFirstTime);
 
   const [selectedCardsId, setSelectedCardsId] = useState<string[]>([]);
   const [sending, setTrueSending, setFalseSending] = useBoolean(false);
@@ -118,13 +122,12 @@ export function CardsToPlay({ match }: CardsToPlayProps): JSX.Element {
     return <div />;
   }
 
-  if (isLoading) {
-    return <Spinner intent="primary" />;
-  }
-
   return (
     <div className={styles.cardsToPlayWrapper}>
       <ul className={styles.cardsToPlay}>{deck.map(renderCard)}</ul>
+      {isFirstTime && (
+        <H3 className={styles.nextRoundText}>Você joga na próxima rodada...</H3>
+      )}
       <div className={styles.confirmButtonWrapper}>
         <Button
           text="Confirmar"

@@ -23,7 +23,7 @@ export function Match(): JSX.Element {
   const { id } = useParams<{ id: string }>();
   const { user } = useAuth();
 
-  const { isLoading, match, nextRound, loadingNext, reload, firstTime } =
+  const { isLoading, match, nextRound, loadingNext, reload, isFirstTime } =
     useSetupMatch(id || '');
 
   const menuRef = useRef<UsersListHandles>(null);
@@ -35,8 +35,8 @@ export function Match(): JSX.Element {
   const matchStarted = round > 0;
   const isOwner = match?.owner?.uid === user.uid;
 
-  const userAlreadyPlayed = match?.rounds?.[0]?.answers.find(
-    (answers) => answers.user.uid === user.uid
+  const userAlreadyPlayed = match?.rounds?.[0]?.usersWhoPlayed.find(
+    (otherUser) => otherUser.user.uid === user.uid
   );
 
   async function handleFinishMatch(): Promise<void> {
@@ -71,8 +71,8 @@ export function Match(): JSX.Element {
             <GoBack />
           </div>
 
-          {matchStarted && !userAlreadyPlayed && !firstTime && (
-            <CardsToPlay match={match} />
+          {matchStarted && !userAlreadyPlayed && (
+            <CardsToPlay match={match} isFirstTime={isFirstTime} />
           )}
 
           {matchStarted && <CardsPlayedList match={match} />}
@@ -103,7 +103,7 @@ export function Match(): JSX.Element {
               <Callout intent="primary" title="Esperando...">
                 Esperando{' '}
                 <Text style={{ fontWeight: 'bold', display: 'inline' }}>
-                  {getFirstString(match.owner.displayName!)}
+                  {getFirstString(match?.owner?.displayName)}
                 </Text>{' '}
                 (dono da sala) iniciar a partida!
               </Callout>
