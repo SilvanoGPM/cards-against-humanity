@@ -1,3 +1,5 @@
+import { Tag } from '@blueprintjs/core';
+
 import { EnterInMatch } from './EnternMatch';
 import { UserInfo } from './UserInfo';
 import { ButtonsMenu } from './ButtonsMenu';
@@ -13,7 +15,9 @@ export function Home(): JSX.Element {
         <ButtonsMenu />
         <EnterInMatch />
 
-        <p className={styles.version}>0.1.0 beta</p>
+        <Tag intent="primary" className={styles.version}>
+          0.1.0 beta
+        </Tag>
       </main>
     </div>
   );

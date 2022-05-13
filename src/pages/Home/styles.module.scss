@@ -97,6 +97,7 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  padding-bottom: 5rem;
 }
 
 .form {
@@ -105,10 +106,9 @@
   .enterInputMatch {
     flex: 1;
   }
-
 }
 
-.version {
+.version.version {
   position: absolute;
   bottom: 10px;
   right: 10px;
