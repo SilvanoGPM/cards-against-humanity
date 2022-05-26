@@ -142,7 +142,7 @@ export function useSetupMatch(id: string): UseFetchMatchReturn {
           reload();
         }
 
-        const hasDeck = convertedMatch.rounds[0].decks.find(
+        const hasDeck = convertedMatch?.rounds[0]?.decks.find(
           (deck) => deck.user.uid === user.uid
         );
 
