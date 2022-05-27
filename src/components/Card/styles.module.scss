@@ -6,18 +6,68 @@
 
   --color: #191919;
   --background: #ffffff;
+  background-color: transparent;
+  perspective: 1000px;
   width: 280px;
   height: 350px;
-  border: 2px solid var(--color);
   border-radius: 10px;
-  color: var(--color);
-  background-color: var(--background);
-  font-size: 1.6rem;
-  padding: 2rem 1rem;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  word-break: break-word;
+
+  &Inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.8s;
+    transform-style: preserve-3d;
+    border-radius: 10px;
+  }
+
+  &AnimationOff {
+    transform: rotateY(180deg);
+  }
+
+  &AnimationRevert {
+    transform: rotateY(0);
+  }
+
+  &:hover {
+    .cardAnimationHover {
+      transform: rotateY(180deg);
+    }
+  }
+
+  &AnimationAuto {
+    animation: flip 1s;
+    animation-fill-mode: forwards;
+
+    @keyframes flip {
+      from { transform: rotateY(0deg) }
+      to { transform: rotateY(180deg) }
+    }
+  }
+
+  &Back,
+  &Front {
+    color: var(--color);
+    background-color: var(--background);
+    padding: 2rem 1rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    word-break: break-word;
+    border-radius: 10px;
+    border: 2px solid var(--color);
+
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    -webkit-backface-visibility: hidden; /* Safari */
+    backface-visibility: hidden;
+  }
+
+  &Back {
+    transform: rotateY(180deg);
+    font-size: 1.6rem;
+  }
 
   svg {
     width: 60%;
@@ -33,4 +83,9 @@
   width: 90%;
   height: 2px;
   background-color: var(--color);
+}
+
+.gameNameText {
+  font-size: 2rem;
+  font-weight: bold;
 }

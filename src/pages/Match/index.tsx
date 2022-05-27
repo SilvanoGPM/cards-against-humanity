@@ -55,15 +55,26 @@ export function Match(): JSX.Element {
     }
   }
 
+  console.log(loadingNext);
+
   return (
     <div className={styles.container}>
-      <SomeLoading loading={isLoading} message="Carregando partida..." />
+      <SomeLoading
+        loading={isLoading || loadingNext}
+        message={
+          isLoading ? 'Carregando partida...' : 'Carregando próximo round...'
+        }
+      />
 
-      {!isLoading && (
+      {!isLoading && !loadingNext && (
         <>
           {matchStarted && (
             <div className={styles.question}>
-              <Card {...match.rounds[0].question} />
+              <Card
+                {...match.rounds[0].question}
+                animationDelay={loadingNext ? '0s' : '0.5s'}
+                animationType={loadingNext ? 'revert' : 'auto'}
+              />
             </div>
           )}
 

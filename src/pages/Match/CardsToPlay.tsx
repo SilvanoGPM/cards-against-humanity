@@ -112,6 +112,10 @@ export function CardsToPlay({
           className={`${styles.cardToPlay} ${
             isSelected ? styles.isSelected : ''
           }`}
+          frontClassName={styles.cardToPlayFront}
+          backClassName={`${styles.cardToPlayBack} ${
+            isSelected ? styles.isSelected : ''
+          }`}
           messageClassName={styles.cardToPlayText}
         />
       </button>

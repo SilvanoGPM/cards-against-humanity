@@ -27,8 +27,14 @@ export function Cards(): JSX.Element {
           <H3 className={`${styles.totalOfCards} ${styles.whites}`}>
             Total de respostas: {whites.length}
           </H3>
-          {whites.map(({ id, message, type }) => (
-            <Card key={id} message={message} type={type} />
+          {whites.map(({ id, message, type }, index) => (
+            <Card
+              key={id}
+              message={message}
+              type={type}
+              animationType="auto"
+              animationDelay={`${index >= 20 ? 0 : index * 500}ms`}
+            />
           ))}
         </div>
 

@@ -130,19 +130,6 @@
   display: flex;
   justify-content: center;
   margin-top: 3rem;
-  animation: appear 1s;
-}
-
-@keyframes appear {
-  from {
-    opacity: 0;
-    transform: scale(0);
-  }
-
-  to {
-    transform: scale(1);
-    opacity: 1;
-  }
 }
 
 .cardsToPlay {
@@ -163,8 +150,6 @@
   cursor: pointer;
   width: 100px;
   height: 150px;
-  font-size: 0.8rem;
-  padding: 0.2rem;
   transition: 0.2s ease-in-out;
 
   &:hover {
@@ -173,7 +158,19 @@
 
   &.isSelected {
     transform: translateY(-10px);
-    border-color: $green2;
+
+    .cardToPlayBack {
+      border-color: $green2;
+    }
+  }
+
+  &Front {
+    display: none;
+  }
+
+  &Back {
+    font-size: 0.8rem;
+    padding: 0.2rem;
   }
 
   &Text {
