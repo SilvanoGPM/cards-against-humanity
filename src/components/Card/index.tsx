@@ -8,7 +8,7 @@ interface CardProps extends Omit<CardType, 'id'> {
   frontClassName?: string;
   backClassName?: string;
   messageClassName?: string;
-  animationType?: 'off' | 'revert' | 'hover' | 'auto';
+  animationType?: 'off' | 'revert' | 'hover' | 'auto' | 'rotating';
   animationDelay?: string;
 }
 
@@ -17,6 +17,7 @@ const animations = {
   hover: styles.cardAnimationHover,
   auto: styles.cardAnimationAuto,
   revert: styles.cardAnimationRevert,
+  rotating: styles.cardAnimationRotating,
 };
 
 export function Card({

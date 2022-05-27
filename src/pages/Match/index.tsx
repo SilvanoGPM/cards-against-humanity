@@ -55,8 +55,6 @@ export function Match(): JSX.Element {
     }
   }
 
-  console.log(loadingNext);
-
   return (
     <div className={styles.container}>
       <SomeLoading
@@ -136,6 +134,21 @@ export function Match(): JSX.Element {
                     />
                   </div>
                 )}
+
+                {!matchStarted && (
+                  <Card
+                    message={
+                      isOwner
+                        ? 'Inicie a partida a qualquer momento.'
+                        : 'Esperando o dono iniciar a partida!'
+                    }
+                    className={styles.cardRotating}
+                    type="WHITE"
+                    animationType="rotating"
+                    animationDelay="0s"
+                  />
+                )}
+
                 <div
                   className={`${styles.manageButton} ${
                     round === 0 ? styles.startButton : ''

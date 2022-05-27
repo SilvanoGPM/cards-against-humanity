@@ -198,9 +198,9 @@
 .startButton {
   width: auto;
   position: absolute;
-  top: 50%;
+  top: 80%;
   left: 50%;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, -80%);
 }
 
 .copyMatchId {
@@ -256,4 +256,13 @@
 .nextRoundText {
   text-align: center;
   font-weight: bold;
+}
+
+.cardRotating {
+  position: absolute;
+  top: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 250px;
+  height: 300px;
 }

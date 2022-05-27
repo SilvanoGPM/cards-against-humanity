@@ -45,6 +45,19 @@
     }
   }
 
+  &AnimationRotating {
+    animation: rotating 4s infinite linear;
+
+    @keyframes rotating {
+      0% { transform: rotateY(0deg) rotateX(10deg); }
+      30% { transform: rotateY(90deg) rotateX(0deg); }
+      50% { transform: rotateY(180deg) rotateX(-10deg); }
+      70% { transform: rotateY(270deg) rotateX(-30deg); }
+      90% { transform: rotateY(340deg) rotateX(0deg); }
+      100% { transform: rotateY(360deg) rotateX(10deg) }
+    }
+  }
+
   &Back,
   &Front {
     color: var(--color);
