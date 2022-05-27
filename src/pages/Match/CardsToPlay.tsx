@@ -102,13 +102,15 @@ export function CardsToPlay({
     }
   }
 
-  function renderCard(card: CardType): JSX.Element {
+  function renderCard(card: CardType, index: number): JSX.Element {
     const isSelected = selectedCardsId.includes(card.id);
 
     return (
       <button key={card.id} onClick={selectCard(card.id)}>
         <Card
           {...card}
+          animationType="auto"
+          animationDelay={`${(index + 2) * 500}ms`}
           className={`${styles.cardToPlay} ${
             isSelected ? styles.isSelected : ''
           }`}
