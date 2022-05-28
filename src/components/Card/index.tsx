@@ -1,4 +1,5 @@
 import { CARD_TOKEN } from '@/constants/globals';
+import { useState } from 'react';
 
 import { WhiteLogo, BlackLogo } from './Logos';
 import styles from './styles.module.scss';
@@ -8,7 +9,7 @@ interface CardProps extends Omit<CardType, 'id'> {
   frontClassName?: string;
   backClassName?: string;
   messageClassName?: string;
-  animationType?: 'off' | 'revert' | 'hover' | 'auto' | 'rotating';
+  animationType?: 'off' | 'revert' | 'hover' | 'auto' | 'rotating' | 'click';
   animationDelay?: string;
 }
 
@@ -18,6 +19,7 @@ const animations = {
   auto: styles.cardAnimationAuto,
   revert: styles.cardAnimationRevert,
   rotating: styles.cardAnimationRotating,
+  click: styles.cardAnimationClick,
 };
 
 export function Card({
@@ -30,6 +32,8 @@ export function Card({
   frontClassName = '',
   backClassName = '',
 }: CardProps): JSX.Element {
+  const [clicked, setClicked] = useState(false);
+
   const isBlack = type === 'BLACK';
   const animation = animations[animationType];
 
@@ -42,14 +46,23 @@ export function Card({
     return `<p class="${styles.message} ${messageClassName}">${text}</p>`;
   }
 
+  function toggleClicked(): void {
+    if (animationType === 'click') {
+      setClicked(!clicked);
+    }
+  }
+
   const Logo = isBlack ? BlackLogo : WhiteLogo;
 
   return (
-    <div
+    <button
+      onClick={toggleClicked}
       className={`${styles.card} ${isBlack ? styles.isBlack : ''} ${className}`}
     >
       <div
-        className={`${styles.cardInner} ${animation}`}
+        className={`${styles.cardInner} ${
+          animationType !== 'click' ? animation : clicked ? animation : ''
+        }`}
         style={{ animationDelay }}
       >
         <div className={`${styles.cardFront} ${frontClassName}`}>
@@ -66,6 +79,6 @@ export function Card({
           <Logo />
         </div>
       </div>
-    </div>
+    </button>
   );
 }

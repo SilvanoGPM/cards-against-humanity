@@ -11,6 +11,7 @@
   width: 280px;
   height: 350px;
   border-radius: 10px;
+  border: none;
 
   &Inner {
     position: relative;
@@ -40,8 +41,12 @@
     animation-fill-mode: forwards;
 
     @keyframes flip {
-      from { transform: rotateY(0deg) }
-      to { transform: rotateY(180deg) }
+      from {
+        transform: rotateY(0deg);
+      }
+      to {
+        transform: rotateY(180deg);
+      }
     }
   }
 
@@ -49,13 +54,29 @@
     animation: rotating 4s infinite linear;
 
     @keyframes rotating {
-      0% { transform: rotateY(0deg) rotateX(10deg); }
-      30% { transform: rotateY(90deg) rotateX(0deg); }
-      50% { transform: rotateY(180deg) rotateX(-10deg); }
-      70% { transform: rotateY(270deg) rotateX(-30deg); }
-      90% { transform: rotateY(340deg) rotateX(0deg); }
-      100% { transform: rotateY(360deg) rotateX(10deg) }
+      0% {
+        transform: rotateY(0deg) rotateX(10deg);
+      }
+      30% {
+        transform: rotateY(90deg) rotateX(0deg);
+      }
+      50% {
+        transform: rotateY(180deg) rotateX(-10deg);
+      }
+      70% {
+        transform: rotateY(270deg) rotateX(-30deg);
+      }
+      90% {
+        transform: rotateY(340deg) rotateX(0deg);
+      }
+      100% {
+        transform: rotateY(360deg) rotateX(10deg);
+      }
     }
+  }
+
+  &AnimationClick {
+    transform: rotateY(180deg);
   }
 
   &Back,
@@ -80,6 +101,7 @@
   &Back {
     transform: rotateY(180deg);
     font-size: 1.6rem;
+    text-align: left;
   }
 
   svg {
@@ -101,4 +123,5 @@
 .gameNameText {
   font-size: 2rem;
   font-weight: bold;
+  text-align: left;
 }

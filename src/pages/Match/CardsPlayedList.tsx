@@ -32,7 +32,14 @@ export function CardsPlayedList({ match }: CardsPlayedListProps): JSX.Element {
   );
 
   function renderCard(card: CardType): JSX.Element {
-    return <Card key={card.id} {...card} />;
+    return (
+      <Card
+        key={card.id}
+        {...card}
+        animationType="click"
+        className={styles.cardPlayedCursor}
+      />
+    );
   }
 
   function renderAnswers(

@@ -39,6 +39,7 @@
     "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/no-non-null-assertion": "off",
     "no-shadow": "off",
+    "no-nested-ternary": "off",
     "@typescript-eslint/explicit-function-return-type": [
       "error",
       {
