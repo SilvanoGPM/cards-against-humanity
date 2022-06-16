@@ -38,9 +38,16 @@ export function ButtonsMenu(): JSX.Element {
       >
         Criar partida
       </Button>
+
       <Link to="/cards">
         <Button disabled={creating} large intent="primary">
           Ver cartas
+        </Button>
+      </Link>
+
+      <Link to="/cards">
+        <Button disabled={creating} large intent="primary">
+          Encontrar partida
         </Button>
       </Link>
 

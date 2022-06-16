@@ -112,4 +112,18 @@
   position: absolute;
   bottom: 10px;
   right: 10px;
+
+  @media (max-width: 500px) {
+    bottom: unset;
+    right: unset;
+    left: 50%;
+
+    transform: translateX(-50%);
+
+    top: 240px;
+  }
+
+  @media (max-width: 400px) {
+    top: 220px;
+  }
 }

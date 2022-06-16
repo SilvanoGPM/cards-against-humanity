@@ -1,6 +1,6 @@
 import { useRef } from 'react';
 import { useParams } from 'react-router-dom';
-import { Alert, Button, Callout, Tag, Text } from '@blueprintjs/core';
+import { Alert, Button, Tag } from '@blueprintjs/core';
 
 import { useAuth } from '@/contexts/AuthContext';
 import { SomeLoading } from '@/components/SomeLoading';
@@ -112,7 +112,9 @@ export function Match(): JSX.Element {
               message={
                 isOwner
                   ? 'Inicie a partida a qualquer momento.'
-                  : 'Esperando o dono iniciar a partida!'
+                  : `Esperando <strong>${getFirstString(
+                      match.owner.displayName
+                    )}</strong> iniciar a partida!`
               }
               className={styles.cardRotating}
               type="WHITE"
