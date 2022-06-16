@@ -142,10 +142,17 @@
 }
 
 .cardToPlay {
+  --font-size: clamp(0.8rem, 3vw, 1.5rem);
+  --line-height: clamp(1rem, 3vw, 2rem);
   cursor: pointer;
-  width: 100px;
-  height: 150px;
+  width: 125px;
+  height: 200px;
   transition: 0.2s ease-in-out;
+
+  @media (min-width: 450px) {
+    width: 200px;
+    height: 250px;
+  }
 
   &:hover {
     transform: scale(1.1);
@@ -161,18 +168,22 @@
 
   &Front {
     p {
-      font-size: 0.8rem;
+      font-size: var(--font-size);
       text-align: left;
     }
   }
 
   &Back {
-    font-size: 0.8rem;
+    font-size: var(--font-size);
     padding: 0.2rem;
+
+    @media (min-width: 450px) {
+      padding: 0.8rem;
+    }
   }
 
   &Text {
-    line-height: 1rem;
+    line-height: var(--line-height);
   }
 }
 
