@@ -139,7 +139,7 @@ export function LastMatches({
                       </Button>
                     </Link>
 
-                    {isAdmin && (
+                    {(isAdmin || owner.uid === user.uid) && (
                       <Popover2
                         content={renderPopoverContent(id)}
                         placement="bottom"
