@@ -107,16 +107,18 @@ export function Match(): JSX.Element {
             </Tag>
           )}
 
-          {!matchStarted && !isOwner && (
-            <div className={styles.waiting}>
-              <Callout intent="primary" title="Esperando...">
-                Esperando{' '}
-                <Text style={{ fontWeight: 'bold', display: 'inline' }}>
-                  {getFirstString(match?.owner?.displayName)}
-                </Text>{' '}
-                (dono da sala) iniciar a partida!
-              </Callout>
-            </div>
+          {!matchStarted && (
+            <Card
+              message={
+                isOwner
+                  ? 'Inicie a partida a qualquer momento.'
+                  : 'Esperando o dono iniciar a partida!'
+              }
+              className={styles.cardRotating}
+              type="WHITE"
+              animationType="rotating"
+              animationDelay="0s"
+            />
           )}
 
           {isOwner && (
@@ -133,20 +135,6 @@ export function Match(): JSX.Element {
                       text="Finalizar partida"
                     />
                   </div>
-                )}
-
-                {!matchStarted && (
-                  <Card
-                    message={
-                      isOwner
-                        ? 'Inicie a partida a qualquer momento.'
-                        : 'Esperando o dono iniciar a partida!'
-                    }
-                    className={styles.cardRotating}
-                    type="WHITE"
-                    animationType="rotating"
-                    animationDelay="0s"
-                  />
                 )}
 
                 <div
