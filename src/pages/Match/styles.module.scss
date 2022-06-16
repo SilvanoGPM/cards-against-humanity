@@ -83,7 +83,8 @@
   padding: 0;
   display: flex;
   gap: 1rem;
-  overflow-y: auto;
+  overflow-x: auto;
+  overflow-y: hidden;
 
   &Wrapper {
     margin-top: 2rem;

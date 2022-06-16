@@ -18,6 +18,7 @@ export function Avatar({
       <img
         style={{ width: '100%', height: '100%' }}
         className={className}
+        title={alt}
         alt={alt}
         src={src || avatar}
         onError={(event) => {

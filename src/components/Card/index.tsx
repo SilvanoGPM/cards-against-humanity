@@ -11,6 +11,7 @@ interface CardProps extends Omit<CardType, 'id'> {
   messageClassName?: string;
   animationType?: 'off' | 'revert' | 'hover' | 'auto' | 'rotating' | 'click';
   animationDelay?: string;
+  animationClickShowBack?: boolean;
 }
 
 const animations = {
@@ -31,8 +32,9 @@ export function Card({
   messageClassName = '',
   frontClassName = '',
   backClassName = '',
+  animationClickShowBack = false,
 }: CardProps): JSX.Element {
-  const [clicked, setClicked] = useState(false);
+  const [clicked, setClicked] = useState(animationClickShowBack);
 
   const isBlack = type === 'BLACK';
   const animation = animations[animationType];
