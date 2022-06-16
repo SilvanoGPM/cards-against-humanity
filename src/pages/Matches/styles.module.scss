@@ -1,0 +1,62 @@
+.main {
+  width: 100%;
+  padding: 0 1rem;
+  display: flex;
+  gap: 1rem;
+  flex-direction: column;
+  max-width: 1000px;
+  margin: auto;
+  margin-top: 4rem;
+
+  @media screen and (min-width: 700px) {
+    flex-direction: row;
+  }
+}
+
+.matchesList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.match {
+  max-width: 300px;
+  width: 100%;
+
+  &Info {
+    .text {
+      font-size: 1.2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+
+      button, a, div {
+        flex: 1;
+      }
+    }
+  }
+}
+
+.goBack {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+}
+
+.popover {
+  padding: 1rem;
+  margin: 0 1rem;
+  background-color: #ffffff;
+  text-align: center;
+
+  &Content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+}
+

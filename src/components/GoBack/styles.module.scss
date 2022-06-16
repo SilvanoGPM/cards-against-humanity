@@ -3,4 +3,9 @@
   border-radius: 50%;
   border: 1px solid;
   padding: 0.5rem;
+
+  &Button {
+    border: none;
+    background-color: transparent;
+  }
 }

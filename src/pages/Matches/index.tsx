@@ -1,8 +1,13 @@
 import { SomeLoading } from '@/components/SomeLoading';
+import { GoBack } from '@/components/GoBack';
+
 import { useLastMatches } from './useLastMatches';
+import { LastMatches } from './LastMatches';
+
+import styles from './styles.module.scss';
 
 export function Matches(): JSX.Element {
-  const { loading: loadingLastMatches, matches } = useLastMatches();
+  const { loading: loadingLastMatches, matches, setMatches } = useLastMatches();
 
   return (
     <>
@@ -11,9 +16,13 @@ export function Matches(): JSX.Element {
         message="Carregando as últimas partidas..."
       />
 
-      {matches.map(({ id }) => (
-        <li>{id}</li>
-      ))}
+      <div className={styles.goBack}>
+        <GoBack />
+      </div>
+
+      <main className={styles.main}>
+        <LastMatches matches={matches} onMatchesChange={setMatches} />
+      </main>
     </>
   );
 }

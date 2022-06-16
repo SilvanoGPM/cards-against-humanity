@@ -8,7 +8,7 @@ import { Card } from '@/components/Card';
 import { GoBack } from '@/components/GoBack';
 import { useBoolean } from '@/hooks/useBoolean';
 import { AppToaster } from '@/components/Toast';
-import { finisMatch } from '@/services/matches';
+import { finishMatch } from '@/services/matches';
 import { getFirstString } from '@/utils/getFirstString';
 
 import { useSetupMatch } from './useSetupMatch';
@@ -42,7 +42,7 @@ export function Match(): JSX.Element {
   async function handleFinishMatch(): Promise<void> {
     try {
       setFinishingTrue();
-      await finisMatch(match.id);
+      await finishMatch(match.id);
       reload();
     } catch {
       AppToaster.show({

@@ -20,7 +20,7 @@ import {
 import { getRandomItem } from '@/utils/getRandomItem';
 
 import { createAny, getAll, getAny, mapValue, streamAny } from './core';
-import { getCards } from './cards';
+import { getCard, getCards } from './cards';
 import { getUser } from './users';
 
 interface SetAwnserData {
@@ -73,7 +73,7 @@ export async function addUserToMatch(
   });
 }
 
-export async function finisMatch(id: string): Promise<void> {
+export async function finishMatch(id: string): Promise<void> {
   const matchDoc = doc(matchesCollection, id);
 
   await updateDoc(matchDoc, {
@@ -196,4 +196,51 @@ export async function streamMatches(
   );
 
   return unsubscribe;
+}
+
+export async function convertMatch(
+  match: MatchType
+): Promise<MatchConvertedType> {
+  const usersPromises = match.users.map(async ({ id }) => getUser(id));
+
+  const roundsPromises = match.rounds.map(async (round) => {
+    const answersPromises = round.answers.map(async ({ card, user }) => ({
+      card: await getCard(card.id),
+      user: await getUser(user.id),
+    }));
+
+    const usersWhoPlayedPromises = round.usersWhoPlayed.map(
+      async ({ user }) => ({
+        user: await getUser(user.id),
+      })
+    );
+
+    const decksPromises = round.decks.map(async ({ cards, user }) => ({
+      cards: await Promise.all(cards.map(async ({ id }) => getCard(id))),
+      user: await getUser(user.id),
+    }));
+
+    const question = await getCard(round.question.id);
+    const answers = await Promise.all(answersPromises);
+    const usersWhoPlayed = await Promise.all(usersWhoPlayedPromises);
+    const decks = await Promise.all(decksPromises);
+
+    return {
+      answers,
+      usersWhoPlayed,
+      question,
+      decks,
+    };
+  });
+
+  const convertedOwner = await getUser(match.owner.id);
+  const convertedUsers = await Promise.all(usersPromises);
+  const convertedRounds = await Promise.all(roundsPromises);
+
+  return {
+    ...match,
+    owner: convertedOwner,
+    users: convertedUsers,
+    rounds: convertedRounds,
+  } as MatchConvertedType;
 }

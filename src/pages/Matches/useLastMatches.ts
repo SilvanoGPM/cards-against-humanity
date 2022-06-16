@@ -1,25 +1,34 @@
 import { useEffect, useState } from 'react';
 
-import { getLastMatches, streamMatches } from '@/services/matches';
+import {
+  convertMatch,
+  getLastMatches,
+  streamMatches,
+} from '@/services/matches';
+
 import { AppToaster } from '@/components/Toast';
 import { useBoolean } from '@/hooks/useBoolean';
 import { toValue } from '@/services/core';
 
 interface UseLastMatchesReturn {
-  matches: MatchType[];
+  matches: MatchConvertedType[];
+  setMatches: (matches: MatchConvertedType[]) => void;
   loading: boolean;
 }
 
 export function useLastMatches(size = 10): UseLastMatchesReturn {
   const [loading, , stopLoading] = useBoolean(true);
   const [isFirstStream, setFalseFirstStream] = useBoolean(true);
-  const [matches, setMatches] = useState<MatchType[]>([]);
+  const [matches, setMatches] = useState<MatchConvertedType[]>([]);
 
   useEffect(() => {
     async function loadMatches(): Promise<void> {
       try {
         const matches = await getLastMatches(size);
-        setMatches(matches);
+
+        const convertedMatches = await Promise.all(matches.map(convertMatch));
+
+        setMatches(convertedMatches);
       } catch {
         AppToaster.show({
           message: 'Aconteceu um erro ao tentar encontrar as últimas partidas',
@@ -36,15 +45,12 @@ export function useLastMatches(size = 10): UseLastMatchesReturn {
 
   useEffect(() => {
     const unsubscribePromise = streamMatches(async (snapshot) => {
-      const newMatches = snapshot
+      const newMatchesPromises = snapshot
         .docChanges()
         .filter(({ type }) => type === 'added')
-        .map(({ doc }) => toValue(doc));
+        .map(({ doc }) => convertMatch(toValue(doc)));
 
-      // workaround for inital stream.
-      if (newMatches.length > 10) {
-        return;
-      }
+      const newMatches = await Promise.all(newMatchesPromises);
 
       const removedMatches = snapshot
         .docChanges()
@@ -52,10 +58,14 @@ export function useLastMatches(size = 10): UseLastMatchesReturn {
         .map(({ doc }) => toValue(doc).id);
 
       if (newMatches.length !== 0 || removedMatches.length !== 0) {
-        setMatches((matches) => [
-          ...newMatches,
-          ...matches.filter(({ id }) => !removedMatches.includes(id)),
-        ]);
+        setMatches((matches) => {
+          const matchesId = matches.map(({ id }) => id);
+
+          return [
+            ...newMatches.filter(({ id }) => !matchesId.includes(id)),
+            ...matches.filter(({ id }) => !removedMatches.includes(id)),
+          ];
+        });
       }
     });
 
@@ -64,5 +74,5 @@ export function useLastMatches(size = 10): UseLastMatchesReturn {
     };
   }, [isFirstStream, setFalseFirstStream]);
 
-  return { matches, loading };
+  return { matches, setMatches, loading };
 }

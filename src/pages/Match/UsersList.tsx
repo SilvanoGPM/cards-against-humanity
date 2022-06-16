@@ -1,8 +1,9 @@
 import { getFirstString } from '@/utils/getFirstString';
 import { Card, Colors, H3, Icon } from '@blueprintjs/core';
 
+import { Avatar } from '@/components/Avatar';
+
 import styles from './styles.module.scss';
-import avatar from '../../assets/avatar.png';
 
 interface UsersProps {
   match: MatchConvertedType;
@@ -35,16 +36,7 @@ export function UsersList({ match }: UsersProps): JSX.Element {
         <Card
           className={`${styles.userCard} ${userPlayed ? styles.isPlayed : ''}`}
         >
-          <figure>
-            <img
-              alt={user.displayName || ''}
-              src={user.photoURL || avatar}
-              onError={(event) => {
-                // eslint-disable-next-line
-                event.currentTarget.src = avatar;
-              }}
-            />
-          </figure>
+          <Avatar alt={user.displayName || ''} src={user.photoURL} />
 
           <H3 className={`${styles.userName} ${isOwner ? styles.isOwner : ''}`}>
             {getFirstString(user.displayName) ||

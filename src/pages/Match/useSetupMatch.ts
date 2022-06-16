@@ -4,14 +4,13 @@ import { useNavigate } from 'react-router-dom';
 import {
   addRoundToMatch,
   addUserToMatch,
+  convertMatch,
   getMatch,
   streamMatch,
 } from '@/services/matches';
 
 import { useBoolean } from '@/hooks/useBoolean';
-import { getCard } from '@/services/cards';
 import { useAuth } from '@/contexts/AuthContext';
-import { getUser } from '@/services/users';
 import { AppToaster } from '@/components/Toast';
 
 interface UseFetchMatchReturn {
@@ -34,51 +33,6 @@ export function useSetupMatch(id: string): UseFetchMatchReturn {
   const [match, setMatch] = useState<MatchConvertedType>(
     {} as MatchConvertedType
   );
-
-  const convertMatch = useCallback(async (match: MatchType) => {
-    const usersPromises = match.users.map(async ({ id }) => getUser(id));
-
-    const roundsPromises = match.rounds.map(async (round) => {
-      const answersPromises = round.answers.map(async ({ card, user }) => ({
-        card: await getCard(card.id),
-        user: await getUser(user.id),
-      }));
-
-      const usersWhoPlayedPromises = round.usersWhoPlayed.map(
-        async ({ user }) => ({
-          user: await getUser(user.id),
-        })
-      );
-
-      const decksPromises = round.decks.map(async ({ cards, user }) => ({
-        cards: await Promise.all(cards.map(async ({ id }) => getCard(id))),
-        user: await getUser(user.id),
-      }));
-
-      const question = await getCard(round.question.id);
-      const answers = await Promise.all(answersPromises);
-      const usersWhoPlayed = await Promise.all(usersWhoPlayedPromises);
-      const decks = await Promise.all(decksPromises);
-
-      return {
-        answers,
-        usersWhoPlayed,
-        question,
-        decks,
-      };
-    });
-
-    const convertedOwner = await getUser(match.owner.id);
-    const convertedUsers = await Promise.all(usersPromises);
-    const convertedRounds = await Promise.all(roundsPromises);
-
-    return {
-      ...match,
-      owner: convertedOwner,
-      users: convertedUsers,
-      rounds: convertedRounds,
-    } as MatchConvertedType;
-  }, []);
 
   const reload = useCallback(() => {
     startLoading();
@@ -164,7 +118,6 @@ export function useSetupMatch(id: string): UseFetchMatchReturn {
     isLoading,
     navigate,
     user,
-    convertMatch,
     reload,
     setTrueFirstTime,
     setFalseFirstTime,

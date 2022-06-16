@@ -1,12 +1,18 @@
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Colors, Icon } from '@blueprintjs/core';
 
 import styles from './styles.module.scss';
 
 export function GoBack(): JSX.Element {
+  const navigate = useNavigate();
+
   return (
-    <Link to="/" style={{ color: Colors.BLACK }}>
+    <button
+      onClick={() => navigate(-1)}
+      style={{ color: Colors.BLACK }}
+      className={styles.goBackButton}
+    >
       <Icon className={styles.goBack} icon="arrow-left" size={20} />
-    </Link>
+    </button>
   );
 }
