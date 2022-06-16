@@ -1,13 +1,14 @@
-import { Link } from 'react-router-dom';
-import { Button, Card, H2, H5, Text } from '@blueprintjs/core';
+import { Link, useNavigate } from 'react-router-dom';
+import { Button, Card, H2, H5, NonIdealState, Text } from '@blueprintjs/core';
 import { Popover2 } from '@blueprintjs/popover2';
 
 import { AppToaster } from '@/components/Toast';
 import { getFirstString } from '@/utils/getFirstString';
 import { Avatar } from '@/components/Avatar';
 import { useIsAdmin } from '@/hooks/useIsAdmin';
-import { finishMatch } from '@/services/matches';
+import { finishMatch, newMatch } from '@/services/matches';
 import { useBoolean } from '@/hooks/useBoolean';
+import { useAuth } from '@/contexts/AuthContext';
 
 import styles from './styles.module.scss';
 
@@ -20,10 +21,28 @@ export function LastMatches({
   matches,
   onMatchesChange,
 }: LastMatchesProps): JSX.Element {
+  const navigate = useNavigate();
+  const { user } = useAuth();
   const isAdmin = useIsAdmin();
 
   const [finishingMatch, startFinishingMatch, stopFinishingMatch] =
     useBoolean(false);
+
+  const [creatingMatch, startCreate, stopCreate] = useBoolean(false);
+
+  async function handleNewMatch(): Promise<void> {
+    try {
+      startCreate();
+
+      const id = await newMatch(user.uid || '');
+
+      navigate(`/match/${id}`);
+    } catch (error) {
+      console.error('error', error);
+    } finally {
+      stopCreate();
+    }
+  }
 
   function handleFinishMatch(id: string) {
     return async () => {
@@ -71,57 +90,79 @@ export function LastMatches({
   }
 
   return (
-    <section>
-      <H2>Últimas partidas</H2>
+    <section className={styles.lastMatches}>
+      {matches.length === 0 ? (
+        <div className={styles.emptyList}>
+          <NonIdealState
+            description="Que tal você iniciar uma?"
+            icon="search"
+            title="Nenhuma partida rolando 😢"
+            action={
+              <Button
+                loading={creatingMatch}
+                large
+                intent="success"
+                onClick={handleNewMatch}
+              >
+                Criar partida
+              </Button>
+            }
+          />
+        </div>
+      ) : (
+        <>
+          <H2>Últimas partidas</H2>
 
-      <div className={styles.matchesList}>
-        {matches.map(({ id, owner, rounds }) => (
-          <Card key={id} className={styles.match}>
-            <Avatar
-              alt={getFirstString(owner.displayName)}
-              src={owner.photoURL}
-            />
+          <div className={styles.matchesList}>
+            {matches.map(({ id, owner, rounds }) => (
+              <Card key={id} className={styles.match}>
+                <Avatar
+                  alt={getFirstString(owner.displayName)}
+                  src={owner.photoURL}
+                />
 
-            <div className={styles.matchInfo}>
-              <Text className={styles.text}>
-                Dono da sala: {getFirstString(owner.displayName)}
-              </Text>
-              <Text className={styles.text}>Rounds: {rounds.length}</Text>
+                <div className={styles.matchInfo}>
+                  <Text className={styles.text}>
+                    Dono da sala: {getFirstString(owner.displayName)}
+                  </Text>
+                  <Text className={styles.text}>Rounds: {rounds.length}</Text>
 
-              <div className={styles.buttons}>
-                <Link to={`/match/${id}`}>
-                  <Button
-                    style={{ width: '100%' }}
-                    large
-                    intent="success"
-                    icon="key-enter"
-                  >
-                    Entrar na partida
-                  </Button>
-                </Link>
+                  <div className={styles.buttons}>
+                    <Link to={`/match/${id}`}>
+                      <Button
+                        style={{ width: '100%' }}
+                        large
+                        intent="success"
+                        icon="key-enter"
+                      >
+                        Entrar na partida
+                      </Button>
+                    </Link>
 
-                {isAdmin && (
-                  <Popover2
-                    content={renderPopoverContent(id)}
-                    placement="bottom"
-                    popoverClassName={styles.popover}
-                  >
-                    <Button
-                      large
-                      style={{ width: '100%' }}
-                      intent="danger"
-                      icon="cross"
-                      loading={finishingMatch}
-                    >
-                      Encerrar partida
-                    </Button>
-                  </Popover2>
-                )}
-              </div>
-            </div>
-          </Card>
-        ))}
-      </div>
+                    {isAdmin && (
+                      <Popover2
+                        content={renderPopoverContent(id)}
+                        placement="bottom"
+                        popoverClassName={styles.popover}
+                      >
+                        <Button
+                          large
+                          style={{ width: '100%' }}
+                          intent="danger"
+                          icon="cross"
+                          loading={finishingMatch}
+                        >
+                          Encerrar partida
+                        </Button>
+                      </Popover2>
+                    )}
+                  </div>
+                </div>
+              </Card>
+            ))}
+          </div>
+        </>
+      )}
     </section>
   );
 }
