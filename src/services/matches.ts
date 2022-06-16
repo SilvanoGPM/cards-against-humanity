@@ -3,6 +3,12 @@ import {
   doc,
   Unsubscribe,
   DocumentSnapshot,
+  limit,
+  query,
+  where,
+  getDocs,
+  onSnapshot,
+  QuerySnapshot,
 } from 'firebase/firestore';
 
 import {
@@ -13,7 +19,7 @@ import {
 
 import { getRandomItem } from '@/utils/getRandomItem';
 
-import { createAny, getAll, getAny, streamAny } from './core';
+import { createAny, getAll, getAny, mapValue, streamAny } from './core';
 import { getCards } from './cards';
 import { getUser } from './users';
 
@@ -29,6 +35,14 @@ interface SortPlayersDecksParams {
 
 export function getMatches(): Promise<MatchType[]> {
   return getAll<MatchType>(matchesCollection);
+}
+
+export async function getLastMatches(size = 10): Promise<MatchType[]> {
+  const data = await getDocs(
+    query(matchesCollection, where('status', '==', 'PLAYING'), limit(size))
+  );
+
+  return mapValue(data);
 }
 
 export async function getMatch(id: string): Promise<MatchType> {
@@ -171,4 +185,15 @@ export function streamMatch(
   callback: (snapshot: DocumentSnapshot<MatchType>) => void
 ): Promise<Unsubscribe> {
   return streamAny<MatchType>(matchesCollection, id, callback);
+}
+
+export async function streamMatches(
+  callback: (snapshot: QuerySnapshot<MatchType>) => void
+): Promise<Unsubscribe> {
+  const unsubscribe = onSnapshot(
+    query(matchesCollection, where('status', '==', 'PLAYING')),
+    callback
+  );
+
+  return unsubscribe;
 }

@@ -7,18 +7,23 @@ import {
   onSnapshot,
   Unsubscribe,
   DocumentSnapshot,
+  QuerySnapshot,
+  QueryDocumentSnapshot,
 } from 'firebase/firestore';
+
+export function toValue<T>(doc: QueryDocumentSnapshot<T>): T {
+  return { ...doc.data(), id: doc.id } as T;
+}
+
+export function mapValue<T>(data: QuerySnapshot<T>): T[] {
+  return data.docs.map<T>(toValue);
+}
 
 export async function getAll<T>(
   collection: CollectionReference<T>
 ): Promise<T[]> {
   const data = await getDocs(collection);
-
-  const values = data.docs.map<T>(
-    (doc) => ({ ...doc.data(), id: doc.id } as T)
-  );
-
-  return values;
+  return mapValue(data);
 }
 
 export async function getAny<T>(

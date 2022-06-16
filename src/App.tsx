@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from 'react-query';
 import { Home } from '@/pages/Home';
 import { Match } from '@/pages/Match';
 import { Cards } from '@/pages/Cards';
+import { Matches } from '@/pages/Matches';
 import { Login } from '@/pages/Login';
 import { NewCard } from '@/pages/NewCard';
 import { AuthProvider } from '@/contexts/AuthContext';
@@ -29,6 +30,7 @@ export function App(): JSX.Element {
               </PrivateRoute>
             }
           />
+
           <Route
             path="/match/:id"
             element={
@@ -37,6 +39,16 @@ export function App(): JSX.Element {
               </PrivateRoute>
             }
           />
+
+          <Route
+            path="/matches"
+            element={
+              <PrivateRoute>
+                <Matches />
+              </PrivateRoute>
+            }
+          />
+
           <Route
             path="/cards"
             element={
@@ -45,6 +57,7 @@ export function App(): JSX.Element {
               </PrivateRoute>
             }
           />
+
           <Route
             path="/new-card"
             element={
