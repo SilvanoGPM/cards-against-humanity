@@ -31,10 +31,6 @@
   text-align: center;
   margin-top: 5rem;
 
-  @media screen and (min-width: 700px) {
-    margin-top: 2rem;
-  }
-
   &.whites {
     color: #000000;
   }
@@ -42,4 +38,22 @@
   &.blacks {
     color: #ffffff;
   }
+}
+
+.selectCards.selectCards {
+  position: absolute;
+  top: 35px;
+  right: 100px;
+  width: 100px;
+
+  @media (max-width: 700px) {
+    right: 50%;
+    transform: translateX(50%);
+  }
+}
+
+.placeholderHeader {
+  height: 100px;
+  background-color: white;
+  width: 100%;
 }
