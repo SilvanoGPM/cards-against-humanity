@@ -15,8 +15,13 @@
 
 .matchesList {
   display: flex;
+  justify-content: space-between;
   flex-wrap: wrap;
   gap: 1rem;
+
+  @media screen and (max-width: 960px) {
+    justify-content: center;
+  }
 }
 
 .match {
@@ -70,4 +75,15 @@
   align-items: center;
   width: 100%;
   margin-top: 2rem;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+
+  @media screen and (max-width: 700px) {
+    flex-direction: column;
+  }
 }

@@ -6,7 +6,7 @@ import { AppToaster } from '@/components/Toast';
 import { getFirstString } from '@/utils/getFirstString';
 import { Avatar } from '@/components/Avatar';
 import { useIsAdmin } from '@/hooks/useIsAdmin';
-import { finishMatch, newMatch } from '@/services/matches';
+import { finishAllMatches, finishMatch, newMatch } from '@/services/matches';
 import { useBoolean } from '@/hooks/useBoolean';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -71,6 +71,29 @@ export function LastMatches({
     };
   }
 
+  async function handleFinishAllMatches(): Promise<void> {
+    try {
+      startFinishingMatch();
+
+      await finishAllMatches(matches);
+
+      onMatchesChange([]);
+
+      AppToaster.show({
+        intent: 'success',
+        timeout: 1000,
+        message: 'Todas as partidas foram finalizadas!',
+      });
+    } catch {
+      AppToaster.show({
+        intent: 'danger',
+        message: 'Erro ao finalizar partidas',
+      });
+    } finally {
+      stopFinishingMatch();
+    }
+  }
+
   function renderPopoverContent(id: string): JSX.Element {
     return (
       <div className={styles.popoverContent}>
@@ -111,7 +134,41 @@ export function LastMatches({
         </div>
       ) : (
         <>
-          <H2>Últimas partidas</H2>
+          <div className={styles.header}>
+            <H2>Últimas partidas</H2>
+
+            {isAdmin && (
+              <Popover2
+                content={
+                  <div className={styles.popoverContent}>
+                    <H5>Finalizar todas as partidas?</H5>
+
+                    <Button
+                      large
+                      intent="danger"
+                      icon="cross"
+                      onClick={handleFinishAllMatches}
+                      loading={finishingMatch}
+                    >
+                      Sim, tenho certeza.
+                    </Button>
+                  </div>
+                }
+                placement="bottom"
+                popoverClassName={styles.popover}
+              >
+                <Button
+                  large
+                  style={{ width: '100%' }}
+                  intent="danger"
+                  icon="cross"
+                  loading={finishingMatch}
+                >
+                  Encerrar todas as partidas
+                </Button>
+              </Popover2>
+            )}
+          </div>
 
           <div className={styles.matchesList}>
             {matches.map(({ id, owner, rounds }) => (

@@ -81,6 +81,14 @@ export async function finishMatch(id: string): Promise<void> {
   });
 }
 
+export async function finishAllMatches(
+  matches: MatchConvertedType[]
+): Promise<void> {
+  matches.forEach(async ({ id }) => {
+    finishMatch(id);
+  });
+}
+
 export async function sortPlayersDecks({
   users,
   cards,
