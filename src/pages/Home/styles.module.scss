@@ -89,6 +89,10 @@
     flex: 1;
     width: 100%;
   }
+
+  @media (max-width: 500px) {
+    margin-top: 50px;
+  }
 }
 
 .enterMatch {
@@ -108,6 +112,20 @@
   }
 }
 
+.github.github {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+
+  @media (max-width: 500px) {
+    bottom: -40px;
+  }
+
+  @media (max-width: 300px) {
+    bottom: -50px;
+  }
+}
+
 .version.version {
   position: absolute;
   bottom: 10px;
@@ -120,10 +138,10 @@
 
     transform: translateX(-50%);
 
-    top: 240px;
+    top: 280px;
   }
 
   @media (max-width: 400px) {
-    top: 220px;
+    top: 260px;
   }
 }
