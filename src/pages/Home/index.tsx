@@ -3,6 +3,7 @@ import { Tag } from '@blueprintjs/core';
 import { ButtonsMenu } from './ButtonsMenu';
 import { EnterInMatch } from './EnternMatch';
 import { UserInfo } from './UserInfo';
+import { version } from '../../../package.json';
 
 import styles from './styles.module.scss';
 
@@ -16,7 +17,7 @@ export function Home(): JSX.Element {
         <EnterInMatch />
 
         <Tag intent="primary" className={styles.version}>
-          0.1.0 beta
+          {version}.beta
         </Tag>
 
         <div className={styles.github}>

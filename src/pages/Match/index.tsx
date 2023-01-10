@@ -39,6 +39,10 @@ export function Match(): JSX.Element {
     (otherUser) => otherUser.user.uid === user.uid
   );
 
+  function openDrawer(): void {
+    menuRef.current?.openDrawer();
+  }
+
   async function handleFinishMatch(): Promise<void> {
     try {
       setFinishingTrue();
@@ -91,7 +95,7 @@ export function Match(): JSX.Element {
           <Button
             intent="success"
             className={styles.menu}
-            onClick={menuRef.current?.openDrawer}
+            onClick={openDrawer}
             icon="user"
           />
 
