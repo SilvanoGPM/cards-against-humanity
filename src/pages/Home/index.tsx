@@ -3,6 +3,7 @@ import { Tag } from '@blueprintjs/core';
 import { ButtonsMenu } from './ButtonsMenu';
 import { EnterInMatch } from './EnternMatch';
 import { UserInfo } from './UserInfo';
+import { WarnAlert } from './WarnAlert';
 import { version } from '../../../package.json';
 
 import styles from './styles.module.scss';
@@ -31,6 +32,8 @@ export function Home(): JSX.Element {
             title="GitHub"
           />
         </div>
+
+        <WarnAlert />
       </main>
     </div>
   );
