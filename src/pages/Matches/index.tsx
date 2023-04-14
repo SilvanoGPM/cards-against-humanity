@@ -1,5 +1,6 @@
 import { SomeLoading } from '@/components/SomeLoading';
 import { GoBack } from '@/components/GoBack';
+import { Ad } from '@/components/Ad';
 
 import { useLastMatches } from './useLastMatches';
 import { LastMatches } from './LastMatches';
@@ -22,6 +23,10 @@ export function Matches(): JSX.Element {
 
       <main className={styles.main}>
         <LastMatches matches={matches} onMatchesChange={setMatches} />
+
+        <div className={styles.ad}>
+          <Ad />
+        </div>
       </main>
     </>
   );

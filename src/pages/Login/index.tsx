@@ -6,6 +6,7 @@ import { FcGoogle } from 'react-icons/fc';
 import { useAuth } from '@/contexts/AuthContext';
 import { useBoolean } from '@/hooks/useBoolean';
 import { AppToaster } from '@/components/Toast';
+import { Ad } from '@/components/Ad';
 
 import styles from './styles.module.scss';
 
@@ -54,6 +55,10 @@ export function Login(): JSX.Element {
       >
         Login com Google
       </Button>
+
+      <div className={styles.ad}>
+        <Ad />
+      </div>
     </section>
   );
 }

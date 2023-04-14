@@ -99,9 +99,9 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
-  padding-bottom: 5rem;
+  gap: 0.5rem;
 }
 
 .form {
@@ -144,4 +144,14 @@
   @media (max-width: 400px) {
     top: 260px;
   }
+}
+
+.ad {
+  width: 100%;
+  display: flex;
+  flex: 1;
+}
+
+.ad ins {
+  flex: 1;
 }

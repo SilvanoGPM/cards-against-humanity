@@ -1,7 +1,9 @@
-import { AppToaster } from '@/components/Toast';
 import { Button, H2, InputGroup } from '@blueprintjs/core';
 import { FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
+
+import { AppToaster } from '@/components/Toast';
+import { Ad } from '@/components/Ad';
 
 import styles from './styles.module.scss';
 
@@ -27,19 +29,25 @@ export function EnterInMatch(): JSX.Element {
 
   return (
     <section className={styles.enterMatch}>
-      <H2>Entrar em uma partida</H2>
-      <form onSubmit={handleLogin} className={styles.form}>
-        <InputGroup
-          name="id"
-          id="id"
-          placeholder="Id da partida"
-          className={styles.enterInputMatch}
-        />
+      <div>
+        <H2>Entrar em uma partida</H2>
+        <form onSubmit={handleLogin} className={styles.form}>
+          <InputGroup
+            name="id"
+            id="id"
+            placeholder="Id da partida"
+            className={styles.enterInputMatch}
+          />
 
-        <Button intent="success" type="submit" rightIcon="key-enter">
-          Entrar
-        </Button>
-      </form>
+          <Button intent="success" type="submit" rightIcon="key-enter">
+            Entrar
+          </Button>
+        </form>
+      </div>
+
+      <div className={styles.ad}>
+        <Ad />
+      </div>
     </section>
   );
 }

@@ -2,7 +2,10 @@
 
 .container {
   display: flex;
+  flex-direction: column;
   justify-content: center;
+  gap: 1rem;
+  padding: 2rem;
   align-items: center;
   min-height: 100vh;
 }
@@ -14,4 +17,15 @@
   font-size: 1.2rem;
   margin: 0 1rem;
   background-color: $white;
+}
+
+.ad {
+  width: 100%;
+  max-width: 900px;
+  min-height: 300px;
+  display: flex;
+}
+
+.ad ins {
+  flex: 1;
 }

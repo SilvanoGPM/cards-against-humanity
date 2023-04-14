@@ -7,10 +7,6 @@
   max-width: 1000px;
   margin: auto;
   margin-top: 4rem;
-
-  @media screen and (min-width: 700px) {
-    flex-direction: row;
-  }
 }
 
 .matchesList {
@@ -87,3 +83,15 @@
     flex-direction: column;
   }
 }
+
+.ad {
+  width: 100%;
+  min-height: 300px;
+  display: flex;
+  margin-bottom: 1rem;
+}
+
+.ad ins {
+  flex: 1;
+}
+
