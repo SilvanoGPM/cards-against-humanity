@@ -1,5 +1,11 @@
 import { useEffect } from 'react';
 
+declare global {
+  interface Window {
+    adsbygoogle: any;
+  }
+}
+
 export function Ad(): JSX.Element {
   useEffect(() => {
     (window.adsbygoogle = window.adsbygoogle || []).push({});
