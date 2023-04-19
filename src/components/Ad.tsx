@@ -1,4 +1,10 @@
+import { useEffect } from 'react';
+
 export function Ad(): JSX.Element {
+  useEffect(() => {
+    (window.adsbygoogle = window.adsbygoogle || []).push({});
+  }, []);
+
   return (
     <ins
       className="adsbygoogle"
