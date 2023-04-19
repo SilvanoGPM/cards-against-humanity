@@ -8,7 +8,9 @@ declare global {
 
 export function Ad(): JSX.Element {
   useEffect(() => {
-    (window.adsbygoogle = window.adsbygoogle || []).push({});
+    window.addEventListener('load', () => {
+      (window.adsbygoogle = window.adsbygoogle || []).push({});
+    });
   }, []);
 
   return (
