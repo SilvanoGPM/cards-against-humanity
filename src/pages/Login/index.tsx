@@ -56,9 +56,7 @@ export function Login(): JSX.Element {
         Login com Google
       </Button>
 
-      <div className={styles.ad}>
-        <Ad />
-      </div>
+      <Ad />
     </section>
   );
 }
