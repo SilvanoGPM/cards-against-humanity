@@ -91,11 +91,7 @@ export function Match(): JSX.Element {
 
           {matchStarted && <CardsPlayedList match={match} />}
 
-          {matchStarted && (
-            <div className={styles.ad}>
-              <Ad />
-            </div>
-          )}
+          {matchStarted && <Ad />}
 
           <Menu ref={menuRef} match={match} />
 

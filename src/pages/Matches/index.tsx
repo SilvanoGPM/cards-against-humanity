@@ -24,9 +24,7 @@ export function Matches(): JSX.Element {
       <main className={styles.main}>
         <LastMatches matches={matches} onMatchesChange={setMatches} />
 
-        <div className={styles.ad}>
-          <Ad />
-        </div>
+        <Ad />
       </main>
     </>
   );

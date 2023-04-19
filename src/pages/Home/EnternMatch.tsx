@@ -45,9 +45,7 @@ export function EnterInMatch(): JSX.Element {
         </form>
       </div>
 
-      <div className={styles.ad}>
-        <Ad />
-      </div>
+      <Ad />
     </section>
   );
 }
