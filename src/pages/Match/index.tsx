@@ -10,7 +10,6 @@ import { useBoolean } from '@/hooks/useBoolean';
 import { AppToaster } from '@/components/Toast';
 import { finishMatch } from '@/services/matches';
 import { getFirstString } from '@/utils/getFirstString';
-import { Ad } from '@/components/Ad';
 
 import { useSetupMatch } from './useSetupMatch';
 import { CardsPlayedList } from './CardsPlayedList';
@@ -90,8 +89,6 @@ export function Match(): JSX.Element {
           )}
 
           {matchStarted && <CardsPlayedList match={match} />}
-
-          {matchStarted && <Ad />}
 
           <Menu ref={menuRef} match={match} />
 

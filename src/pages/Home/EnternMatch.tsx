@@ -3,7 +3,6 @@ import { FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { AppToaster } from '@/components/Toast';
-import { Ad } from '@/components/Ad';
 
 import styles from './styles.module.scss';
 
@@ -44,8 +43,6 @@ export function EnterInMatch(): JSX.Element {
           </Button>
         </form>
       </div>
-
-      <Ad />
     </section>
   );
 }
