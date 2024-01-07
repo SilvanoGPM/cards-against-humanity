@@ -10,12 +10,14 @@ import {
 
 import { login } from '@/firebase/config';
 import { useBoolean } from '@/hooks/useBoolean';
+import { useIsAdmin } from '@/hooks/useIsAdmin';
 import { useStorage } from '@/hooks/useStorage';
 import { newUser } from '@/services/users';
 
 export interface AuthContextProps {
   user: User;
   authenticated: boolean;
+  isAdmin: boolean;
   handleLogin: () => Promise<void>;
   handleLogout: () => Promise<void>;
 }
@@ -35,6 +37,8 @@ export function AuthProvider({ children }: AuthProviderProps): JSX.Element {
   );
 
   const [authenticated, setTrueAuth, setFalseAuth] = useBoolean(false);
+
+  const isAdmin = useIsAdmin(user, authenticated);
 
   useEffect(() => {
     if (user.uid && !authenticated) {
@@ -63,8 +67,8 @@ export function AuthProvider({ children }: AuthProviderProps): JSX.Element {
   }, [setUser, setFalseAuth]);
 
   const value = useMemo(
-    () => ({ user, authenticated, handleLogin, handleLogout }),
-    [user, authenticated, handleLogin, handleLogout]
+    () => ({ user, authenticated, handleLogin, handleLogout, isAdmin }),
+    [user, authenticated, handleLogin, handleLogout, isAdmin]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -1,14 +1,14 @@
 import {
-  getDocs,
-  addDoc,
   CollectionReference,
+  DocumentSnapshot,
+  QueryDocumentSnapshot,
+  QuerySnapshot,
+  Unsubscribe,
+  addDoc,
   doc,
   getDoc,
+  getDocs,
   onSnapshot,
-  Unsubscribe,
-  DocumentSnapshot,
-  QuerySnapshot,
-  QueryDocumentSnapshot,
 } from 'firebase/firestore';
 
 export function toValue<T>(doc: QueryDocumentSnapshot<T>): T {

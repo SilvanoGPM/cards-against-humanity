@@ -1,8 +1,5 @@
 export default class Repository {
-  static async save<T>(
-    key: string,
-    value: Record<string, unknown> | T
-  ): Promise<void> {
+  static save<T>(key: string, value: Record<string, unknown> | T): void {
     const valueString = JSON.stringify(value);
 
     try {
@@ -12,7 +9,7 @@ export default class Repository {
     }
   }
 
-  static async get<T>(key: string): Promise<T | null | undefined> {
+  static get<T>(key: string): T | null | undefined {
     try {
       const value = localStorage.getItem(key);
       return value ? (JSON.parse(value) as T) : null;

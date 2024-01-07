@@ -1,23 +1,24 @@
+import { Alert, Button, Tag } from '@blueprintjs/core';
 import { useRef } from 'react';
 import { useParams } from 'react-router-dom';
-import { Alert, Button, Tag } from '@blueprintjs/core';
 
-import { useAuth } from '@/contexts/AuthContext';
-import { SomeLoading } from '@/components/SomeLoading';
 import { Card } from '@/components/Card';
 import { GoBack } from '@/components/GoBack';
-import { useBoolean } from '@/hooks/useBoolean';
+import { SomeLoading } from '@/components/SomeLoading';
 import { AppToaster } from '@/components/Toast';
+import { useAuth } from '@/contexts/AuthContext';
+import { useBoolean } from '@/hooks/useBoolean';
 import { finishMatch } from '@/services/matches';
 import { getFirstString } from '@/utils/getFirstString';
 
-import { useSetupMatch } from './useSetupMatch';
 import { CardsPlayedList } from './CardsPlayedList';
-import { UsersListHandles } from './UsersList';
 import { CardsToPlay } from './CardsToPlay';
 import { Menu } from './Menu';
+import { UsersListHandles } from './UsersList';
+import { useSetupMatch } from './useSetupMatch';
 
 import styles from './styles.module.scss';
+import { useDisableMatch } from './useDisableMatch';
 
 export function Match(): JSX.Element {
   const { id } = useParams<{ id: string }>();
@@ -58,6 +59,8 @@ export function Match(): JSX.Element {
       setFinishingFalse();
     }
   }
+
+  useDisableMatch(id, isOwner);
 
   return (
     <div className={styles.container}>

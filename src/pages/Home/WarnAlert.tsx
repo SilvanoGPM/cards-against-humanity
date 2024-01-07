@@ -32,6 +32,11 @@ export function WarnAlert(): JSX.Element {
       isOpen={isOpenState}
     >
       <p>
+        Originalmente, tratava-se de um jogo pessoal, o que significa que ele
+        pode incluir cartas EXTREMAMENTE específicas.
+      </p>
+
+      <p>
         Atualmente, fazemos uso do serviço gratuito do Firebase como servidor.
         No entanto, devido ao aumento significativo no número de acessos,
         estamos enfrentando desafios que podem impactar a experiência de jogo

@@ -1,9 +1,6 @@
-import { useFirestoreQuery } from '@react-query-firebase/firestore';
-
-import { query } from 'firebase/firestore';
-
 import { AppToaster } from '@/components/Toast';
-import { cardsCollection } from '@/firebase/config';
+import { getCards } from '@/services/cards';
+import { useEffect, useState } from 'react';
 
 interface UseFetchCardsReturn {
   cards: CardType[];
@@ -11,9 +8,26 @@ interface UseFetchCardsReturn {
 }
 
 export function useFetchCards(): UseFetchCardsReturn {
-  const ref = query(cardsCollection);
+  const [cards, setCards] = useState<CardType[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isError, setIsError] = useState(false);
 
-  const { data, isLoading, isError } = useFirestoreQuery(['cards'], ref);
+  useEffect(() => {
+    async function loadCards(): Promise<void> {
+      try {
+        const cards = await getCards();
+        setCards(cards);
+      } catch {
+        setIsError(true);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    if (isLoading) {
+      loadCards();
+    }
+  }, [isLoading]);
 
   if (isError) {
     AppToaster.show({
@@ -24,12 +38,6 @@ export function useFetchCards(): UseFetchCardsReturn {
 
     return { cards: [], isLoading: false };
   }
-
-  const cards =
-    data?.docs.map((snapshot) => ({
-      ...snapshot.data(),
-      id: snapshot.id,
-    })) || [];
 
   return {
     cards,

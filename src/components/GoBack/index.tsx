@@ -1,14 +1,14 @@
-import { useNavigate } from 'react-router-dom';
 import { Colors, Icon } from '@blueprintjs/core';
+import { useNavigate } from 'react-router-dom';
 
 import styles from './styles.module.scss';
 
-export function GoBack(): JSX.Element {
+export function GoBack({ toHome = true }: { toHome?: boolean }): JSX.Element {
   const navigate = useNavigate();
 
   return (
     <button
-      onClick={() => navigate(-1)}
+      onClick={() => (toHome ? navigate('/') : navigate(-1))}
       style={{ color: Colors.BLACK }}
       className={styles.goBackButton}
     >

@@ -38,41 +38,45 @@ export function useLastMatches(size = 10): UseLastMatchesReturn {
       }
     }
 
-    loadMatches();
+    if (loading) {
+      loadMatches();
+    }
 
     return () => stopLoading();
-  }, [size, stopLoading]);
+  }, [size, loading, stopLoading]);
 
-  useEffect(() => {
-    const unsubscribePromise = streamMatches(async (snapshot) => {
-      const newMatchesPromises = snapshot
-        .docChanges()
-        .filter(({ type }) => type === 'added')
-        .map(({ doc }) => convertMatch(toValue(doc)));
+  // TODO: Ativiar o stream novamente
 
-      const newMatches = await Promise.all(newMatchesPromises);
+  // useEffect(() => {
+  //   const unsubscribePromise = streamMatches(async (snapshot) => {
+  //     const newMatchesPromises = snapshot
+  //       .docChanges()
+  //       .filter(({ type }) => type === 'added')
+  //       .map(({ doc }) => convertMatch(toValue(doc)));
 
-      const removedMatches = snapshot
-        .docChanges()
-        .filter(({ type }) => type === 'removed')
-        .map(({ doc }) => toValue(doc).id);
+  //     const newMatches = await Promise.all(newMatchesPromises);
 
-      if (newMatches.length !== 0 || removedMatches.length !== 0) {
-        setMatches((matches) => {
-          const matchesId = matches.map(({ id }) => id);
+  //     const removedMatches = snapshot
+  //       .docChanges()
+  //       .filter(({ type }) => type === 'removed')
+  //       .map(({ doc }) => toValue(doc).id);
 
-          return [
-            ...newMatches.filter(({ id }) => !matchesId.includes(id)),
-            ...matches.filter(({ id }) => !removedMatches.includes(id)),
-          ];
-        });
-      }
-    });
+  //     if (newMatches.length !== 0 || removedMatches.length !== 0) {
+  //       setMatches((matches) => {
+  //         const matchesId = matches.map(({ id }) => id);
 
-    return () => {
-      unsubscribePromise.then((unsbscribe) => unsbscribe());
-    };
-  }, [isFirstStream, setFalseFirstStream]);
+  //         return [
+  //           ...newMatches.filter(({ id }) => !matchesId.includes(id)),
+  //           ...matches.filter(({ id }) => !removedMatches.includes(id)),
+  //         ];
+  //       });
+  //     }
+  //   });
+
+  //   return () => {
+  //     unsubscribePromise.then((unsbscribe) => unsbscribe());
+  //   };
+  // }, [isFirstStream, setFalseFirstStream]);
 
   return { matches, setMatches, loading };
 }

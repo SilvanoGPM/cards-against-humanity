@@ -1,14 +1,13 @@
-import { Link, useNavigate } from 'react-router-dom';
 import { Button, Card, H2, H5, NonIdealState, Text } from '@blueprintjs/core';
 import { Popover2 } from '@blueprintjs/popover2';
+import { Link, useNavigate } from 'react-router-dom';
 
-import { AppToaster } from '@/components/Toast';
-import { getFirstString } from '@/utils/getFirstString';
 import { Avatar } from '@/components/Avatar';
-import { useIsAdmin } from '@/hooks/useIsAdmin';
-import { finishAllMatches, finishMatch, newMatch } from '@/services/matches';
-import { useBoolean } from '@/hooks/useBoolean';
+import { AppToaster } from '@/components/Toast';
 import { useAuth } from '@/contexts/AuthContext';
+import { useBoolean } from '@/hooks/useBoolean';
+import { finishAllMatches, finishMatch, newMatch } from '@/services/matches';
+import { getFirstString } from '@/utils/getFirstString';
 
 import styles from './styles.module.scss';
 
@@ -22,8 +21,7 @@ export function LastMatches({
   onMatchesChange,
 }: LastMatchesProps): JSX.Element {
   const navigate = useNavigate();
-  const { user } = useAuth();
-  const isAdmin = useIsAdmin();
+  const { user, isAdmin } = useAuth();
 
   const [finishingMatch, startFinishingMatch, stopFinishingMatch] =
     useBoolean(false);

@@ -10,7 +10,7 @@ import styles from './styles.module.scss';
 export function ButtonsMenu(): JSX.Element {
   const navigate = useNavigate();
 
-  const { user, handleLogout } = useAuth();
+  const { user, handleLogout, isAdmin } = useAuth();
 
   const [creating, startCreate, stopCreate] = useBoolean(false);
 
@@ -51,11 +51,13 @@ export function ButtonsMenu(): JSX.Element {
         </Button>
       </Link>
 
-      <Link to="/new-card">
-        <Button disabled={creating} large intent="primary">
-          Criar carta
-        </Button>
-      </Link>
+      {isAdmin && (
+        <Link to="/new-card">
+          <Button disabled={creating} large intent="primary">
+            Criar carta
+          </Button>
+        </Link>
+      )}
 
       <Button disabled={creating} large intent="danger" onClick={handleLogout}>
         Sair
