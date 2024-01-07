@@ -12,6 +12,7 @@ export async function cacheCards(): Promise<void> {
   if (CARDS_CACHE.length === 0) {
     console.log('aqui');
     CARDS_CACHE = await getAll<CardType>(cardsCollection);
+    // TODO: Adicionar uma maneira de atualizar as cartas no navegador dos jogadores.
     Repository.save(CARDS_KEY, CARDS_CACHE);
   }
 }

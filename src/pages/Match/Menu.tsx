@@ -1,11 +1,13 @@
+import { Button, Colors, Drawer } from '@blueprintjs/core';
 import { forwardRef, useImperativeHandle } from 'react';
 import { AiFillCopy } from 'react-icons/ai';
-import { Button, Drawer } from '@blueprintjs/core';
 
 import { AppToaster } from '@/components/Toast';
 import { useBoolean } from '@/hooks/useBoolean';
 
 import { UsersList } from './UsersList';
+
+import qrCode from '../../assets/qrcode.png';
 
 import styles from './styles.module.scss';
 
@@ -37,14 +39,27 @@ function MenuComponent(
 
   return (
     <Drawer isOpen={isOpen} onClose={closeDrawer} title="Menu">
+      <div className={styles.copyMatchIdWrapper}>
+        <p style={{ color: Colors.GRAY1 }}>Envie o código para seus amigos:</p>
+
+        <div className={styles.copyMatchId}>
+          <input defaultValue={match.id} />
+          <Button
+            onClick={handleCopyMatchId}
+            intent="primary"
+            icon={<AiFillCopy />}
+          />
+        </div>
+      </div>
+
       <UsersList match={match} />
-      <div className={styles.copyMatchId}>
-        <input defaultValue={match.id} />
-        <Button
-          onClick={handleCopyMatchId}
-          intent="primary"
-          icon={<AiFillCopy />}
-        />
+
+      <div className={styles.aux}>
+        <p style={{ color: Colors.GRAY1 }}>
+          Deseja auxiliar no projeto? Considere me pagar um café 😊
+        </p>
+
+        <img alt="QRCode do Pix" src={qrCode} />
       </div>
     </Drawer>
   );
