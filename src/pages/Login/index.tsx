@@ -33,6 +33,8 @@ export function Login(): JSX.Element {
       await handleLogin();
       navigateTo();
     } catch {
+      console.log('eerooo');
+
       AppToaster.show({
         message: 'Aconteceu um erro ao tentar fazer login.',
         intent: 'danger',

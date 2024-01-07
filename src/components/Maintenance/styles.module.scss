@@ -1,0 +1,41 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  overflow: hidden;
+  gap: 0.5rem;
+
+  .textWrapper {
+    text-align: center;
+    padding: 0 1rem;
+  }
+
+  h1 {
+    font-size: 2rem;
+    margin: 0;
+
+    @media screen and (max-width: 700px) {
+      font-size: 1.5rem;
+    }
+  }
+
+  p {
+    font-size: 1rem;
+
+    @media screen and (max-width: 700px) {
+      font-size: 0.8rem;
+    }
+  }
+
+  img {
+    border-radius: 30px;
+    object-fit: cover;
+  }
+}
+
+.logo {
+  width: 200px;
+  margin-bottom: 1rem;
+}

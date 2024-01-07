@@ -1,7 +1,7 @@
-import { useEffect } from 'react';
-import { Alert } from '@blueprintjs/core';
-import { useStorage } from '@/hooks/useStorage';
 import { useBoolean } from '@/hooks/useBoolean';
+import { useStorage } from '@/hooks/useStorage';
+import { Alert } from '@blueprintjs/core';
+import { useEffect } from 'react';
 
 export function WarnAlert(): JSX.Element {
   const [isOpen, setIsOpen] = useStorage(
@@ -32,10 +32,12 @@ export function WarnAlert(): JSX.Element {
       isOpen={isOpenState}
     >
       <p>
-        Atualmente utilizamos o firebase gratuito como servidor, porém estamos
-        recebendo muitos acessos o que pode dificultar a jogabilidade ou até
-        mesmo exceder o limite do servidor, logo naquele dia não será possível
-        mais jogar.
+        Atualmente, fazemos uso do serviço gratuito do Firebase como servidor.
+        No entanto, devido ao aumento significativo no número de acessos,
+        estamos enfrentando desafios que podem impactar a experiência de jogo
+        ou, em último caso, resultar na ultrapassagem do limite do servidor.
+        Nesse cenário, haverá a impossibilidade de continuar jogando a partir
+        daquele dia.
       </p>
 
       <p>

@@ -50,8 +50,10 @@ export function AuthProvider({ children }: AuthProviderProps): JSX.Element {
 
       setUser(user);
       setTrueAuth();
-    } catch {
+    } catch (error) {
       setFalseAuth();
+
+      throw error;
     }
   }, [setFalseAuth, setTrueAuth, setUser]);
 

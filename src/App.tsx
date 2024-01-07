@@ -1,15 +1,18 @@
-import { Route, Routes } from 'react-router-dom';
 import { FocusStyleManager } from '@blueprintjs/core';
 import { QueryClient, QueryClientProvider } from 'react-query';
+import { Route, Routes } from 'react-router-dom';
 
-import { Home } from '@/pages/Home';
-import { Match } from '@/pages/Match';
-import { Cards } from '@/pages/Cards';
-import { Matches } from '@/pages/Matches';
-import { Login } from '@/pages/Login';
-import { NewCard } from '@/pages/NewCard';
-import { AuthProvider } from '@/contexts/AuthContext';
 import { PrivateRoute } from '@/components/PrivateRoute';
+import { AuthProvider } from '@/contexts/AuthContext';
+import { Cards } from '@/pages/Cards';
+import { Home } from '@/pages/Home';
+import { Login } from '@/pages/Login';
+import { Match } from '@/pages/Match';
+import { Matches } from '@/pages/Matches';
+import { NewCard } from '@/pages/NewCard';
+
+import { Maintance } from './components/Maintenance';
+import { IS_MAINTANCE } from './constants/globals';
 
 import './styles/styles.scss';
 
@@ -18,6 +21,10 @@ FocusStyleManager.onlyShowFocusOnTabs();
 const queryClient = new QueryClient();
 
 export function App(): JSX.Element {
+  if (IS_MAINTANCE) {
+    return <Maintance />;
+  }
+
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
