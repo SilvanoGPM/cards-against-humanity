@@ -27,6 +27,11 @@ export const theme = extendTheme({
         color: 'black',
         overflowX: 'hidden',
       },
+
+      '.chakra-alert': {
+        bg: 'black !important',
+        color: 'white',
+      },
     },
   },
 });

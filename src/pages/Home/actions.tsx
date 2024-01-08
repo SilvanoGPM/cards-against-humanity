@@ -1,0 +1,125 @@
+import { LoginButton } from '@/components/login-button';
+import { useAuth } from '@/contexts/AuthContext';
+import { useBoolean } from '@/hooks/useBoolean';
+import { newMatch } from '@/services/matches';
+import { Button, Icon, VStack, useToast } from '@chakra-ui/react';
+import { MdExitToApp } from 'react-icons/md';
+import { RiPhoneFindFill } from 'react-icons/ri';
+import { RxCardStackPlus } from 'react-icons/rx';
+import { TbCards } from 'react-icons/tb';
+import { Link, useNavigate } from 'react-router-dom';
+
+export function Actions() {
+  const { isAdmin, user, handleLogout, authenticated } = useAuth();
+
+  const navigate = useNavigate();
+  const toast = useToast();
+
+  const [isCreating, startCreate, stopCreate] = useBoolean(false);
+
+  function handleShowLoginInfo() {
+    toast({
+      title: 'Faça login',
+      description: 'Para jogar é necessário realizar login',
+      status: 'info',
+    });
+  }
+
+  function handleNavigateWithoutLogin(
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) {
+    if (!authenticated) {
+      event.preventDefault();
+
+      handleShowLoginInfo();
+    }
+  }
+
+  async function handleNewMatch() {
+    if (!authenticated) {
+      handleShowLoginInfo();
+      return;
+    }
+
+    try {
+      startCreate();
+
+      const id = await newMatch(user.uid);
+
+      navigate(`/match/${id}`);
+    } catch (error) {
+      console.error('error', error);
+      toast({
+        title: 'Aconteceu um erro',
+        description: 'Não foi possível criar a partida',
+        status: 'error',
+      });
+    } finally {
+      stopCreate();
+    }
+  }
+
+  return (
+    <VStack flex="1">
+      <Button
+        onClick={handleNewMatch}
+        isLoading={isCreating}
+        leftIcon={<Icon as={RxCardStackPlus} transform="auto" rotate="90" />}
+        w="full"
+      >
+        Nova partida
+      </Button>
+
+      <Button
+        onClick={handleNavigateWithoutLogin}
+        as={Link}
+        to="/matches"
+        isLoading={isCreating}
+        leftIcon={<Icon as={RiPhoneFindFill} />}
+        w="full"
+        variant="defaultOutlined"
+      >
+        Encontrar partidas
+      </Button>
+
+      <Button
+        onClick={handleNavigateWithoutLogin}
+        as={Link}
+        to="/cards"
+        isLoading={isCreating}
+        leftIcon={<Icon as={TbCards} />}
+        w="full"
+        variant="defaultOutlined"
+      >
+        Ver cartas
+      </Button>
+
+      {isAdmin && (
+        <Button
+          as={Link}
+          to="/new-card"
+          isLoading={isCreating}
+          leftIcon={<Icon as={RxCardStackPlus} transform="auto" rotate="90" />}
+          w="full"
+          variant="defaultOutlined"
+        >
+          Nova carta
+        </Button>
+      )}
+
+      {authenticated ? (
+        <Button
+          isLoading={isCreating}
+          onClick={handleLogout}
+          leftIcon={<Icon as={MdExitToApp} />}
+          w="full"
+          variant="defaultOutlined"
+        >
+          Sair
+        </Button>
+      ) : (
+        <LoginButton w="full" />
+      )}
+    </VStack>
+  );
+}

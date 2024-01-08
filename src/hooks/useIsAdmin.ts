@@ -2,7 +2,7 @@ import { isAdmin } from '@/services/users';
 import { User } from 'firebase/auth';
 import { useEffect, useState } from 'react';
 
-export function useIsAdmin(user: User, shouldFetch: boolean): boolean {
+export function useIsAdmin(user: User, shouldFetch: boolean) {
   const [userIsAdmin, setUserIsAdmin] = useState(false);
 
   useEffect(() => {
@@ -17,5 +17,5 @@ export function useIsAdmin(user: User, shouldFetch: boolean): boolean {
     }
   }, [user, shouldFetch]);
 
-  return userIsAdmin;
+  return { userIsAdmin, setUserIsAdmin };
 }

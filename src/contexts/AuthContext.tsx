@@ -38,7 +38,7 @@ export function AuthProvider({ children }: AuthProviderProps): JSX.Element {
 
   const [authenticated, setTrueAuth, setFalseAuth] = useBoolean(false);
 
-  const isAdmin = useIsAdmin(user, authenticated);
+  const { userIsAdmin, setUserIsAdmin } = useIsAdmin(user, authenticated);
 
   useEffect(() => {
     if (user.uid && !authenticated) {
@@ -64,11 +64,18 @@ export function AuthProvider({ children }: AuthProviderProps): JSX.Element {
   const handleLogout = useCallback(async () => {
     setUser({} as User);
     setFalseAuth();
-  }, [setUser, setFalseAuth]);
+    setUserIsAdmin(false);
+  }, [setUser, setFalseAuth, setUserIsAdmin]);
 
   const value = useMemo(
-    () => ({ user, authenticated, handleLogin, handleLogout, isAdmin }),
-    [user, authenticated, handleLogin, handleLogout, isAdmin]
+    () => ({
+      user,
+      authenticated,
+      handleLogin,
+      handleLogout,
+      isAdmin: userIsAdmin,
+    }),
+    [user, authenticated, handleLogin, handleLogout, userIsAdmin]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

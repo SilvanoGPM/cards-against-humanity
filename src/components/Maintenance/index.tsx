@@ -1,23 +1,25 @@
-import { Colors } from '@blueprintjs/core';
-import qrCode from '../../assets/qrcode.png';
+import { Box, Center, Heading, Text } from '@chakra-ui/react';
 import { WhiteLogo } from '../Card/Logos';
-import styles from './styles.module.scss';
+import { PixQRCode } from '../pix-qrcode';
 
 export function Maintance(): JSX.Element {
   return (
-    <div className={styles.container}>
-      <div className={styles.logo}>
+    <Center flexDir="column" minH="100vh" p="4" textAlign="center" gap="4">
+      <Box w="200px">
         <WhiteLogo />
-      </div>
+      </Box>
 
-      <div className={styles.textWrapper}>
-        <h1>Site em manutenção 🚧</h1>
-        <p style={{ color: Colors.GRAY1 }}>
+      <Box>
+        <Heading as="h1" fontSize="2xl">
+          Site em manutenção 🚧
+        </Heading>
+
+        <Text color="gray.600" fontSize="medium">
           Deseja auxiliar no projeto? Considere me pagar um café 😊
-        </p>
-      </div>
+        </Text>
+      </Box>
 
-      <img alt="QRCode do Pix" src={qrCode} />
-    </div>
+      <PixQRCode maxW="300px" copyMessage="show" />
+    </Center>
   );
 }

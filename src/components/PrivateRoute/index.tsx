@@ -46,7 +46,7 @@ export function PrivateRoute({
   if (!authenticated) {
     return (
       <Navigate
-        to="/login"
+        to="/"
         state={{
           path: location.pathname,
         }}
