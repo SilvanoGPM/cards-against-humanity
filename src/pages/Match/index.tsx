@@ -32,11 +32,11 @@ export function Match(): JSX.Element {
   const [alertIsOpen, openAlert, closeAlert] = useBoolean(false);
   const [finishing, setFinishingTrue, setFinishingFalse] = useBoolean(false);
 
-  const round = match?.rounds?.length;
+  const round = match?.rounds || 0;
   const matchStarted = round > 0;
   const isOwner = match?.owner?.uid === user.uid;
 
-  const userAlreadyPlayed = match?.rounds?.[0]?.usersWhoPlayed.find(
+  const userAlreadyPlayed = match?.actualRound?.usersWhoPlayed.find(
     (otherUser) => otherUser.user.uid === user.uid
   );
 
@@ -76,7 +76,7 @@ export function Match(): JSX.Element {
           {matchStarted && (
             <div className={styles.question}>
               <Card
-                {...match.rounds[0].question}
+                {...match.actualRound!.question}
                 animationDelay={loadingNext ? '0s' : '0.5s'}
                 animationType={loadingNext ? 'revert' : 'auto'}
               />

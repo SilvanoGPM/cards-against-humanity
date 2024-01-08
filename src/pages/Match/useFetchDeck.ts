@@ -17,7 +17,7 @@ export function useFetchDeck(
   const [deck, setDeck] = useState<CardType[]>([]);
 
   useEffect(() => {
-    const deck = match.rounds[0].decks.find(
+    const deck = match.actualRound?.decks.find(
       (deck) => deck.user.uid === user.uid
     );
 

@@ -1,10 +1,10 @@
-import { Fragment } from 'react';
 import { Divider, H2, H3 } from '@blueprintjs/core';
+import { Fragment } from 'react';
 
-import { Card } from '@/components/Card';
-import { getFirstString } from '@/utils/getFirstString';
 import { Avatar } from '@/components/Avatar';
+import { Card } from '@/components/Card';
 import { useAuth } from '@/contexts/AuthContext';
+import { getFirstString } from '@/utils/getFirstString';
 
 import styles from './styles.module.scss';
 
@@ -20,19 +20,20 @@ interface GroupedAnswersType {
 export function CardsPlayedList({ match }: CardsPlayedListProps): JSX.Element {
   const { user } = useAuth();
 
-  const groupedAnswers = match.rounds[0].answers.reduce<GroupedAnswersType[]>(
-    (grouped, { card, user }) => {
-      const groupFound = grouped.find((group) => group.user.uid === user.uid);
+  const groupedAnswers =
+    match.actualRound?.answers.reduce<GroupedAnswersType[]>(
+      (grouped, { card, user }) => {
+        const groupFound = grouped.find((group) => group.user.uid === user.uid);
 
-      if (groupFound) {
-        groupFound.cards.push(card);
-        return grouped;
-      }
+        if (groupFound) {
+          groupFound.cards.push(card);
+          return grouped;
+        }
 
-      return [...grouped, { user, cards: [card] }];
-    },
-    []
-  );
+        return [...grouped, { user, cards: [card] }];
+      },
+      []
+    ) || [];
 
   function renderCard(card: CardType, isActive: boolean): JSX.Element {
     return (
@@ -75,11 +76,11 @@ export function CardsPlayedList({ match }: CardsPlayedListProps): JSX.Element {
     );
   }
 
-  if (match.rounds.length === 0) {
+  if (match.rounds === 0) {
     return <div />;
   }
 
-  const hasCardsPlayed = match?.rounds?.[0].answers.length > 0;
+  const hasCardsPlayed = (match?.actualRound?.answers.length || 0) > 0;
 
   const userAnswers = groupedAnswers.find(
     (group) => group.user.uid === user.uid

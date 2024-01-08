@@ -37,7 +37,8 @@ interface RoundType {
 interface MatchType {
   id: string;
   status: 'FINISHED' | 'PLAYING';
-  rounds: RoundType[];
+  rounds: number;
+  actualRound?: RoundType | null;
   users: import('firebase/firestore').DocumentReference<UserType>[];
   owner: import('firebase/firestore').DocumentReference<UserType>;
 }
@@ -64,8 +65,9 @@ interface RoundConvertedType {
 }
 
 interface MatchConvertedType
-  extends Omit<MatchType, 'users' | 'owner' | 'rounds'> {
+  extends Omit<MatchType, 'users' | 'owner' | 'actualRound'> {
   users: UserType[];
   owner: UserType;
-  rounds: RoundConvertedType[];
+  rounds: number;
+  actualRound?: RoundConvertedType | null;
 }

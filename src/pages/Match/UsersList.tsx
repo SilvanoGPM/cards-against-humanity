@@ -16,10 +16,10 @@ export interface UsersListHandles {
 export function UsersList({ match }: UsersProps): JSX.Element {
   function renderUser(user: UserType): JSX.Element {
     const isOwner = user.uid === match.owner.uid;
-    const isStarted = match.rounds.length > 0;
+    const isStarted = match.rounds > 0;
     const userPlayed =
       isStarted &&
-      match.rounds[0].usersWhoPlayed.find(
+      match.actualRound?.usersWhoPlayed.find(
         (played) => played.user.uid === user.uid
       );
 

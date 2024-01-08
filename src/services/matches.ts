@@ -1,14 +1,14 @@
 import {
-  updateDoc,
-  doc,
-  Unsubscribe,
   DocumentSnapshot,
-  limit,
-  query,
-  where,
-  getDocs,
-  onSnapshot,
   QuerySnapshot,
+  Unsubscribe,
+  doc,
+  getDocs,
+  limit,
+  onSnapshot,
+  query,
+  updateDoc,
+  where,
 } from 'firebase/firestore';
 
 import {
@@ -19,8 +19,8 @@ import {
 
 import { getRandomItem } from '@/utils/getRandomItem';
 
-import { createAny, getAll, getAny, mapValue, streamAny } from './core';
 import { getCard, getCards } from './cards';
+import { createAny, getAll, getAny, mapValue, streamAny } from './core';
 import { getUser } from './users';
 
 interface SetAwnserData {
@@ -53,7 +53,7 @@ export function newMatch(ownerId: string): Promise<string> {
   const ownerDoc = doc(usersCollection, ownerId);
 
   return createAny<Omit<MatchType, 'id'>>(matchesCollection, {
-    rounds: [],
+    rounds: 0,
     status: 'PLAYING',
     users: [ownerDoc],
     owner: ownerDoc,
@@ -129,7 +129,7 @@ export async function sortPlayersDecks({
   return decks;
 }
 
-export async function addRoundToMatch(id: string): Promise<void> {
+export async function createNewActiveRoundToMatch(id: string): Promise<void> {
   const matchDoc = doc(matchesCollection, id);
 
   const { rounds, users: docUsers } = await getMatch(id);
@@ -146,27 +146,27 @@ export async function addRoundToMatch(id: string): Promise<void> {
   );
 
   await updateDoc(matchDoc, {
-    rounds: [
-      {
-        question: doc(cardsCollection, questionId),
-        answers: [],
-        usersWhoPlayed: [],
-        decks,
-      },
-      ...(rounds as any),
-    ],
+    rounds: rounds + 1,
+    actualRound: {
+      question: doc(cardsCollection, questionId),
+      answers: [],
+      usersWhoPlayed: [],
+      decks,
+    },
   });
 }
 
-export async function setAnswerToLastRound(
+export async function setAnswerToActiveRound(
   id: string,
   { awnsers, user }: SetAwnserData
 ): Promise<void> {
   const matchDoc = doc(matchesCollection, id);
 
-  const { rounds } = await getMatch(id);
+  const { actualRound } = await getMatch(id);
 
-  const [lastRound, ...otherRounds] = rounds;
+  if (!actualRound) {
+    return;
+  }
 
   const playedUser = doc(usersCollection, user);
 
@@ -175,16 +175,14 @@ export async function setAnswerToLastRound(
     card: doc(cardsCollection, awnser),
   }));
 
-  const answers = [...lastRound.answers, ...newAnswers];
+  const answers = [...actualRound.answers, ...newAnswers];
 
-  const usersWhoPlayed = [...lastRound.usersWhoPlayed, { user: playedUser }];
+  const usersWhoPlayed = [...actualRound.usersWhoPlayed, { user: playedUser }];
 
-  const newLastRound = { ...lastRound, answers, usersWhoPlayed };
-
-  const newRounds = [newLastRound, ...otherRounds];
+  const updatedActualRound = { ...actualRound, answers, usersWhoPlayed };
 
   await updateDoc(matchDoc, {
-    rounds: newRounds,
+    actualRound: updatedActualRound,
   });
 }
 
@@ -206,49 +204,54 @@ export async function streamMatches(
   return unsubscribe;
 }
 
+export async function getActualRound(
+  round?: RoundType | null
+): Promise<RoundConvertedType | null> {
+  if (!round) {
+    return null;
+  }
+
+  const answersPromises = round.answers.map(async ({ card, user }) => ({
+    card: await getCard(card.id),
+    user: await getUser(user.id),
+  }));
+
+  const usersWhoPlayedPromises = round.usersWhoPlayed.map(async ({ user }) => ({
+    user: await getUser(user.id),
+  }));
+
+  const decksPromises = round.decks.map(async ({ cards, user }) => ({
+    cards: await Promise.all(cards.map(async ({ id }) => getCard(id))),
+    user: await getUser(user.id),
+  }));
+
+  const question = await getCard(round.question.id);
+  const answers = await Promise.all(answersPromises);
+  const usersWhoPlayed = await Promise.all(usersWhoPlayedPromises);
+  const decks = await Promise.all(decksPromises);
+
+  return {
+    answers,
+    usersWhoPlayed,
+    question,
+    decks,
+  };
+}
+
 export async function convertMatch(
   match: MatchType
 ): Promise<MatchConvertedType> {
   const usersPromises = match.users.map(async ({ id }) => getUser(id));
 
-  const roundsPromises = match.rounds.map(async (round) => {
-    const answersPromises = round.answers.map(async ({ card, user }) => ({
-      card: await getCard(card.id),
-      user: await getUser(user.id),
-    }));
-
-    const usersWhoPlayedPromises = round.usersWhoPlayed.map(
-      async ({ user }) => ({
-        user: await getUser(user.id),
-      })
-    );
-
-    const decksPromises = round.decks.map(async ({ cards, user }) => ({
-      cards: await Promise.all(cards.map(async ({ id }) => getCard(id))),
-      user: await getUser(user.id),
-    }));
-
-    const question = await getCard(round.question.id);
-    const answers = await Promise.all(answersPromises);
-    const usersWhoPlayed = await Promise.all(usersWhoPlayedPromises);
-    const decks = await Promise.all(decksPromises);
-
-    return {
-      answers,
-      usersWhoPlayed,
-      question,
-      decks,
-    };
-  });
-
   const convertedOwner = await getUser(match.owner.id);
   const convertedUsers = await Promise.all(usersPromises);
-  const convertedRounds = await Promise.all(roundsPromises);
+
+  const convertedActualRound = await getActualRound(match.actualRound);
 
   return {
     ...match,
     owner: convertedOwner,
     users: convertedUsers,
-    rounds: convertedRounds,
+    actualRound: convertedActualRound,
   } as MatchConvertedType;
 }

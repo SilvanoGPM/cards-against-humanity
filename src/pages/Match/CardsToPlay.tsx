@@ -3,7 +3,7 @@ import { Button, H3 } from '@blueprintjs/core';
 
 import { Card } from '@/components/Card';
 import { useAuth } from '@/contexts/AuthContext';
-import { setAnswerToLastRound } from '@/services/matches';
+import { setAnswerToActiveRound } from '@/services/matches';
 import { AppToaster, BottomToaster } from '@/components/Toast';
 import { CARD_TOKEN } from '@/constants/globals';
 import { countString } from '@/utils/countString';
@@ -28,7 +28,7 @@ export function CardsToPlay({
   const [selectedCardsId, setSelectedCardsId] = useState<string[]>([]);
   const [sending, setTrueSending, setFalseSending] = useBoolean(false);
 
-  const { question } = match.rounds[0];
+  const { question } = match.actualRound!;
 
   const totalOfPlays = countString(question.message, CARD_TOKEN) || 1;
 
@@ -68,7 +68,7 @@ export function CardsToPlay({
 
       setTrueSending();
 
-      const containsSomeCard = match.rounds[0].answers.find(
+      const containsSomeCard = match.actualRound?.answers.find(
         (lastAwnser) =>
           selectedCardsId.some((awnser) => awnser === lastAwnser.card.id) &&
           user.uid === lastAwnser.user.uid
@@ -88,7 +88,7 @@ export function CardsToPlay({
         awnsers: selectedCardsId,
       };
 
-      await setAnswerToLastRound(match.id, data);
+      await setAnswerToActiveRound(match.id, data);
 
       setSelectedCardsId([]);
     } catch {
@@ -124,7 +124,7 @@ export function CardsToPlay({
     );
   }
 
-  if (match.rounds.length === 0) {
+  if (match.rounds === 0) {
     return <div />;
   }
 

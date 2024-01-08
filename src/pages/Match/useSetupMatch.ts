@@ -2,16 +2,16 @@ import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import {
-  addRoundToMatch,
   addUserToMatch,
   convertMatch,
+  createNewActiveRoundToMatch,
   getMatch,
   streamMatch,
 } from '@/services/matches';
 
-import { useBoolean } from '@/hooks/useBoolean';
-import { useAuth } from '@/contexts/AuthContext';
 import { AppToaster } from '@/components/Toast';
+import { useAuth } from '@/contexts/AuthContext';
+import { useBoolean } from '@/hooks/useBoolean';
 
 interface UseFetchMatchReturn {
   match: MatchConvertedType;
@@ -96,7 +96,7 @@ export function useSetupMatch(id: string): UseFetchMatchReturn {
           reload();
         }
 
-        const hasDeck = convertedMatch?.rounds[0]?.decks.find(
+        const hasDeck = convertedMatch?.actualRound?.decks.find(
           (deck) => deck.user.uid === user.uid
         );
 
@@ -127,7 +127,7 @@ export function useSetupMatch(id: string): UseFetchMatchReturn {
   const nextRound = useCallback(async () => {
     try {
       startLoadingNext();
-      await addRoundToMatch(id);
+      await createNewActiveRoundToMatch(id);
     } catch {
       AppToaster.show({
         intent: 'danger',

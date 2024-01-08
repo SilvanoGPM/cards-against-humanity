@@ -180,7 +180,7 @@ export function LastMatches({
                   <Text className={styles.text}>
                     Dono da sala: {getFirstString(owner.displayName)}
                   </Text>
-                  <Text className={styles.text}>Rounds: {rounds.length}</Text>
+                  <Text className={styles.text}>Rounds: {rounds}</Text>
 
                   <div className={styles.buttons}>
                     <Link to={`/match/${id}`}>
