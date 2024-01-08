@@ -31,7 +31,10 @@ export function PixQRCode({ copyMessage = 'auto', ...props }: PixQRCodeProps) {
       <Text
         color="gray.600"
         fontSize="small"
-        display={{ base: 'block', lg: copyMessage ? 'block' : 'none' }}
+        display={{
+          base: 'block',
+          lg: copyMessage === 'show' ? 'block' : 'none',
+        }}
       >
         (Clique para copiar a chave)
       </Text>
