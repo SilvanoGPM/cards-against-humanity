@@ -1,4 +1,4 @@
-import { getFirstString } from '@/utils/getFirstString';
+import { getFirstString } from '@/utils/get-first-string';
 import { Card, Colors, H3, Icon } from '@blueprintjs/core';
 
 import { Avatar } from '@/components/Avatar';

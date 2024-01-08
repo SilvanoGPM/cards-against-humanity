@@ -9,7 +9,7 @@ import { AppToaster } from '@/components/Toast';
 import { useAuth } from '@/contexts/AuthContext';
 import { useBoolean } from '@/hooks/useBoolean';
 import { finishMatch } from '@/services/matches';
-import { getFirstString } from '@/utils/getFirstString';
+import { getFirstString } from '@/utils/get-first-string';
 
 import { CardsPlayedList } from './CardsPlayedList';
 import { CardsToPlay } from './CardsToPlay';

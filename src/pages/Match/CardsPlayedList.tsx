@@ -4,7 +4,7 @@ import { Fragment } from 'react';
 import { Avatar } from '@/components/Avatar';
 import { Card } from '@/components/Card';
 import { useAuth } from '@/contexts/AuthContext';
-import { getFirstString } from '@/utils/getFirstString';
+import { getFirstString } from '@/utils/get-first-string';
 
 import styles from './styles.module.scss';
 

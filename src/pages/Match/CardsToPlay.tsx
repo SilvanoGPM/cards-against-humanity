@@ -6,7 +6,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { setAnswerToActiveRound } from '@/services/matches';
 import { AppToaster, BottomToaster } from '@/components/Toast';
 import { CARD_TOKEN } from '@/constants/globals';
-import { countString } from '@/utils/countString';
+import { countString } from '@/utils/count-string';
 import { useBoolean } from '@/hooks/useBoolean';
 
 import { useFetchDeck } from './useFetchDeck';

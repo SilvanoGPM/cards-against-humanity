@@ -7,7 +7,7 @@ import { AppToaster } from '@/components/Toast';
 import { useAuth } from '@/contexts/AuthContext';
 import { useBoolean } from '@/hooks/useBoolean';
 import { finishAllMatches, finishMatch, newMatch } from '@/services/matches';
-import { getFirstString } from '@/utils/getFirstString';
+import { getFirstString } from '@/utils/get-first-string';
 
 import styles from './styles.module.scss';
 

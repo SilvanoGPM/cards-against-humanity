@@ -1,5 +1,3 @@
-import { FocusStyleManager } from '@blueprintjs/core';
-import { QueryClient, QueryClientProvider } from 'react-query';
 import { Route, Routes } from 'react-router-dom';
 
 import { PrivateRoute } from '@/components/PrivateRoute';
@@ -14,11 +12,8 @@ import { NewCard } from '@/pages/NewCard';
 import { Maintance } from './components/Maintenance';
 import { IS_MAINTANCE } from './constants/globals';
 
-import './styles/styles.scss';
-
-FocusStyleManager.onlyShowFocusOnTabs();
-
-const queryClient = new QueryClient();
+import '@fontsource/roboto/400.css';
+import '@fontsource/roboto/700.css';
 
 export function App(): JSX.Element {
   if (IS_MAINTANCE) {
@@ -26,56 +21,54 @@ export function App(): JSX.Element {
   }
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <Routes>
-          <Route
-            path="/"
-            element={
-              <PrivateRoute>
-                <Home />
-              </PrivateRoute>
-            }
-          />
+    <AuthProvider>
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <PrivateRoute>
+              <Home />
+            </PrivateRoute>
+          }
+        />
 
-          <Route
-            path="/match/:id"
-            element={
-              <PrivateRoute>
-                <Match />
-              </PrivateRoute>
-            }
-          />
+        <Route
+          path="/match/:id"
+          element={
+            <PrivateRoute>
+              <Match />
+            </PrivateRoute>
+          }
+        />
 
-          <Route
-            path="/matches"
-            element={
-              <PrivateRoute>
-                <Matches />
-              </PrivateRoute>
-            }
-          />
+        <Route
+          path="/matches"
+          element={
+            <PrivateRoute>
+              <Matches />
+            </PrivateRoute>
+          }
+        />
 
-          <Route
-            path="/cards"
-            element={
-              <PrivateRoute>
-                <Cards />
-              </PrivateRoute>
-            }
-          />
+        <Route
+          path="/cards"
+          element={
+            <PrivateRoute>
+              <Cards />
+            </PrivateRoute>
+          }
+        />
 
-          <Route
-            path="/new-card"
-            element={
-              <PrivateRoute onlyAdmins>
-                <NewCard />
-              </PrivateRoute>
-            }
-          />
-          <Route path="/login" element={<Login />} />
-        </Routes>
-      </AuthProvider>
-    </QueryClientProvider>
+        <Route
+          path="/new-card"
+          element={
+            <PrivateRoute onlyAdmins>
+              <NewCard />
+            </PrivateRoute>
+          }
+        />
+        <Route path="/login" element={<Login />} />
+      </Routes>
+    </AuthProvider>
   );
 }

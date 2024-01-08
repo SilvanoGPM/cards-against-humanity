@@ -1,6 +1,5 @@
 import { ChangeEvent, FormEvent, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { useFirestoreCollectionMutation } from '@react-query-firebase/firestore';
 
 import {
   Button,
@@ -14,9 +13,10 @@ import {
 import { Card } from '@/components/Card';
 import { GoBack } from '@/components/GoBack';
 import { AppToaster } from '@/components/Toast';
-import { createCollection } from '@/firebase/config';
 import { CARD_TOKEN } from '@/constants/globals';
 import { useBoolean } from '@/hooks/useBoolean';
+
+import { newCard } from '@/services/cards';
 
 import styles from './styles.module.scss';
 
@@ -32,10 +32,6 @@ export function NewCard(): JSX.Element {
   const [creating, startCreating, stopCreating] = useBoolean(false);
   const formRef = useRef<HTMLFormElement>(null);
   const messageRef = useRef<TextArea>(null);
-
-  const mutation = useFirestoreCollectionMutation(
-    createCollection<CardToCreate>('cards')
-  );
 
   function handleSubmit(event: FormEvent): void {
     event.preventDefault();
@@ -66,7 +62,7 @@ export function NewCard(): JSX.Element {
           ? { type: 'BLACK', message: card.message }
           : card;
 
-        await mutation.mutateAsync(cardToCreate);
+        await newCard(cardToCreate);
 
         AppToaster.show({
           intent: 'success',

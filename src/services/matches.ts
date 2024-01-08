@@ -17,7 +17,7 @@ import {
   usersCollection,
 } from '@/firebase/config';
 
-import { getRandomItem } from '@/utils/getRandomItem';
+import { getRandomItem } from '@/utils/get-random-item';
 
 import { getCard, getCards } from './cards';
 import { createAny, getAll, getAny, mapValue, streamAny } from './core';
