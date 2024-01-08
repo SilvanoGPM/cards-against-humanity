@@ -83,9 +83,12 @@ export function Match(): JSX.Element {
             </div>
           )}
 
-          <div className={styles.goBack}>
+          <button
+            className={styles.goBack}
+            onClick={isOwner ? () => finishMatch(id!) : undefined}
+          >
             <GoBack />
-          </div>
+          </button>
 
           {matchStarted && !userAlreadyPlayed && (
             <CardsToPlay match={match} isFirstTime={isFirstTime} />
