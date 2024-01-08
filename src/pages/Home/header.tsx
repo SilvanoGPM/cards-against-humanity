@@ -52,6 +52,8 @@ export function Header(): JSX.Element {
               <PopoverTrigger>
                 <Avatar
                   cursor="pointer"
+                  bg="black"
+                  color="white"
                   src={user.photoURL || avatar}
                   name={userName}
                 />
@@ -61,6 +63,8 @@ export function Header(): JSX.Element {
                 <PopoverHeader>
                   <Flex gap="2">
                     <Avatar
+                      bg="black"
+                      color="white"
                       size="sm"
                       name={userName}
                       src={user.photoURL || avatar}

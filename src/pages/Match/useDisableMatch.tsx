@@ -6,18 +6,21 @@ export function useDisableMatch(
   isOwner: boolean
 ): void {
   useEffect(() => {
-    async function changeMatchStatus(): Promise<void> {
-      console.log('aquii');
+    let called = false;
 
-      if (isOwner && id) {
+    async function changeMatchStatus(): Promise<void> {
+      if (isOwner && id && !called) {
         finishMatch(id);
+        called = true;
       }
     }
 
     window.addEventListener('beforeunload', changeMatchStatus);
+    window.addEventListener('unload', changeMatchStatus);
 
     return () => {
       window.removeEventListener('beforeunload', changeMatchStatus);
+      window.removeEventListener('unload', changeMatchStatus);
     };
   }, [id, isOwner]);
 }

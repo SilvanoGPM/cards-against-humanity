@@ -1,18 +1,10 @@
-import { Tag } from '@blueprintjs/core';
 import { Container, Flex } from '@chakra-ui/react';
 
-import { version } from '../../../package.json';
-import { ButtonsMenu } from './ButtonsMenu';
-import { EnterInMatch } from './EnternMatch';
-import { WarnAlert } from './WarnAlert';
 import { Header } from './header';
-
-import styles from './styles.module.scss';
-import { Tags } from './tags';
-
 import { Contribution } from './contribution';
 import { JoinMatch } from './join-match';
 import { Actions } from './actions';
+import { Tags } from './tags';
 
 export function Home(): JSX.Element {
   return (
@@ -41,34 +33,5 @@ export function Home(): JSX.Element {
 
       <Tags />
     </Container>
-  );
-
-  return (
-    <div className={styles.container}>
-      <Header />
-
-      <main className={styles.main}>
-        <ButtonsMenu />
-        <EnterInMatch />
-
-        <Tag intent="primary" className={styles.version}>
-          {version}.beta
-        </Tag>
-
-        <div className={styles.github}>
-          <iframe
-            src="https://ghbtns.com/github-btn.html?user=SilvanoGPM&repo=cards-against-humanity&type=star&count=true&size=large"
-            style={{ textAlign: 'center' }}
-            frameBorder="0"
-            scrolling="0"
-            width="170"
-            height="30"
-            title="GitHub"
-          />
-        </div>
-
-        <WarnAlert />
-      </main>
-    </div>
   );
 }
