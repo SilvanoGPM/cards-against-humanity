@@ -1,15 +1,25 @@
 import { useState } from 'react';
-import { Button, H3 } from '@blueprintjs/core';
 
 import { Card } from '@/components/Card';
-import { useAuth } from '@/contexts/AuthContext';
-import { setAnswerToActiveRound } from '@/services/matches';
-import { AppToaster, BottomToaster } from '@/components/Toast';
 import { CARD_TOKEN } from '@/constants/globals';
-import { countString } from '@/utils/count-string';
+import { useAuth } from '@/contexts/AuthContext';
 import { useBoolean } from '@/hooks/useBoolean';
+import { setAnswerToActiveRound } from '@/services/matches';
+import { countString } from '@/utils/count-string';
 
+import {
+  Box,
+  Button,
+  Center,
+  Flex,
+  HStack,
+  Heading,
+  Icon,
+  useToast,
+} from '@chakra-ui/react';
+import { FaCheckCircle } from 'react-icons/fa';
 import { useFetchDeck } from './useFetchDeck';
+
 import styles from './styles.module.scss';
 
 interface CardsToPlayProps {
@@ -17,11 +27,9 @@ interface CardsToPlayProps {
   isFirstTime: boolean;
 }
 
-export function CardsToPlay({
-  match,
-  isFirstTime,
-}: CardsToPlayProps): JSX.Element {
+export function CardsToPlay({ match, isFirstTime }: CardsToPlayProps) {
   const { user } = useAuth();
+  const toast = useToast();
 
   const { deck } = useFetchDeck(match, isFirstTime);
 
@@ -58,9 +66,10 @@ export function CardsToPlay({
   async function confirmPlay(): Promise<void> {
     try {
       if (selectedCardsId.length !== totalOfPlays) {
-        BottomToaster.show({
-          intent: 'primary',
-          message: `Selecione ${totalOfPlays} cartas para jogar!`,
+        toast({
+          title: 'Escolha as cartas',
+          description: `Selecione ${totalOfPlays} cartas para jogar!`,
+          status: 'info',
         });
 
         return;
@@ -75,9 +84,10 @@ export function CardsToPlay({
       );
 
       if (containsSomeCard) {
-        AppToaster.show({
-          intent: 'primary',
-          message: 'Você já adicionou essa carta!',
+        toast({
+          title: 'Carta já adicionada',
+          description: `Você já adicionou essa carta!`,
+          status: 'info',
         });
 
         return;
@@ -91,11 +101,13 @@ export function CardsToPlay({
       await setAnswerToActiveRound(match.id, data);
 
       setSelectedCardsId([]);
-    } catch {
-      AppToaster.show({
-        intent: 'danger',
-        icon: 'error',
-        message: 'Erro ao tentar enviar resposta!',
+    } catch (error) {
+      console.log('error', error);
+
+      toast({
+        title: 'Aconteceu um erro',
+        description: 'Não foi possível realizar jogada',
+        status: 'error',
       });
     } finally {
       setFalseSending();
@@ -106,46 +118,51 @@ export function CardsToPlay({
     const isSelected = selectedCardsId.includes(card.id);
 
     return (
-      <button key={card.id} onClick={selectCard(card.id)}>
+      <Box key={card.id} onClick={selectCard(card.id)}>
         <Card
           {...card}
           animationType="auto"
           animationDelay={`${(index + 2) * 500}ms`}
-          className={`${styles.cardToPlay} ${
+          className={`${styles.card} ${isSelected ? styles.isSelected : ''}`}
+          frontClassName={styles.cardFront}
+          backClassName={`${styles.cardBack} ${
             isSelected ? styles.isSelected : ''
           }`}
-          frontClassName={styles.cardToPlayFront}
-          backClassName={`${styles.cardToPlayBack} ${
-            isSelected ? styles.isSelected : ''
-          }`}
-          messageClassName={styles.cardToPlayText}
+          messageClassName={styles.cardText}
         />
-      </button>
+      </Box>
     );
   }
 
   if (match.rounds === 0) {
-    return <div />;
+    return null;
   }
 
   return (
-    <div className={styles.cardsToPlayWrapper}>
-      <ul className={styles.cardsToPlay}>{deck.map(renderCard)}</ul>
+    <Flex w="full" flexDir="column" gap="8">
+      <HStack justify={{ base: 'start', md: 'center' }} overflowX="auto" py="4">
+        {deck.map(renderCard)}
+      </HStack>
+
       {isFirstTime && (
-        <H3 className={styles.nextRoundText}>Você joga na próxima rodada...</H3>
+        <Heading as="h3" fontSize="xl" textAlign="center">
+          Você joga na próxima rodada...
+        </Heading>
       )}
-      <div className={styles.confirmButtonWrapper}>
+
+      <Center>
         <Button
-          text="Confirmar"
-          loading={sending}
-          icon="confirm"
-          intent="success"
+          w="full"
+          maxW="500px"
+          leftIcon={<Icon as={FaCheckCircle} />}
+          isLoading={sending}
           onClick={confirmPlay}
-          className={`${styles.confirmButton} ${
-            selectedCardsId.length === totalOfPlays ? styles.show : ''
-          }`}
-        />
-      </div>
-    </div>
+          transform="auto"
+          scale={selectedCardsId.length === totalOfPlays ? '1' : '0'}
+        >
+          Confirmar
+        </Button>
+      </Center>
+    </Flex>
   );
 }

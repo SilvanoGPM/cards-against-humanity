@@ -1,10 +1,8 @@
-import { Divider, H2, H3 } from '@blueprintjs/core';
-import { Fragment } from 'react';
-
-import { Avatar } from '@/components/Avatar';
 import { Card } from '@/components/Card';
 import { useAuth } from '@/contexts/AuthContext';
-import { getFirstString } from '@/utils/get-first-string';
+
+import { getUserName } from '@/utils/get-user-name';
+import { Avatar, Box, Flex, HStack, Heading, Text } from '@chakra-ui/react';
 
 import styles from './styles.module.scss';
 
@@ -17,7 +15,7 @@ interface GroupedAnswersType {
   cards: CardType[];
 }
 
-export function CardsPlayedList({ match }: CardsPlayedListProps): JSX.Element {
+export function CardsPlayedList({ match }: CardsPlayedListProps) {
   const { user } = useAuth();
 
   const groupedAnswers =
@@ -42,57 +40,84 @@ export function CardsPlayedList({ match }: CardsPlayedListProps): JSX.Element {
         key={card.id}
         {...card}
         animationType="click"
-        className={styles.cardPlayedCursor}
+        className={styles.card}
+        frontClassName={styles.cardFront}
+        backClassName={styles.cardBack}
+        messageClassName={styles.cardText}
       />
     );
   }
 
   function renderAnswers(
     group: GroupedAnswersType,
-    index: number,
-    skipOwnerOfCard = true
+    index: number
   ): JSX.Element | null {
-    const name = group.user.displayName || '';
-
-    if (skipOwnerOfCard && group.user.uid === user.uid) {
-      return null;
-    }
+    const name = getUserName(group.user);
 
     return (
-      <Fragment key={group.user.uid}>
-        <div className={styles.cardPlayedWrapper}>
-          <div className={styles.cardsGroup}>
+      <Flex key={group.user.uid} gap="4" align="center">
+        <Flex flexDir="column" gap="8">
+          <Flex gap="2">
+            <Avatar
+              bg="black"
+              color="white"
+              name={name}
+              src={group.user.photoURL!}
+            />
+
+            <Flex direction="column" color="secondary" w="full">
+              <Text
+                fontWeight="bold"
+                overflow="hidden"
+                whiteSpace="nowrap"
+                maxW="80%"
+                textOverflow="ellipsis"
+              >
+                {name}
+              </Text>
+
+              <Text
+                fontSize="sm"
+                overflow="hidden"
+                whiteSpace="nowrap"
+                textOverflow="ellipsis"
+                maxW="80%"
+                mt="-1"
+              >
+                {group.user.email}
+              </Text>
+            </Flex>
+          </Flex>
+
+          <HStack>
             {group.cards.map((card) =>
               renderCard(card, group.user.uid === user.uid)
             )}
-          </div>
-          <div className={styles.user}>
-            <Avatar alt={name} src={group.user.photoURL} />
-            <H3 style={{ margin: 0 }}>{getFirstString(name)}</H3>
-          </div>
-        </div>
-        {index !== groupedAnswers.length - 1 && <Divider />}
-      </Fragment>
-    );
-  }
+          </HStack>
+        </Flex>
 
-  if (match.rounds === 0) {
-    return <div />;
+        {index !== groupedAnswers.length - 1 && (
+          <Box h="320px" w="3px" bg="gray.200" mr="2" />
+        )}
+      </Flex>
+    );
   }
 
   const hasCardsPlayed = (match?.actualRound?.answers.length || 0) > 0;
 
-  const userAnswers = groupedAnswers.find(
-    (group) => group.user.uid === user.uid
-  );
+  if (match.rounds === 0 || !hasCardsPlayed) {
+    return null;
+  }
 
   return (
-    <div className={styles.cardsPlayedWrapper}>
-      {hasCardsPlayed && <H2>Cartas já jogadas:</H2>}
-      <ul className={styles.cardsPlayed}>
-        {userAnswers && renderAnswers(userAnswers, 0, false)}
+    <Flex flexDir="column" w="full" mt="4">
+      <Heading as="h2" fontSize="2xl" mb="4" ml="4">
+        Respostas:
+      </Heading>
+
+      <HStack overflowX="scroll" overflowY="visible" p="4">
         {groupedAnswers.map((group, index) => renderAnswers(group, index))}
-      </ul>
-    </div>
+      </HStack>
+    </Flex>
   );
 }

@@ -9,9 +9,9 @@ import {
   streamMatch,
 } from '@/services/matches';
 
-import { AppToaster } from '@/components/Toast';
 import { useAuth } from '@/contexts/AuthContext';
 import { useBoolean } from '@/hooks/useBoolean';
+import { useToast } from '@chakra-ui/react';
 
 interface UseFetchMatchReturn {
   match: MatchConvertedType;
@@ -22,9 +22,10 @@ interface UseFetchMatchReturn {
   nextRound: () => void;
 }
 
-export function useSetupMatch(id: string): UseFetchMatchReturn {
+export function useSetupMatch(id = ''): UseFetchMatchReturn {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const toast = useToast();
 
   const [isLoading, startLoading, stopLoading] = useBoolean(true);
   const [loadingNext, startLoadingNext, stopLoadingNext] = useBoolean(false);
@@ -49,10 +50,19 @@ export function useSetupMatch(id: string): UseFetchMatchReturn {
           navigate('/');
 
           const message = !match
-            ? 'Partida não encontrada!'
-            : 'Partida finalizada!';
+            ? {
+                title: 'Partida não encontrada',
+                description: 'Não encontramos uma partida com esse código.',
+              }
+            : {
+                title: 'Partida finalizada',
+                description: 'Esta partida já foi finalizada',
+              };
 
-          AppToaster.show({ intent: 'primary', message });
+          toast({
+            ...message,
+            status: 'info',
+          });
 
           return;
         }
@@ -70,9 +80,10 @@ export function useSetupMatch(id: string): UseFetchMatchReturn {
 
         setMatch(convertedMatch);
       } catch {
-        AppToaster.show({
-          intent: 'primary',
-          message: 'Partida não encontrada!',
+        toast({
+          title: 'Partida não encontrada',
+          description: 'Não encontramos uma partida com esse código.',
+          status: 'info',
         });
 
         navigate('/');
@@ -113,6 +124,7 @@ export function useSetupMatch(id: string): UseFetchMatchReturn {
       unsubscribePromise.then((unsbscribe) => unsbscribe());
     };
   }, [
+    toast,
     id,
     stopLoading,
     isLoading,
@@ -127,17 +139,31 @@ export function useSetupMatch(id: string): UseFetchMatchReturn {
   const nextRound = useCallback(async () => {
     try {
       startLoadingNext();
+
+      setMatch((match) => {
+        if (match.actualRound) {
+          return {
+            ...match,
+            actualRound: { ...match.actualRound, answers: [] },
+          };
+        }
+
+        return match;
+      });
+
       await createNewActiveRoundToMatch(id);
-    } catch {
-      AppToaster.show({
-        intent: 'danger',
-        icon: 'error',
-        message: 'Aconteceu um erro ao tentar carregar a próxima rodada',
+    } catch (error) {
+      console.error('error', error);
+
+      toast({
+        title: 'Aconteceu um erro',
+        description: 'Não foi possível carregar a rodada, recarregue a página.',
+        status: 'warning',
       });
     } finally {
       stopLoadingNext();
     }
-  }, [id, startLoadingNext, stopLoadingNext]);
+  }, [id, startLoadingNext, stopLoadingNext, toast]);
 
   return {
     isLoading,

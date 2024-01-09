@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 
-import { AppToaster } from '@/components/Toast';
-import { useAuth } from '@/contexts/AuthContext';
 import { MAX_OF_CARDS_IN_DECK } from '@/constants/globals';
+import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@chakra-ui/react';
 
 interface UseRandomDeckReturn {
   deck: CardType[];
@@ -13,6 +13,7 @@ export function useFetchDeck(
   isFirstTime: boolean
 ): UseRandomDeckReturn {
   const { user } = useAuth();
+  const toast = useToast();
 
   const [deck, setDeck] = useState<CardType[]>([]);
 
@@ -22,15 +23,15 @@ export function useFetchDeck(
     );
 
     if (!deck && !isFirstTime) {
-      AppToaster.show({
-        intent: 'danger',
-        icon: 'error',
-        message: 'Seu deck não foi encontrado!',
+      toast({
+        title: 'Deck não encontrado',
+        description: 'Seu deck não foi encontrado, espera a próxima rodada.',
+        status: 'info',
       });
     }
 
     setDeck(deck?.cards.slice(0, MAX_OF_CARDS_IN_DECK) || []);
-  }, [match, user, isFirstTime]);
+  }, [match, user, isFirstTime, toast]);
 
   return { deck };
 }

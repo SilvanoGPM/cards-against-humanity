@@ -20,8 +20,6 @@ export async function cacheCards(): Promise<void> {
 export async function getCards(): Promise<CardType[]> {
   await cacheCards();
 
-  console.log('getCards');
-
   return CARDS_CACHE;
 }
 

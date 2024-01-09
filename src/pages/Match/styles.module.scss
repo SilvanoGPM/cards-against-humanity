@@ -141,18 +141,13 @@
   }
 }
 
-.cardToPlay {
+.card {
   --font-size: clamp(0.8rem, 3vw, 1.5rem);
   --line-height: clamp(1rem, 3vw, 2rem);
   cursor: pointer;
-  width: 125px;
-  height: 200px;
+  width: 200px;
+  height: 250px;
   transition: 0.2s ease-in-out;
-
-  @media (min-width: 450px) {
-    width: 200px;
-    height: 250px;
-  }
 
   &:hover {
     transform: scale(1.1);
@@ -161,7 +156,7 @@
   &.isSelected {
     transform: translateY(-10px);
 
-    .cardToPlayBack {
+    .cardBack {
       border-color: $green2;
     }
   }
@@ -175,7 +170,7 @@
 
   &Back {
     font-size: var(--font-size);
-    padding: 0.2rem;
+    padding: 0.4rem;
 
     @media (min-width: 450px) {
       padding: 0.8rem;
@@ -271,15 +266,6 @@
 .nextRoundText {
   text-align: center;
   font-weight: bold;
-}
-
-.cardRotating {
-  position: absolute;
-  top: 80px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 250px;
-  height: 300px;
 }
 
 .cardPlayedCursor {

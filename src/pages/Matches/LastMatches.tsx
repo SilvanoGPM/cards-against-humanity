@@ -2,7 +2,7 @@ import { Link, useNavigate } from 'react-router-dom';
 
 import { useAuth } from '@/contexts/AuthContext';
 import { useBoolean } from '@/hooks/useBoolean';
-import { finishAllMatches, finishMatch, newMatch } from '@/services/matches';
+import { finishAllMatches, newMatch } from '@/services/matches';
 
 import {
   Avatar,
@@ -28,6 +28,7 @@ import {
 import { FaSearch, FaTimes } from 'react-icons/fa';
 import { RxCardStackPlus } from 'react-icons/rx';
 
+import { FinishMatchButton } from '@/components/finish-match-button';
 import { getFirstString } from '@/utils/get-first-string';
 import { getUserName } from '@/utils/get-user-name';
 
@@ -67,36 +68,6 @@ export function LastMatches({
     } finally {
       stopCreate();
     }
-  }
-
-  function handleFinishMatch(id: string) {
-    return async () => {
-      try {
-        startFinishingMatch();
-
-        await finishMatch(id);
-
-        const newMatches = matches.filter((match) => match.id !== id);
-
-        onMatchesChange([...newMatches]);
-
-        toast({
-          title: 'Partida finalizada',
-          description: 'A partida foi finalizada com sucesso!',
-          status: 'success',
-        });
-      } catch (error) {
-        console.error('error', error);
-
-        toast({
-          title: 'Aconteceu um erro',
-          description: 'Não foi possível finalizar a partida',
-          status: 'error',
-        });
-      } finally {
-        stopFinishingMatch();
-      }
-    };
   }
 
   async function handleFinishAllMatches(): Promise<void> {
@@ -246,34 +217,16 @@ export function LastMatches({
                   </Button>
 
                   {(isAdmin || owner.uid === user.uid) && (
-                    <Popover>
-                      <PopoverTrigger>
-                        <Button
-                          variant="defaultOutlined"
-                          leftIcon={<Icon as={FaTimes} />}
-                          isLoading={finishingMatch}
-                        >
-                          Encerrar partida
-                        </Button>
-                      </PopoverTrigger>
+                    <FinishMatchButton
+                      matchId={id}
+                      afterFinish={(id) => {
+                        const newMatches = matches.filter(
+                          (match) => match.id !== id
+                        );
 
-                      <PopoverContent>
-                        <PopoverArrow />
-                        <PopoverCloseButton />
-                        <PopoverHeader>Finalizar partida?</PopoverHeader>
-                        <PopoverBody>
-                          <Button
-                            w="full"
-                            variant="solid"
-                            colorScheme="red"
-                            onClick={handleFinishMatch(id)}
-                            isLoading={finishingMatch}
-                          >
-                            Sim, tenho certeza.
-                          </Button>
-                        </PopoverBody>
-                      </PopoverContent>
-                    </Popover>
+                        onMatchesChange([...newMatches]);
+                      }}
+                    />
                   )}
                 </Flex>
               </Card>

@@ -20,7 +20,7 @@ export function Tags() {
       />
 
       <Tag bg="black" color="white" w="fit-content">
-        {version}.beta
+        {version}
       </Tag>
     </Flex>
   );
