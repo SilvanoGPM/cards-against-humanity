@@ -1,10 +1,9 @@
-import { SomeLoading } from '@/components/SomeLoading';
 import { GoBack } from '@/components/GoBack';
+import { SomeLoading } from '@/components/SomeLoading';
 
-import { useLastMatches } from './useLastMatches';
+import { Box, Container } from '@chakra-ui/react';
 import { LastMatches } from './LastMatches';
-
-import styles from './styles.module.scss';
+import { useLastMatches } from './useLastMatches';
 
 export function Matches(): JSX.Element {
   const { loading: loadingLastMatches, matches, setMatches } = useLastMatches();
@@ -16,13 +15,13 @@ export function Matches(): JSX.Element {
         message="Carregando as últimas partidas..."
       />
 
-      <div className={styles.goBack}>
+      <Box pos="absolute" top="-12" left="4">
         <GoBack />
-      </div>
+      </Box>
 
-      <main className={styles.main}>
+      <Container as="main" maxW="1100px" mt="16" flexDir="column">
         <LastMatches matches={matches} onMatchesChange={setMatches} />
-      </main>
+      </Container>
     </>
   );
 }

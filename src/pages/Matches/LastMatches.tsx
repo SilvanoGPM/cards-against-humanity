@@ -1,15 +1,35 @@
-import { Button, Card, H2, H5, NonIdealState, Text } from '@blueprintjs/core';
-import { Popover2 } from '@blueprintjs/popover2';
 import { Link, useNavigate } from 'react-router-dom';
 
-import { Avatar } from '@/components/Avatar';
-import { AppToaster } from '@/components/Toast';
 import { useAuth } from '@/contexts/AuthContext';
 import { useBoolean } from '@/hooks/useBoolean';
 import { finishAllMatches, finishMatch, newMatch } from '@/services/matches';
-import { getFirstString } from '@/utils/get-first-string';
 
-import styles from './styles.module.scss';
+import {
+  Avatar,
+  Box,
+  Button,
+  Card,
+  Center,
+  Flex,
+  Heading,
+  Icon,
+  Popover,
+  PopoverArrow,
+  PopoverBody,
+  PopoverCloseButton,
+  PopoverContent,
+  PopoverHeader,
+  PopoverTrigger,
+  SimpleGrid,
+  Text,
+  useToast,
+} from '@chakra-ui/react';
+
+import { FaSearch, FaTimes } from 'react-icons/fa';
+import { RxCardStackPlus } from 'react-icons/rx';
+
+import { getFirstString } from '@/utils/get-first-string';
+import { getUserName } from '@/utils/get-user-name';
 
 interface LastMatchesProps {
   matches: MatchConvertedType[];
@@ -21,6 +41,7 @@ export function LastMatches({
   onMatchesChange,
 }: LastMatchesProps): JSX.Element {
   const navigate = useNavigate();
+  const toast = useToast();
   const { user, isAdmin } = useAuth();
 
   const [finishingMatch, startFinishingMatch, stopFinishingMatch] =
@@ -28,15 +49,21 @@ export function LastMatches({
 
   const [creatingMatch, startCreate, stopCreate] = useBoolean(false);
 
-  async function handleNewMatch(): Promise<void> {
+  async function handleNewMatch() {
     try {
       startCreate();
 
-      const id = await newMatch(user.uid || '');
+      const id = await newMatch(user.uid);
 
       navigate(`/match/${id}`);
     } catch (error) {
       console.error('error', error);
+
+      toast({
+        title: 'Aconteceu um erro',
+        description: 'Não foi possível criar a partida',
+        status: 'error',
+      });
     } finally {
       stopCreate();
     }
@@ -53,15 +80,18 @@ export function LastMatches({
 
         onMatchesChange([...newMatches]);
 
-        AppToaster.show({
-          intent: 'success',
-          timeout: 1000,
-          message: 'Partida finalizada com sucesso!',
+        toast({
+          title: 'Partida finalizada',
+          description: 'A partida foi finalizada com sucesso!',
+          status: 'success',
         });
-      } catch {
-        AppToaster.show({
-          intent: 'danger',
-          message: 'Erro ao finalizar partida',
+      } catch (error) {
+        console.error('error', error);
+
+        toast({
+          title: 'Aconteceu um erro',
+          description: 'Não foi possível finalizar a partida',
+          status: 'error',
         });
       } finally {
         stopFinishingMatch();
@@ -77,147 +107,180 @@ export function LastMatches({
 
       onMatchesChange([]);
 
-      AppToaster.show({
-        intent: 'success',
-        timeout: 1000,
-        message: 'Todas as partidas foram finalizadas!',
+      toast({
+        title: 'Partidas finalizadas',
+        description: 'Todas as partidas foram finalizadas!',
+        status: 'success',
       });
-    } catch {
-      AppToaster.show({
-        intent: 'danger',
-        message: 'Erro ao finalizar partidas',
+    } catch (error) {
+      console.error('error', error);
+
+      toast({
+        title: 'Aconteceu um erro',
+        description: 'Não foi possível finalizar as partidas',
+        status: 'error',
       });
     } finally {
       stopFinishingMatch();
     }
   }
 
-  function renderPopoverContent(id: string): JSX.Element {
-    return (
-      <div className={styles.popoverContent}>
-        <H5>Tem certeza que deseja finalizar esta partida?</H5>
-
-        <Button
-          large
-          intent="danger"
-          icon="cross"
-          onClick={handleFinishMatch(id)}
-          loading={finishingMatch}
-        >
-          Sim, tenho certeza.
-        </Button>
-      </div>
-    );
-  }
-
   return (
-    <section className={styles.lastMatches}>
+    <Flex flexDir="column">
       {matches.length === 0 ? (
-        <div className={styles.emptyList}>
-          <NonIdealState
-            description="Que tal você iniciar uma?"
-            icon="search"
-            title="Nenhuma partida rolando 😢"
-            action={
-              <Button
-                loading={creatingMatch}
-                large
-                intent="success"
-                onClick={handleNewMatch}
-              >
-                Criar partida
-              </Button>
-            }
-          />
-        </div>
+        <Center flexDir="column" gap="4" minH="60vh">
+          <Icon as={FaSearch} fontSize="4xl" />
+
+          <Box textAlign="center">
+            <Heading as="h2" fontSize="2xl">
+              Nenhuma partida rolando 😢
+            </Heading>
+
+            <Text color="gray.500">
+              Inicie uma agora e jogue com seus amigos!
+            </Text>
+          </Box>
+
+          <Button isLoading={creatingMatch} onClick={handleNewMatch}>
+            Criar partida
+          </Button>
+        </Center>
       ) : (
         <>
-          <div className={styles.header}>
-            <H2>Últimas partidas</H2>
+          <Flex
+            align="center"
+            justify="space-between"
+            gap="4"
+            direction={{ base: 'column', md: 'row' }}
+            mb="12"
+          >
+            <Heading as="h2" fontSize="2xl">
+              Últimas partidas
+            </Heading>
 
             {isAdmin && (
-              <Popover2
-                content={
-                  <div className={styles.popoverContent}>
-                    <H5>Finalizar todas as partidas?</H5>
+              <Popover>
+                <PopoverTrigger>
+                  <Button
+                    leftIcon={<Icon as={FaTimes} />}
+                    isLoading={finishingMatch}
+                  >
+                    Encerrar todas as partidas
+                  </Button>
+                </PopoverTrigger>
 
+                <PopoverContent>
+                  <PopoverArrow />
+                  <PopoverCloseButton />
+                  <PopoverHeader>Finalizar todas as partidas?</PopoverHeader>
+                  <PopoverBody>
                     <Button
-                      large
-                      intent="danger"
-                      icon="cross"
+                      w="full"
+                      variant="solid"
+                      colorScheme="red"
                       onClick={handleFinishAllMatches}
-                      loading={finishingMatch}
+                      isLoading={finishingMatch}
                     >
                       Sim, tenho certeza.
                     </Button>
-                  </div>
-                }
-                placement="bottom"
-                popoverClassName={styles.popover}
-              >
-                <Button
-                  large
-                  style={{ width: '100%' }}
-                  intent="danger"
-                  icon="cross"
-                  loading={finishingMatch}
-                >
-                  Encerrar todas as partidas
-                </Button>
-              </Popover2>
+                  </PopoverBody>
+                </PopoverContent>
+              </Popover>
             )}
-          </div>
+          </Flex>
 
-          <div className={styles.matchesList}>
+          <SimpleGrid
+            pos="relative"
+            zIndex="1"
+            w="full"
+            maxW="full"
+            spacing={4}
+            minChildWidth={{ base: '100%', md: '300px', lg: '250px' }}
+            alignItems="center"
+          >
             {matches.map(({ id, owner, rounds }) => (
-              <Card key={id} className={styles.match}>
-                <Avatar
-                  alt={getFirstString(owner.displayName)}
-                  src={owner.photoURL}
-                />
+              <Card
+                key={id}
+                bg="white"
+                shadow="2xl"
+                p="4"
+                rounded="md"
+                border="1px"
+                borderColor="black"
+              >
+                <Flex mb="4" gap="2">
+                  <Avatar
+                    bg="black"
+                    color="white"
+                    name={getUserName(owner)}
+                    src={owner.photoURL!}
+                  />
 
-                <div className={styles.matchInfo}>
-                  <Text className={styles.text}>
-                    Dono da sala: {getFirstString(owner.displayName)}
-                  </Text>
-                  <Text className={styles.text}>Rounds: {rounds}</Text>
+                  <Box>
+                    <Text
+                      fontWeight="bold"
+                      overflow="hidden"
+                      whiteSpace="nowrap"
+                      textOverflow="ellipsis"
+                      maxW={{ base: '150px', md: '400px', lg: '200px' }}
+                    >
+                      Dono: {getFirstString(owner.displayName)}
+                    </Text>
 
-                  <div className={styles.buttons}>
-                    <Link to={`/match/${id}`}>
-                      <Button
-                        style={{ width: '100%' }}
-                        large
-                        intent="success"
-                        icon="key-enter"
-                      >
-                        Entrar na partida
-                      </Button>
-                    </Link>
+                    <Text color="gray.600" fontSize="small">
+                      Rounds: {rounds}
+                    </Text>
+                  </Box>
+                </Flex>
 
-                    {(isAdmin || owner.uid === user.uid) && (
-                      <Popover2
-                        content={renderPopoverContent(id)}
-                        placement="bottom"
-                        popoverClassName={styles.popover}
-                      >
+                <Flex flexDir="column" gap="2">
+                  <Button
+                    leftIcon={
+                      <Icon as={RxCardStackPlus} transform="auto" rotate="90" />
+                    }
+                    as={Link}
+                    to={`/match/${id}`}
+                    w="full"
+                  >
+                    Entrar na partida
+                  </Button>
+
+                  {(isAdmin || owner.uid === user.uid) && (
+                    <Popover>
+                      <PopoverTrigger>
                         <Button
-                          large
-                          style={{ width: '100%' }}
-                          intent="danger"
-                          icon="cross"
-                          loading={finishingMatch}
+                          variant="defaultOutlined"
+                          leftIcon={<Icon as={FaTimes} />}
+                          isLoading={finishingMatch}
                         >
                           Encerrar partida
                         </Button>
-                      </Popover2>
-                    )}
-                  </div>
-                </div>
+                      </PopoverTrigger>
+
+                      <PopoverContent>
+                        <PopoverArrow />
+                        <PopoverCloseButton />
+                        <PopoverHeader>Finalizar partida?</PopoverHeader>
+                        <PopoverBody>
+                          <Button
+                            w="full"
+                            variant="solid"
+                            colorScheme="red"
+                            onClick={handleFinishMatch(id)}
+                            isLoading={finishingMatch}
+                          >
+                            Sim, tenho certeza.
+                          </Button>
+                        </PopoverBody>
+                      </PopoverContent>
+                    </Popover>
+                  )}
+                </Flex>
               </Card>
             ))}
-          </div>
+          </SimpleGrid>
         </>
       )}
-    </section>
+    </Flex>
   );
 }

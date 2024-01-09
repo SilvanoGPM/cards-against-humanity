@@ -49,6 +49,7 @@ export function Actions() {
       navigate(`/match/${id}`);
     } catch (error) {
       console.error('error', error);
+
       toast({
         title: 'Aconteceu um erro',
         description: 'Não foi possível criar a partida',
