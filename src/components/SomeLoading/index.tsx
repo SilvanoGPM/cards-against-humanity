@@ -1,5 +1,6 @@
-import { H2 } from '@blueprintjs/core';
 import { AiOutlineLoading } from 'react-icons/ai';
+
+import { Box, Center, Heading } from '@chakra-ui/react';
 
 import styles from './styles.module.scss';
 
@@ -13,9 +14,22 @@ export function SomeLoading({
   message = 'Loading...',
 }: SomeLoadingProps): JSX.Element {
   return (
-    <div className={`${styles.container} ${loading ? styles.show : ''}`}>
+    <Center
+      flexDir="column"
+      pos="fixed"
+      inset="0"
+      bg="white"
+      h="100vh"
+      overflow="hidden"
+      zIndex="100000"
+      transform="auto"
+      translateY={loading ? '0' : '-100%'}
+    >
       <AiOutlineLoading className={styles.loading} size={50} />
-      <H2>{message}</H2>
-    </div>
+
+      <Heading as="h2" fontSize="2xl">
+        {message}
+      </Heading>
+    </Center>
   );
 }
