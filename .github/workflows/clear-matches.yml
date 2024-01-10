@@ -2,7 +2,7 @@ name: Remover partidas todos os dias
 
 on:
   schedule:
-    - cron: '28 3 * * *' # Executar todos os dias às 5 horas da manhã
+    - cron: '32 3 * * *' # Executar todos os dias às 5 horas da manhã
     # - cron: '0 6 * * *'  # Executar todos os dias às 5 horas da manhã
 
 jobs:
