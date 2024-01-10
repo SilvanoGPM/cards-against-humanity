@@ -1,0 +1,25 @@
+name: Remover partidas todos os dias
+
+on:
+  schedule:
+    - cron: '20 0 * * *' # Executar todos os dias às 5 horas da manhã
+    # - cron: '0 6 * * *'  # Executar todos os dias às 5 horas da manhã
+
+jobs:
+  executar-script:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout do repositório
+        uses: actions/checkout@v2
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Instalar dependências
+        run: npm install
+
+      - name: Executar Script
+        run: node ./scripts/remove-matches.js

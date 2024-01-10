@@ -1,10 +1,11 @@
 import { Container, Flex } from '@chakra-ui/react';
 
+import { Tags } from './tags';
+
 import { Header } from './header';
 import { Contribution } from './contribution';
 import { JoinMatch } from './join-match';
 import { Actions } from './actions';
-import { Tags } from './tags';
 
 export function Home(): JSX.Element {
   return (
