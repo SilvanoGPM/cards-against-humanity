@@ -117,7 +117,7 @@ function SettingsDrawerBase(
         </DrawerHeader>
 
         <DrawerBody>
-          <Flex w="full" flexDir="column" gap="9">
+          <Flex w="full" flexDir="column" gap="8">
             <Flex flexDir="column" gap="4">
               <Heading as="h3" fontSize="2xl">
                 Código da partida:
@@ -142,7 +142,7 @@ function SettingsDrawerBase(
               </Flex>
             </Flex>
 
-            <Flex flexDir="column" textAlign="center">
+            <Flex flexDir="column" gap="4">
               <Heading as="h3" fontSize="2xl">
                 Chat:
               </Heading>
@@ -151,27 +151,47 @@ function SettingsDrawerBase(
                 maxH="300px"
                 h="300px"
                 border="1px"
-                spacing="4"
+                spacing="0"
                 borderColor="black"
                 rounded="md"
                 mb="2"
                 p="4"
                 overflowY="scroll"
               >
-                {match?.messages?.map((message) => (
-                  <Flex key={message.id} w="full" align="start">
-                    <Text
-                      color="gray.600"
-                      wordBreak="break-word"
-                      textAlign="start"
-                    >
-                      <Text as="span" fontWeight="bold" color="black">
-                        {message.userName}:
-                      </Text>{' '}
-                      {message.message}
-                    </Text>
-                  </Flex>
-                ))}
+                {match?.messages
+                  .sort((a, b) => {
+                    return a.createdAt.toMillis() - b.createdAt.toMillis();
+                  })
+                  .map((message) => ({
+                    ...message,
+                    createdAt: message.createdAt.toDate() as Date,
+                  }))
+                  ?.map((message) => {
+                    const hours = String(message.createdAt.getHours()).padStart(
+                      2,
+                      '0'
+                    );
+
+                    const minutes = message.createdAt.getMinutes();
+
+                    return (
+                      <Flex key={message.id} w="full" align="start">
+                        <Text
+                          color="gray.600"
+                          wordBreak="break-word"
+                          textAlign="start"
+                        >
+                          <Text as="span" fontSize="x-small">
+                            {hours}:{minutes}
+                          </Text>{' '}
+                          <Text as="span" fontWeight="bold" color="black">
+                            {message.userName}:
+                          </Text>{' '}
+                          {message.message}
+                        </Text>
+                      </Flex>
+                    );
+                  })}
               </VStack>
 
               <Flex>
@@ -180,6 +200,11 @@ function SettingsDrawerBase(
                   placeholder="Insira sua mensagem..."
                   borderColor="black"
                   roundedRight="0"
+                  onKeyDown={(event) => {
+                    if (event.key === 'Enter') {
+                      handleSendMessage();
+                    }
+                  }}
                 />
 
                 <Button
