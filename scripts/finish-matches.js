@@ -8,7 +8,8 @@ const {
   query,
   where,
   getDocs,
-  deleteDoc,
+  updateDoc,
+  doc,
 } = require('firebase/firestore');
 
 const firebaseConfig = {
@@ -27,19 +28,26 @@ const matchesCollection = collection(getFirestore(app), 'matches');
 
 const q = query(matchesCollection, where('status', '!=', 'FINISHED'));
 
-const deleteDocuments = async () => {
+const finishMatches = async () => {
   try {
     const querySnapshot = await getDocs(q);
 
     querySnapshot.forEach(async (doc) => {
-      await deleteDoc(doc.ref);
-      console.log(`Documento ${doc.id} excluído com sucesso.`);
+      try {
+        await updateDoc(doc.ref, {
+          status: 'FINISHED',
+        });
+
+        console.log(`Partida ${doc.id} finalizada com sucesso.`);
+      } catch (error) {
+        console.error(`Erro ao finalizar partida ${doc.id}:`, error);
+      }
     });
 
-    console.log('Exclusão de documentos concluída.');
+    console.log('Partidas finalizadas com sucesso.');
   } catch (error) {
-    console.error('Erro ao excluir documentos:', error);
+    console.error('Erro ao finalizar partidas:', error);
   }
 };
 
-deleteDocuments();
+finishMatches();
