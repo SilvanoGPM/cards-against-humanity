@@ -1,14 +1,9 @@
 import { useEffect, useState } from 'react';
 
-import {
-  convertMatch,
-  getLastMatches,
-  streamMatches,
-} from '@/services/matches';
+import { convertMatch, getLastMatches } from '@/services/matches';
 
-import { AppToaster } from '@/components/Toast';
 import { useBoolean } from '@/hooks/useBoolean';
-import { toValue } from '@/services/core';
+import { useToast } from '@chakra-ui/react';
 
 interface UseLastMatchesReturn {
   matches: MatchConvertedType[];
@@ -18,8 +13,8 @@ interface UseLastMatchesReturn {
 
 export function useLastMatches(size = 10): UseLastMatchesReturn {
   const [loading, , stopLoading] = useBoolean(true);
-  const [isFirstStream, setFalseFirstStream] = useBoolean(true);
   const [matches, setMatches] = useState<MatchConvertedType[]>([]);
+  const toast = useToast();
 
   useEffect(() => {
     async function loadMatches(): Promise<void> {
@@ -29,9 +24,13 @@ export function useLastMatches(size = 10): UseLastMatchesReturn {
         const convertedMatches = await Promise.all(matches.map(convertMatch));
 
         setMatches(convertedMatches);
-      } catch {
-        AppToaster.show({
-          message: 'Aconteceu um erro ao tentar encontrar as últimas partidas',
+      } catch (error) {
+        console.error('error', error);
+
+        toast({
+          title: 'Aconteceu um erro',
+          description: 'Não foi possível encontrar as últimas partidas.',
+          variant: 'error',
         });
       } finally {
         stopLoading();
@@ -43,7 +42,7 @@ export function useLastMatches(size = 10): UseLastMatchesReturn {
     }
 
     return () => stopLoading();
-  }, [size, loading, stopLoading]);
+  }, [size, loading, stopLoading, toast]);
 
   // TODO: Ativiar o stream novamente
 

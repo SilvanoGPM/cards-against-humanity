@@ -158,7 +158,7 @@ function SettingsDrawerBase(
                 p="4"
                 overflowY="scroll"
               >
-                {match.messages?.map((message) => (
+                {match?.messages?.map((message) => (
                   <Flex key={message.id} w="full" align="start">
                     <Text
                       color="gray.600"

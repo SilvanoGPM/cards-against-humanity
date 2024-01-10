@@ -1,5 +1,5 @@
-import { AppToaster } from '@/components/Toast';
 import { getCards } from '@/services/cards';
+import { useToast } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 
 interface UseFetchCardsReturn {
@@ -12,12 +12,22 @@ export function useFetchCards(): UseFetchCardsReturn {
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
 
+  const toast = useToast();
+
   useEffect(() => {
     async function loadCards(): Promise<void> {
       try {
         const cards = await getCards();
         setCards(cards);
-      } catch {
+      } catch (error) {
+        console.error('error', error);
+
+        toast({
+          title: 'Aconteceu um erro',
+          description: 'Não foi possível carregar as cartas.',
+          variant: 'error',
+        });
+
         setIsError(true);
       } finally {
         setIsLoading(false);
@@ -27,15 +37,9 @@ export function useFetchCards(): UseFetchCardsReturn {
     if (isLoading) {
       loadCards();
     }
-  }, [isLoading]);
+  }, [isLoading, toast]);
 
   if (isError) {
-    AppToaster.show({
-      intent: 'danger',
-      icon: 'error',
-      message: 'Não foi possível carregar as cartas',
-    });
-
     return { cards: [], isLoading: false };
   }
 
