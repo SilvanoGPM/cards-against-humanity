@@ -1,4 +1,5 @@
 export const fakeMatch = {
+  messages: [],
   id: '1',
   owner: {
     displayName: 'test',

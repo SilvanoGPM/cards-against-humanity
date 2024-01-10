@@ -79,5 +79,4 @@ interface MatchConvertedType
   owner: UserType;
   rounds: number;
   actualRound?: RoundConvertedType | null;
-  messages: MatchMessage[];
 }
