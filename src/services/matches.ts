@@ -1,6 +1,7 @@
 import {
   DocumentSnapshot,
   QuerySnapshot,
+  Timestamp,
   Unsubscribe,
   doc,
   getDocs,
@@ -57,6 +58,7 @@ export function newMatch(ownerId: string): Promise<string> {
     status: 'PLAYING',
     users: [ownerDoc],
     owner: ownerDoc,
+    messages: [],
   });
 }
 
@@ -70,6 +72,22 @@ export async function addUserToMatch(
 
   await updateDoc(matchDoc, {
     users: [doc(usersCollection, userId), ...users],
+  });
+}
+
+export async function playingMatch(id: string): Promise<void> {
+  const matchDoc = doc(matchesCollection, id);
+
+  await updateDoc(matchDoc, {
+    status: 'PLAYING',
+  });
+}
+
+export async function loadingMatch(id: string): Promise<void> {
+  const matchDoc = doc(matchesCollection, id);
+
+  await updateDoc(matchDoc, {
+    status: 'LOADING',
   });
 }
 
@@ -130,6 +148,8 @@ export async function sortPlayersDecks({
 }
 
 export async function createNewActiveRoundToMatch(id: string): Promise<void> {
+  await loadingMatch(id);
+
   const matchDoc = doc(matchesCollection, id);
 
   const { rounds, users: docUsers } = await getMatch(id);
@@ -147,12 +167,34 @@ export async function createNewActiveRoundToMatch(id: string): Promise<void> {
 
   await updateDoc(matchDoc, {
     rounds: rounds + 1,
+    status: 'PLAYING',
     actualRound: {
       question: doc(cardsCollection, questionId),
       answers: [],
       usersWhoPlayed: [],
       decks,
     },
+  });
+}
+
+export async function addMessageToMatch(
+  id: string,
+  message: Omit<MatchMessage, 'id' | 'createdAt'>
+): Promise<void> {
+  const matchDoc = doc(matchesCollection, id);
+
+  const { messages } = await getMatch(id);
+
+  await updateDoc(matchDoc, {
+    messages: [
+      // FIXME: Arrumar isso
+      ...(messages as any),
+      {
+        id: crypto.randomUUID(),
+        createdAt: Timestamp.now(),
+        ...message,
+      },
+    ],
   });
 }
 
@@ -197,7 +239,7 @@ export async function streamMatches(
   callback: (snapshot: QuerySnapshot<MatchType>) => void
 ): Promise<Unsubscribe> {
   const unsubscribe = onSnapshot(
-    query(matchesCollection, where('status', '==', 'PLAYING')),
+    query(matchesCollection, where('status', '!=', 'FINISHED')),
     callback
   );
 
@@ -241,7 +283,7 @@ export async function getActualRound(
 export async function convertMatch(
   match: MatchType
 ): Promise<MatchConvertedType> {
-  const usersPromises = match.users.map(async ({ id }) => getUser(id));
+  const usersPromises = match?.users?.map(async ({ id }) => getUser(id));
 
   const convertedOwner = await getUser(match.owner.id);
   const convertedUsers = await Promise.all(usersPromises);

@@ -1,11 +1,11 @@
 import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 
 import { useAuth } from '@/contexts/AuthContext';
-import { useEffect } from 'react';
-import { isAdmin } from '@/services/users';
 import { useBoolean } from '@/hooks/useBoolean';
+import { isAdmin } from '@/services/users';
+import { useToast } from '@chakra-ui/react';
+import { useEffect } from 'react';
 import { SomeLoading } from '../SomeLoading';
-import { AppToaster } from '../Toast';
 
 interface CustomRouteProps {
   children: JSX.Element;
@@ -18,7 +18,8 @@ export function PrivateRoute({
 }: CustomRouteProps): JSX.Element {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, authenticated } = useAuth();
+  const { user, authenticated, isLoading } = useAuth();
+  const toast = useToast();
 
   const [admin, setTrueAdmin] = useBoolean(false);
 
@@ -27,10 +28,12 @@ export function PrivateRoute({
       const admin = await isAdmin(user.uid);
 
       if (!admin) {
-        AppToaster.show({
-          intent: 'warning',
-          message: 'Você não possui permissão',
+        toast({
+          title: 'Sem permissão',
+          description: 'Você não possui permissão para acessar a página',
+          status: 'warning',
         });
+
         navigate('/');
         return;
       }
@@ -41,9 +44,9 @@ export function PrivateRoute({
     if (authenticated && onlyAdmins) {
       verifyIfIsAdmin();
     }
-  }, [authenticated, onlyAdmins, user, navigate, setTrueAdmin]);
+  }, [authenticated, onlyAdmins, user, navigate, setTrueAdmin, toast]);
 
-  if (!authenticated) {
+  if (!authenticated && !isLoading && !user?.uid) {
     return (
       <Navigate
         to="/"

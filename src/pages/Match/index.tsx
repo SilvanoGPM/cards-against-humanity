@@ -9,6 +9,7 @@ import { finishMatch } from '@/services/matches';
 import { getFirstString } from '@/utils/get-first-string';
 
 import { FinishMatchButton } from '@/components/finish-match-button';
+import { getUserName } from '@/utils/get-user-name';
 import {
   Avatar,
   AvatarGroup,
@@ -22,7 +23,6 @@ import {
   Tag,
 } from '@chakra-ui/react';
 import { FaArrowRight, FaBars, FaFlag, FaPlay } from 'react-icons/fa';
-import { getUserName } from '@/utils/get-user-name';
 import { CardsPlayedList } from './CardsPlayedList';
 import { CardsToPlay } from './CardsToPlay';
 import { SettingsDrawer } from './SettingsDrawer';
@@ -35,20 +35,29 @@ export function Match() {
   const { id } = useParams<{ id: string }>();
   const { user } = useAuth();
 
-  const { isLoading, match, nextRound, loadingNext, isFirstTime } =
-    useSetupMatch(id);
+  const {
+    isLoading,
+    match,
+    nextRound,
+    loadingNext,
+    isFirstTime,
+    hasNewMessages,
+    setHasNewMessases,
+  } = useSetupMatch(id);
 
   const menuRef = useRef<UsersListHandles>(null);
 
   const round = match?.rounds || 0;
-  const matchStarted = round > 0;
-  const isOwner = match?.owner?.uid === user.uid;
+  const isOwner = match?.owner?.uid === user?.uid;
+
+  const matchStarted = round > 0 && !isLoading && match;
 
   const userAlreadyPlayed = match?.actualRound?.usersWhoPlayed.find(
-    (otherUser) => otherUser.user.uid === user.uid
+    (otherUser) => otherUser.user.uid === user?.uid
   );
 
   function handleOpenDrawer(): void {
+    setHasNewMessases(false);
     menuRef.current?.openDrawer();
   }
 
@@ -66,7 +75,7 @@ export function Match() {
           {matchStarted && (
             <Center w="full" mt="16">
               <Card
-                {...match.actualRound!.question}
+                {...match!.actualRound!.question}
                 animationDelay={loadingNext ? '0s' : '0.5s'}
                 animationType={loadingNext ? 'revert' : 'auto'}
               />
@@ -83,12 +92,12 @@ export function Match() {
           </Box>
 
           {matchStarted && !userAlreadyPlayed && (
-            <CardsToPlay match={match} isFirstTime={isFirstTime} />
+            <CardsToPlay match={match!} isFirstTime={isFirstTime} />
           )}
 
-          {matchStarted && <CardsPlayedList match={match} />}
+          {matchStarted && <CardsPlayedList match={match!} />}
 
-          <SettingsDrawer ref={menuRef} match={match} />
+          <SettingsDrawer ref={menuRef} match={match!} />
 
           <Flex gap="2" pos="fixed" top="4" right="4">
             <AvatarGroup
@@ -96,7 +105,7 @@ export function Match() {
               max={4}
               display={{ base: 'none', md: 'flex' }}
             >
-              {match.users.map((user) => {
+              {match?.users?.map((user) => {
                 const name = getUserName(user);
 
                 return (
@@ -112,11 +121,24 @@ export function Match() {
               })}
             </AvatarGroup>
 
-            <IconButton
-              aria-label="Abrir menu"
-              onClick={handleOpenDrawer}
-              icon={<Icon as={FaBars} />}
-            />
+            <Box pos="relative">
+              <IconButton
+                aria-label="Abrir menu"
+                onClick={handleOpenDrawer}
+                icon={<Icon as={FaBars} />}
+              />
+
+              <Box
+                boxSize="10px"
+                rounded="full"
+                bg="red.500"
+                pos="absolute"
+                top="-1"
+                right="-1"
+                transform="auto"
+                scale={hasNewMessages ? '1' : '0'}
+              />
+            </Box>
           </Flex>
 
           {matchStarted && (
@@ -132,7 +154,7 @@ export function Match() {
             </Tag>
           )}
 
-          {!matchStarted && (
+          {!matchStarted && match && (
             <Center w="full" mt="16">
               <Box
                 as={Card}
@@ -140,7 +162,7 @@ export function Match() {
                   isOwner
                     ? 'Inicie a partida a qualquer momento.'
                     : `Esperando <strong>${getFirstString(
-                        match.owner.displayName
+                        match!.owner.displayName
                       )}</strong> iniciar a partida!`
                 }
                 type="WHITE"

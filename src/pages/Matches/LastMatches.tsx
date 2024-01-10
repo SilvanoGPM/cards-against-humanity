@@ -171,6 +171,7 @@ export function LastMatches({
           >
             {matches.map(({ id, owner, rounds }) => (
               <Card
+                h="190px"
                 key={id}
                 bg="white"
                 shadow="2xl"
@@ -204,7 +205,7 @@ export function LastMatches({
                   </Box>
                 </Flex>
 
-                <Flex flexDir="column" gap="2">
+                <Flex flexDir="column" gap="2" justify="center" flex="1">
                   <Button
                     leftIcon={
                       <Icon as={RxCardStackPlus} transform="auto" rotate="90" />

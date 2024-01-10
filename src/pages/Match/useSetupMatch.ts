@@ -13,16 +13,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useBoolean } from '@/hooks/useBoolean';
 import { useToast } from '@chakra-ui/react';
 
-interface UseFetchMatchReturn {
-  match: MatchConvertedType;
-  isLoading: boolean;
-  isFirstTime: boolean;
-  loadingNext: boolean;
-  reload: () => void;
-  nextRound: () => void;
-}
-
-export function useSetupMatch(id = ''): UseFetchMatchReturn {
+export function useSetupMatch(id = '') {
   const navigate = useNavigate();
   const { user } = useAuth();
   const toast = useToast();
@@ -31,9 +22,8 @@ export function useSetupMatch(id = ''): UseFetchMatchReturn {
   const [loadingNext, startLoadingNext, stopLoadingNext] = useBoolean(false);
   const [isFirstTime, setTrueFirstTime, setFalseFirstTime] = useBoolean(false);
 
-  const [match, setMatch] = useState<MatchConvertedType>(
-    {} as MatchConvertedType
-  );
+  const [match, setMatch] = useState<MatchConvertedType | null>(null);
+  const [hasNewMessages, setHasNewMessases] = useState(false);
 
   const reload = useCallback(() => {
     startLoading();
@@ -46,7 +36,7 @@ export function useSetupMatch(id = ''): UseFetchMatchReturn {
 
         const matchFinished = match?.status === 'FINISHED';
 
-        if (!match || matchFinished) {
+        if (!match || Object.keys(match).length === 0 || matchFinished) {
           navigate('/');
 
           const message = !match
@@ -68,7 +58,7 @@ export function useSetupMatch(id = ''): UseFetchMatchReturn {
         }
 
         const userIsInTheMatch = match.users.find(
-          (innerUser) => innerUser.id === user.uid
+          (innerUser) => innerUser.id === user?.uid
         );
 
         if (!userIsInTheMatch) {
@@ -79,7 +69,9 @@ export function useSetupMatch(id = ''): UseFetchMatchReturn {
         const convertedMatch = await convertMatch(match);
 
         setMatch(convertedMatch);
-      } catch {
+      } catch (error) {
+        console.log('errror', error);
+
         toast({
           title: 'Partida não encontrada',
           description: 'Não encontramos uma partida com esse código.',
@@ -92,7 +84,7 @@ export function useSetupMatch(id = ''): UseFetchMatchReturn {
       }
     }
 
-    if (isLoading) {
+    if (isLoading && user?.uid) {
       fetchMatch();
     }
 
@@ -115,7 +107,18 @@ export function useSetupMatch(id = ''): UseFetchMatchReturn {
           setFalseFirstTime();
         }
 
-        setMatch(convertedMatch);
+        setMatch((match) => {
+          if (
+            (match?.messages?.length || 0) !==
+            (convertedMatch?.messages?.length || 0)
+          ) {
+            setHasNewMessases(true);
+          }
+
+          return convertedMatch;
+        });
+
+        stopLoading();
       }
     });
 
@@ -141,7 +144,7 @@ export function useSetupMatch(id = ''): UseFetchMatchReturn {
       startLoadingNext();
 
       setMatch((match) => {
-        if (match.actualRound) {
+        if (match?.actualRound) {
           return {
             ...match,
             actualRound: { ...match.actualRound, answers: [] },
@@ -168,9 +171,11 @@ export function useSetupMatch(id = ''): UseFetchMatchReturn {
   return {
     isLoading,
     isFirstTime,
-    loadingNext,
+    loadingNext: loadingNext || match?.status === 'LOADING',
     match,
     reload,
     nextRound,
+    hasNewMessages,
+    setHasNewMessases,
   };
 }

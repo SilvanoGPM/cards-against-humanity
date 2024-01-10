@@ -34,13 +34,22 @@ interface RoundType {
   decks: DeckType[];
 }
 
+interface MatchMessage {
+  id: string;
+  userName: string;
+  userAvatar?: string;
+  message: string;
+  createdAt: Timestamp;
+}
+
 interface MatchType {
   id: string;
-  status: 'FINISHED' | 'PLAYING';
+  status: 'FINISHED' | 'PLAYING' | 'LOADING';
   rounds: number;
   actualRound?: RoundType | null;
   users: import('firebase/firestore').DocumentReference<UserType>[];
   owner: import('firebase/firestore').DocumentReference<UserType>;
+  messages: MatchMessage[];
 }
 
 interface AnswersConvertedType {
@@ -70,4 +79,5 @@ interface MatchConvertedType
   owner: UserType;
   rounds: number;
   actualRound?: RoundConvertedType | null;
+  messages: MatchMessage[];
 }

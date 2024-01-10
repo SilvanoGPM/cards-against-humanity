@@ -18,6 +18,7 @@ export interface AuthContextProps {
   user: User;
   authenticated: boolean;
   isAdmin: boolean;
+  isLoading: boolean;
   handleLogin: () => Promise<void>;
   handleLogout: () => Promise<void>;
 }
@@ -31,12 +32,14 @@ export const AuthContext = createContext<AuthContextProps>(
 );
 
 export function AuthProvider({ children }: AuthProviderProps): JSX.Element {
-  const [user, setUser] = useStorage<User>(
+  const [user, setUser, loading] = useStorage<User>(
     '@CARDS_AGAINST_HUMANITY/USER',
     {} as User
   );
 
-  const [authenticated, setTrueAuth, setFalseAuth] = useBoolean(false);
+  const [authenticated, setTrueAuth, setFalseAuth] = useBoolean(
+    Object.keys(user).length !== 0
+  );
 
   const { userIsAdmin, setUserIsAdmin } = useIsAdmin(user, authenticated);
 
@@ -74,8 +77,9 @@ export function AuthProvider({ children }: AuthProviderProps): JSX.Element {
       handleLogin,
       handleLogout,
       isAdmin: userIsAdmin,
+      isLoading: loading,
     }),
-    [user, authenticated, handleLogin, handleLogout, userIsAdmin]
+    [user, authenticated, handleLogin, handleLogout, userIsAdmin, loading]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

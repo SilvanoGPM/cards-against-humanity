@@ -16,16 +16,20 @@ import {
   Input,
   SimpleGrid,
   Text,
+  VStack,
   useToast,
 } from '@chakra-ui/react';
 
-import { forwardRef, useImperativeHandle } from 'react';
+import { forwardRef, useImperativeHandle, useRef } from 'react';
 
-import { useBoolean } from '@/hooks/useBoolean';
-import { getUserName } from '@/utils/get-user-name';
-import { FaCopy, FaCrown } from 'react-icons/fa';
 import { WhiteLogo } from '@/components/Card/Logos';
 import { PixQRCode } from '@/components/pix-qrcode';
+import { useAuth } from '@/contexts/AuthContext';
+import { useBoolean } from '@/hooks/useBoolean';
+import { addMessageToMatch } from '@/services/matches';
+import { getUserName } from '@/utils/get-user-name';
+import { FaCopy, FaCrown } from 'react-icons/fa';
+import { FiSend } from 'react-icons/fi';
 
 interface SettingsDrawerProps {
   match: MatchConvertedType;
@@ -40,11 +44,56 @@ function SettingsDrawerBase(
   ref: React.ForwardedRef<SettingsDrawerHandles>
 ): JSX.Element {
   const [isOpen, openDrawer, closeDrawer] = useBoolean(false);
+
+  const [isSendingMessage, startSendingMessage, stopSendingMessage] =
+    useBoolean(false);
+
   const toast = useToast();
+  const { user } = useAuth();
+
+  const inputRef = useRef<HTMLInputElement>(null);
 
   useImperativeHandle(ref, () => ({
     openDrawer,
   }));
+
+  async function handleSendMessage() {
+    const message = inputRef.current?.value.trim();
+
+    if (!message || message.length < 3) {
+      toast({
+        title: 'Mensagem muito curta',
+        description: 'Insira uma mensagem de pelo menos 3 caracteres.',
+        status: 'info',
+      });
+
+      return;
+    }
+
+    try {
+      startSendingMessage();
+
+      await addMessageToMatch(match.id, {
+        message,
+        userName: getUserName(user),
+        userAvatar: user.photoURL || undefined,
+      });
+
+      if (inputRef.current) {
+        inputRef.current.value = '';
+      }
+    } catch (error) {
+      console.log('error', error);
+
+      toast({
+        title: 'Aconteceu um erro',
+        description: 'Não foi possível enviar mensagem.',
+        status: 'error',
+      });
+    } finally {
+      stopSendingMessage();
+    }
+  }
 
   function handleCopyMatchId(): void {
     navigator.clipboard.writeText(match.id);
@@ -77,7 +126,7 @@ function SettingsDrawerBase(
               <Flex>
                 <Input
                   readOnly
-                  value={match.id}
+                  value={match?.id}
                   borderColor="black"
                   roundedRight="0"
                 />
@@ -89,6 +138,58 @@ function SettingsDrawerBase(
                   onClick={handleCopyMatchId}
                 >
                   Copiar
+                </Button>
+              </Flex>
+            </Flex>
+
+            <Flex flexDir="column" textAlign="center">
+              <Heading as="h3" fontSize="2xl">
+                Chat:
+              </Heading>
+
+              <VStack
+                maxH="300px"
+                h="300px"
+                border="1px"
+                spacing="4"
+                borderColor="black"
+                rounded="md"
+                mb="2"
+                p="4"
+                overflowY="scroll"
+              >
+                {match.messages?.map((message) => (
+                  <Flex key={message.id} w="full" align="start">
+                    <Text
+                      color="gray.600"
+                      wordBreak="break-word"
+                      textAlign="start"
+                    >
+                      <Text as="span" fontWeight="bold" color="black">
+                        {message.userName}:
+                      </Text>{' '}
+                      {message.message}
+                    </Text>
+                  </Flex>
+                ))}
+              </VStack>
+
+              <Flex>
+                <Input
+                  ref={inputRef}
+                  placeholder="Insira sua mensagem..."
+                  borderColor="black"
+                  roundedRight="0"
+                />
+
+                <Button
+                  px="8"
+                  roundedLeft="0"
+                  rightIcon={<Icon as={FiSend} transform="auto" rotate="45" />}
+                  onClick={handleSendMessage}
+                  isLoading={isSendingMessage}
+                >
+                  Enviar
                 </Button>
               </Flex>
             </Flex>
@@ -107,7 +208,7 @@ function SettingsDrawerBase(
                 minChildWidth="200px"
                 alignItems="start"
               >
-                {match.users
+                {match?.users
                   .sort((a) => {
                     if (a.uid === match.owner.uid) {
                       return -1;
@@ -183,33 +284,6 @@ function SettingsDrawerBase(
       </DrawerContent>
     </Drawer>
   );
-
-  // return (
-  //   <Drawer isOpen={isOpen} onClose={closeDrawer} title="Menu">
-  //     <div className={styles.copyMatchIdWrapper}>
-  //       <p style={{ color: Colors.GRAY1 }}>Envie o código para seus amigos:</p>
-
-  //       <div className={styles.copyMatchId}>
-  //         <input defaultValue={match.id} />
-  //         <Button
-  //           onClick={handleCopyMatchId}
-  //           intent="primary"
-  //           icon={<AiFillCopy />}
-  //         />
-  //       </div>
-  //     </div>
-
-  //     <UsersList match={match} />
-
-  //     <div className={styles.aux}>
-  //       <p style={{ color: Colors.GRAY1 }}>
-  //         Deseja auxiliar no projeto? Considere me pagar um café 😊
-  //       </p>
-
-  //       <img alt="QRCode do Pix" src={qrCode} />
-  //     </div>
-  //   </Drawer>
-  // );
 }
 
 export const SettingsDrawer = forwardRef<
