@@ -1,6 +1,7 @@
 import { LoginButton } from '@/components/login-button';
 import { useAuth } from '@/contexts/AuthContext';
 import { useBoolean } from '@/hooks/useBoolean';
+import { MatchesLimitError } from '@/lib/MatchesLimitError';
 import { newMatch } from '@/services/matches';
 import { Button, Icon, VStack, useToast } from '@chakra-ui/react';
 import { MdExitToApp } from 'react-icons/md';
@@ -49,6 +50,16 @@ export function Actions() {
       navigate(`/match/${id}`);
     } catch (error) {
       console.error('error', error);
+
+      if (error instanceof MatchesLimitError) {
+        toast({
+          title: 'Limite alcançado',
+          description: error.message,
+          status: 'error',
+        });
+
+        return;
+      }
 
       toast({
         title: 'Aconteceu um erro',

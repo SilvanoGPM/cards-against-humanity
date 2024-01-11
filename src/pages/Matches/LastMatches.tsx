@@ -29,6 +29,7 @@ import { FaSearch, FaTimes } from 'react-icons/fa';
 import { RxCardStackPlus } from 'react-icons/rx';
 
 import { FinishMatchButton } from '@/components/finish-match-button';
+import { MatchesLimitError } from '@/lib/MatchesLimitError';
 import { getFirstString } from '@/utils/get-first-string';
 import { getUserName } from '@/utils/get-user-name';
 
@@ -59,6 +60,16 @@ export function LastMatches({
       navigate(`/match/${id}`);
     } catch (error) {
       console.error('error', error);
+
+      if (error instanceof MatchesLimitError) {
+        toast({
+          title: 'Limite alcançado',
+          description: error.message,
+          status: 'error',
+        });
+
+        return;
+      }
 
       toast({
         title: 'Aconteceu um erro',

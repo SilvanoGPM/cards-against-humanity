@@ -44,7 +44,7 @@ const finishMatches = async () => {
       }
     });
 
-    console.log('Partidas finalizadas com sucesso.');
+    console.log(`${querySnapshot.size} Partida(s) finalizadas com sucesso.`);
   } catch (error) {
     console.error('Erro ao finalizar partidas:', error);
   }

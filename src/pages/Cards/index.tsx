@@ -1,4 +1,3 @@
-import { H3 } from '@blueprintjs/core';
 import { useRef, useState } from 'react';
 
 import { Card } from '@/components/Card';
@@ -6,8 +5,18 @@ import { Card } from '@/components/Card';
 import { GoBack } from '@/components/GoBack';
 import { SomeLoading } from '@/components/SomeLoading';
 
+import {
+  Box,
+  Button,
+  Center,
+  Flex,
+  Heading,
+  Icon,
+  Input,
+  Text,
+} from '@chakra-ui/react';
+import { FiSearch } from 'react-icons/fi';
 import { useFetchCards } from './useFetchCards';
-import styles from './styles.module.scss';
 
 type CardFilter = 'ALL' | 'WHITE' | 'BLACK';
 
@@ -15,40 +24,105 @@ export function Cards(): JSX.Element {
   const { isLoading, cards } = useFetchCards();
 
   const [cardsFilter, setCardsFilter] = useState<CardFilter>('ALL');
+  const [cardsSearch, setCardsSearch] = useState('');
 
-  const selectRef = useRef<HTMLSelectElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  const whites = cards.filter(({ type }) => type === 'WHITE');
-  const blacks = cards.filter(({ type }) => type === 'BLACK');
+  function filterCardsByType(type: Omit<CardFilter, 'ALL'>) {
+    return (card: CardType) =>
+      type === card.type && card.message.toLowerCase().includes(cardsSearch);
+  }
+
+  const whites = cards.filter(filterCardsByType('WHITE'));
+  const blacks = cards.filter(filterCardsByType('BLACK'));
+
+  function handleFilterCards() {
+    const search = inputRef.current?.value.trim().toLowerCase();
+
+    setCardsSearch(search || '');
+  }
 
   return (
-    <section className={styles.container}>
+    <Flex flexDir="column" pt="16">
       <SomeLoading loading={isLoading} message="Carregando cartas..." />
 
-      <div className={styles.goBack}>
+      <Box pos="absolute" top="4" left="4">
         <GoBack />
-      </div>
+      </Box>
 
-      <div className={`bp4-html-select ${styles.selectCards}`}>
-        <select
-          ref={selectRef}
-          onChange={(event) => setCardsFilter(event.target.value as CardFilter)}
-        >
-          <option value="ALL">Todas</option>
-          <option value="WHITE">Brancas</option>
-          <option value="BLACK">Pretas</option>
-        </select>
-        <span className="bp4-icon bp4-icon-double-caret-vertical" />
-      </div>
+      <Heading as="h1" fontSize="3xl" textAlign="center">
+        Cartas:
+      </Heading>
 
-      {cardsFilter === 'BLACK' && <div className={styles.placeholderHeader} />}
+      <Center w="full" flexDir="column" gap="4" mt="8" px="4">
+        <Flex w="full" maxW={{ base: 'full', md: '600px' }}>
+          <Input
+            placeholder="Texto da carta..."
+            borderColor="black"
+            roundedRight="0"
+            ref={inputRef}
+            onKeyDown={(event) => {
+              if (event.key === 'Enter') {
+                handleFilterCards();
+              }
+            }}
+          />
 
-      <div className={styles.cardsContainer}>
+          <Button
+            px="8"
+            roundedLeft="0"
+            minW={{ base: 'auto', md: '200px' }}
+            rightIcon={<Icon as={FiSearch} />}
+            onClick={handleFilterCards}
+          >
+            Pesquisar
+          </Button>
+        </Flex>
+
+        <Center flexDir={{ base: 'column', md: 'row' }} w="full">
+          <Button
+            boxShadow="0 .2em black !important"
+            roundedRight={{ base: 'md', md: '0' }}
+            roundedBottomLeft={{ base: '0', md: 'md' }}
+            roundedBottomRight="0"
+            w={{ base: '100%', md: '200px' }}
+            variant={cardsFilter === 'ALL' ? 'default' : 'defaultOutlined'}
+            onClick={() => setCardsFilter('ALL')}
+          >
+            Todas
+          </Button>
+
+          <Button
+            boxShadow="0 .2em black !important"
+            rounded="0"
+            w={{ base: '100%', md: '200px' }}
+            variant={cardsFilter === 'WHITE' ? 'default' : 'defaultOutlined'}
+            onClick={() => setCardsFilter('WHITE')}
+          >
+            Respostas
+          </Button>
+
+          <Button
+            boxShadow="0 .2em black !important"
+            roundedLeft={{ base: 'md', md: '0' }}
+            roundedTopRight={{ base: '0', md: 'md' }}
+            roundedTopLeft="0"
+            w={{ base: '100%', md: '200px' }}
+            variant={cardsFilter === 'BLACK' ? 'default' : 'defaultOutlined'}
+            onClick={() => setCardsFilter('BLACK')}
+          >
+            Perguntas
+          </Button>
+        </Center>
+      </Center>
+
+      <Flex gap="2" flexDir="column">
         {cardsFilter !== 'BLACK' && (
-          <div className={`${styles.cards} ${styles.whites}`}>
-            <H3 className={`${styles.totalOfCards} ${styles.whites}`}>
+          <Center gap="2" flexWrap="wrap" bg="white" mt="8" p="4">
+            <Text color="black" w="full" textAlign="center">
               Total de respostas: {whites.length}
-            </H3>
+            </Text>
+
             {whites.map(({ id, message, type }, index) => (
               <Card
                 key={id}
@@ -58,20 +132,21 @@ export function Cards(): JSX.Element {
                 animationDelay={`${index >= 20 ? 0 : index * 500}ms`}
               />
             ))}
-          </div>
+          </Center>
         )}
 
         {cardsFilter !== 'WHITE' && (
-          <div className={`${styles.cards} ${styles.blacks}`}>
-            <H3 className={`${styles.totalOfCards} ${styles.blacks}`}>
+          <Center gap="2" flexWrap="wrap" bg="black" mt="8" p="4">
+            <Text color="white" w="full" textAlign="center">
               Total de perguntas: {blacks.length}
-            </H3>
+            </Text>
+
             {blacks.map(({ id, message, type }) => (
               <Card key={id} message={message} type={type} />
             ))}
-          </div>
+          </Center>
         )}
-      </div>
-    </section>
+      </Flex>
+    </Flex>
   );
 }

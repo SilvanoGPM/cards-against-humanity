@@ -37,6 +37,7 @@ export function createCollection<T = DocumentData>(
   return collection(db, collectionName) as CollectionReference<T>;
 }
 export const matchesCollection = createCollection<MatchType>('matches');
+export const generalCollection = createCollection<GeneralType>('general');
 export const cardsCollection = createCollection<CardType>('cards');
 export const usersCollection = createCollection<UserType>('users');
 export const adminsCollection = createCollection('admins');

@@ -20,9 +20,11 @@ import {
 
 import { getRandomItem } from '@/utils/get-random-item';
 
+import { MatchesLimitError } from '@/lib/MatchesLimitError';
 import { getCard, getCards } from './cards';
 import { createAny, getAll, getAny, mapValue, streamAny } from './core';
 import { getUser } from './users';
+import { getGeneral } from './general';
 
 interface SetAwnserData {
   awnsers: string[];
@@ -50,7 +52,13 @@ export async function getMatch(id: string): Promise<MatchType> {
   return getAny<MatchType>(matchesCollection, id);
 }
 
-export function newMatch(ownerId: string): Promise<string> {
+export async function newMatch(ownerId: string): Promise<string> {
+  const { canPlay } = await getGeneral();
+
+  if (!canPlay) {
+    throw new MatchesLimitError();
+  }
+
   const ownerDoc = doc(usersCollection, ownerId);
 
   return createAny<Omit<MatchType, 'id'>>(matchesCollection, {

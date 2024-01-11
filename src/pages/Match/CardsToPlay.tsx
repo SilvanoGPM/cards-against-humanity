@@ -102,7 +102,7 @@ export function CardsToPlay({ match, isFirstTime }: CardsToPlayProps) {
 
       setSelectedCardsId([]);
     } catch (error) {
-      console.log('error', error);
+      console.error('error', error);
 
       toast({
         title: 'Aconteceu um erro',

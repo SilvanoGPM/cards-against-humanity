@@ -12,6 +12,7 @@ import {
 import { useAuth } from '@/contexts/AuthContext';
 import { useBoolean } from '@/hooks/useBoolean';
 import { useToast } from '@chakra-ui/react';
+import { getUserName } from '@/utils/get-user-name';
 
 export function useSetupMatch(id = '') {
   const navigate = useNavigate();
@@ -46,7 +47,7 @@ export function useSetupMatch(id = '') {
               }
             : {
                 title: 'Partida finalizada',
-                description: 'Esta partida já foi finalizada',
+                description: 'Esta partida já foi finalizada.',
               };
 
           toast({
@@ -70,7 +71,7 @@ export function useSetupMatch(id = '') {
 
         setMatch(convertedMatch);
       } catch (error) {
-        console.log('errror', error);
+        console.error('errror', error);
 
         toast({
           title: 'Partida não encontrada',
@@ -88,6 +89,8 @@ export function useSetupMatch(id = '') {
       fetchMatch();
     }
 
+    const userName = getUserName(user);
+
     const unsubscribePromise = streamMatch(id, async (newMatch) => {
       if (newMatch.exists()) {
         const convertedMatch = await convertMatch({
@@ -96,7 +99,15 @@ export function useSetupMatch(id = '') {
         });
 
         if (convertedMatch.status === 'FINISHED') {
-          reload();
+          navigate('/');
+
+          toast({
+            title: 'Partida finalizada',
+            description: 'Esta partida já foi finalizada.',
+            status: 'info',
+          });
+
+          return;
         }
 
         const hasDeck = convertedMatch?.actualRound?.decks.find(
@@ -110,7 +121,9 @@ export function useSetupMatch(id = '') {
         setMatch((match) => {
           if (
             (match?.messages?.length || 0) !==
-            (convertedMatch?.messages?.length || 0)
+              (convertedMatch?.messages?.length || 0) &&
+            convertedMatch?.messages[convertedMatch.messages.length - 1]
+              ?.userName !== userName
           ) {
             setHasNewMessases(true);
           }

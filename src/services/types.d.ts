@@ -52,6 +52,11 @@ interface MatchType {
   messages: MatchMessage[];
 }
 
+interface GeneralType {
+  canPlay: boolean;
+  totalCards: number;
+}
+
 interface AnswersConvertedType {
   user: UserType;
   card: CardType;

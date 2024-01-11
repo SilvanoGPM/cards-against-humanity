@@ -28,11 +28,12 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useBoolean } from '@/hooks/useBoolean';
 import { addMessageToMatch } from '@/services/matches';
 import { getUserName } from '@/utils/get-user-name';
-import { FaCopy, FaCrown } from 'react-icons/fa';
+import { FaCrown } from 'react-icons/fa';
 import { FiSend } from 'react-icons/fi';
+import { MatchIdInput } from './match-id-input';
 
 interface SettingsDrawerProps {
-  match: MatchConvertedType;
+  match: MatchConvertedType | null;
 }
 
 export interface SettingsDrawerHandles {
@@ -60,7 +61,7 @@ function SettingsDrawerBase(
   async function handleSendMessage() {
     const message = inputRef.current?.value.trim();
 
-    if (!message || message.length < 3) {
+    if (!message || message.length < 3 || !match) {
       toast({
         title: 'Mensagem muito curta',
         description: 'Insira uma mensagem de pelo menos 3 caracteres.',
@@ -83,7 +84,7 @@ function SettingsDrawerBase(
         inputRef.current.value = '';
       }
     } catch (error) {
-      console.log('error', error);
+      console.error('error', error);
 
       toast({
         title: 'Aconteceu um erro',
@@ -93,16 +94,6 @@ function SettingsDrawerBase(
     } finally {
       stopSendingMessage();
     }
-  }
-
-  function handleCopyMatchId(): void {
-    navigator.clipboard.writeText(match.id);
-
-    toast({
-      title: 'Código copiado',
-      description: 'O código da partida foi copiado com sucesso.',
-      status: 'info',
-    });
   }
 
   return (
@@ -123,23 +114,7 @@ function SettingsDrawerBase(
                 Código da partida:
               </Heading>
 
-              <Flex>
-                <Input
-                  readOnly
-                  value={match?.id}
-                  borderColor="black"
-                  roundedRight="0"
-                />
-
-                <Button
-                  px="8"
-                  roundedLeft="0"
-                  rightIcon={<Icon as={FaCopy} />}
-                  onClick={handleCopyMatchId}
-                >
-                  Copiar
-                </Button>
-              </Flex>
+              <MatchIdInput id={match?.id} />
             </Flex>
 
             <Flex flexDir="column" gap="4">
@@ -149,6 +124,7 @@ function SettingsDrawerBase(
 
               <VStack
                 maxH="300px"
+                shadow="2xl"
                 h="300px"
                 border="1px"
                 spacing="0"
