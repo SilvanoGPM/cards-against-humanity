@@ -1,3 +1,4 @@
+import { useAuth } from '@/contexts/AuthContext';
 import { useStorage } from '@/hooks/useStorage';
 import { Text } from '@blueprintjs/core';
 import { Button, Flex, Heading, Icon } from '@chakra-ui/react';
@@ -5,6 +6,8 @@ import { Button, Flex, Heading, Icon } from '@chakra-ui/react';
 import { LuCookie } from 'react-icons/lu';
 
 export function CookiesModal() {
+  const { authenticated } = useAuth();
+
   const [isOpen, setIsOpen, isLoading] = useStorage(
     '@CARDS_AGAINST_HUMANITY/ACCEPT_COOKIES',
     true
@@ -14,7 +17,7 @@ export function CookiesModal() {
     setIsOpen(false);
   }
 
-  if (!isOpen || isLoading) {
+  if (!isOpen || isLoading || !authenticated) {
     return null;
   }
 
