@@ -1,5 +1,6 @@
 import { Container, Flex } from '@chakra-ui/react';
 
+import { AddCardLink } from '@/components/add-card-link';
 import { Tags } from './tags';
 
 import { Header } from './header';
@@ -33,6 +34,7 @@ export function Home(): JSX.Element {
       </Flex>
 
       <Tags />
+      <AddCardLink />
     </Container>
   );
 }

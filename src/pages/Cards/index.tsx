@@ -5,6 +5,7 @@ import { Card } from '@/components/Card';
 import { GoBack } from '@/components/GoBack';
 import { SomeLoading } from '@/components/SomeLoading';
 
+import { AddCardModal } from '@/components/add-card-modal';
 import {
   Box,
   Button,
@@ -16,6 +17,7 @@ import {
   Text,
 } from '@chakra-ui/react';
 import { FiSearch } from 'react-icons/fi';
+import { useSearchParams } from 'react-router-dom';
 import { useFetchCards } from './useFetchCards';
 
 type CardFilter = 'ALL' | 'WHITE' | 'BLACK';
@@ -25,6 +27,12 @@ export function Cards(): JSX.Element {
 
   const [cardsFilter, setCardsFilter] = useState<CardFilter>('ALL');
   const [cardsSearch, setCardsSearch] = useState('');
+
+  const [params] = useSearchParams();
+
+  const [addCardModalIsOpen, setAddCardModalIsOpen] = useState(
+    params.get('add') !== null
+  );
 
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -115,6 +123,22 @@ export function Cards(): JSX.Element {
           </Button>
         </Center>
       </Center>
+
+      <Text
+        my="4"
+        color="blue.500"
+        cursor="pointer"
+        textDecor="underline"
+        textAlign="center"
+        onClick={() => setAddCardModalIsOpen(true)}
+      >
+        Deseja adicionar uma carta? Clique aqui para saber como.
+      </Text>
+
+      <AddCardModal
+        onClose={() => setAddCardModalIsOpen(false)}
+        isOpen={addCardModalIsOpen}
+      />
 
       <Flex gap="2" flexDir="column">
         {cardsFilter !== 'BLACK' && (
