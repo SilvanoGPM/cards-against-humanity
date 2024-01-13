@@ -2,7 +2,7 @@ name: Finalizar partidas todos os dias
 
 on:
   schedule:
-    - cron: '0 15 * * *' # 3 da tarde UTC (Github) / 12 horas Brasil (Eu) / 7 horas Pacific Time (Firebase)
+    - cron: '0 11 * * *' # 11 da manhã UTC (Github) / 9 da manhã Brasil (Eu) / 4 horas Pacific Time (Firebase)
 
 jobs:
   executar-script:
