@@ -1,4 +1,5 @@
 import { getCards } from '@/services/cards';
+import { getErrorMessage } from '@/utils/get-error-message';
 import { useToast } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 
@@ -22,10 +23,15 @@ export function useFetchCards(): UseFetchCardsReturn {
       } catch (error) {
         console.error('error', error);
 
+        const description = getErrorMessage(
+          error,
+          'Não foi possível carregar as cartas.'
+        );
+
         toast({
+          description,
           title: 'Aconteceu um erro',
-          description: 'Não foi possível carregar as cartas.',
-          variant: 'error',
+          status: 'error',
         });
 
         setIsError(true);

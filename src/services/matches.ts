@@ -20,7 +20,7 @@ import {
 
 import { getRandomItem } from '@/utils/get-random-item';
 
-import { MatchesLimitError } from '@/lib/MatchesLimitError';
+import { ServerMaintanceError } from '@/lib/ServerMaintanceError';
 import { getCard, getCards } from './cards';
 import { createAny, getAll, getAny, mapValue, streamAny } from './core';
 import { getUser } from './users';
@@ -56,7 +56,7 @@ export async function newMatch(ownerId: string): Promise<string> {
   const { canPlay } = await getGeneral();
 
   if (!canPlay) {
-    throw new MatchesLimitError();
+    throw new ServerMaintanceError();
   }
 
   const ownerDoc = doc(usersCollection, ownerId);

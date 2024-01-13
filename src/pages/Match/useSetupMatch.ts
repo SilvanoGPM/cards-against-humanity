@@ -13,6 +13,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useBoolean } from '@/hooks/useBoolean';
 import { useToast } from '@chakra-ui/react';
 import { getUserName } from '@/utils/get-user-name';
+import { getErrorMessage } from '@/utils/get-error-message';
 
 export function useSetupMatch(id = '') {
   const navigate = useNavigate();
@@ -171,10 +172,15 @@ export function useSetupMatch(id = '') {
     } catch (error) {
       console.error('error', error);
 
+      const description = getErrorMessage(
+        error,
+        'Não foi possível carregar a rodada, recarregue a página.'
+      );
+
       toast({
+        description,
         title: 'Aconteceu um erro',
-        description: 'Não foi possível carregar a rodada, recarregue a página.',
-        status: 'warning',
+        status: 'error',
       });
     } finally {
       stopLoadingNext();

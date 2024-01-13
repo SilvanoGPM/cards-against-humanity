@@ -4,6 +4,7 @@ import { convertMatch, getLastMatches } from '@/services/matches';
 
 import { useBoolean } from '@/hooks/useBoolean';
 import { useToast } from '@chakra-ui/react';
+import { getErrorMessage } from '@/utils/get-error-message';
 
 interface UseLastMatchesReturn {
   matches: MatchConvertedType[];
@@ -27,9 +28,14 @@ export function useLastMatches(size = 10): UseLastMatchesReturn {
       } catch (error) {
         console.error('error', error);
 
+        const description = getErrorMessage(
+          error,
+          'Não foi possível encontrar as últimas partidas.'
+        );
+
         toast({
+          description,
           title: 'Aconteceu um erro',
-          description: 'Não foi possível encontrar as últimas partidas.',
           variant: 'error',
         });
       } finally {

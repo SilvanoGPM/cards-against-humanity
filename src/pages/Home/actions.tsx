@@ -1,8 +1,9 @@
 import { LoginButton } from '@/components/login-button';
 import { useAuth } from '@/contexts/AuthContext';
 import { useBoolean } from '@/hooks/useBoolean';
-import { MatchesLimitError } from '@/lib/MatchesLimitError';
+import { ServerMaintanceError } from '@/lib/ServerMaintanceError';
 import { newMatch } from '@/services/matches';
+import { getErrorMessage } from '@/utils/get-error-message';
 import { Button, Icon, VStack, useToast } from '@chakra-ui/react';
 import { MdExitToApp } from 'react-icons/md';
 import { RiPhoneFindFill } from 'react-icons/ri';
@@ -51,7 +52,7 @@ export function Actions() {
     } catch (error) {
       console.error('error', error);
 
-      if (error instanceof MatchesLimitError) {
+      if (error instanceof ServerMaintanceError) {
         toast({
           title: 'Limite alcançado',
           description: error.message,
@@ -61,9 +62,14 @@ export function Actions() {
         return;
       }
 
+      const description = getErrorMessage(
+        error,
+        'Não foi possível criar a partida.'
+      );
+
       toast({
+        description,
         title: 'Aconteceu um erro',
-        description: 'Não foi possível criar a partida',
         status: 'error',
       });
     } finally {

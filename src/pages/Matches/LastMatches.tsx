@@ -29,9 +29,10 @@ import { FaSearch, FaTimes } from 'react-icons/fa';
 import { RxCardStackPlus } from 'react-icons/rx';
 
 import { FinishMatchButton } from '@/components/finish-match-button';
-import { MatchesLimitError } from '@/lib/MatchesLimitError';
+import { ServerMaintanceError } from '@/lib/ServerMaintanceError';
 import { getFirstString } from '@/utils/get-first-string';
 import { getUserName } from '@/utils/get-user-name';
+import { getErrorMessage } from '@/utils/get-error-message';
 
 interface LastMatchesProps {
   matches: MatchConvertedType[];
@@ -61,9 +62,9 @@ export function LastMatches({
     } catch (error) {
       console.error('error', error);
 
-      if (error instanceof MatchesLimitError) {
+      if (error instanceof ServerMaintanceError) {
         toast({
-          title: 'Limite alcançado',
+          title: 'Servidor em manutenção',
           description: error.message,
           status: 'error',
         });
@@ -71,9 +72,14 @@ export function LastMatches({
         return;
       }
 
+      const description = getErrorMessage(
+        error,
+        'Não foi possível criar a partida'
+      );
+
       toast({
+        description,
         title: 'Aconteceu um erro',
-        description: 'Não foi possível criar a partida',
         status: 'error',
       });
     } finally {

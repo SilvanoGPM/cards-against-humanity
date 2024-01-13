@@ -30,6 +30,7 @@ import { addMessageToMatch } from '@/services/matches';
 import { getUserName } from '@/utils/get-user-name';
 import { FaCrown } from 'react-icons/fa';
 import { FiSend } from 'react-icons/fi';
+import { getErrorMessage } from '@/utils/get-error-message';
 import { MatchIdInput } from './match-id-input';
 
 interface SettingsDrawerProps {
@@ -86,9 +87,14 @@ function SettingsDrawerBase(
     } catch (error) {
       console.error('error', error);
 
+      const description = getErrorMessage(
+        error,
+        'Não foi possível enviar mensagem.'
+      );
+
       toast({
+        description,
         title: 'Aconteceu um erro',
-        description: 'Não foi possível enviar mensagem.',
         status: 'error',
       });
     } finally {

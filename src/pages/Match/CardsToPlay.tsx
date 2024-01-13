@@ -18,6 +18,7 @@ import {
   useToast,
 } from '@chakra-ui/react';
 import { FaCheckCircle } from 'react-icons/fa';
+import { getErrorMessage } from '@/utils/get-error-message';
 import { useFetchDeck } from './useFetchDeck';
 
 import styles from './styles.module.scss';
@@ -104,9 +105,14 @@ export function CardsToPlay({ match, isFirstTime }: CardsToPlayProps) {
     } catch (error) {
       console.error('error', error);
 
+      const description = getErrorMessage(
+        error,
+        'Não foi possível realizar jogada.'
+      );
+
       toast({
+        description,
         title: 'Aconteceu um erro',
-        description: 'Não foi possível realizar jogada',
         status: 'error',
       });
     } finally {

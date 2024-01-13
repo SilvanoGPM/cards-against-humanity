@@ -1,4 +1,5 @@
 import { useAuth } from '@/contexts/AuthContext';
+import { getErrorMessage } from '@/utils/get-error-message';
 
 import { Button, ButtonProps, Icon, useToast } from '@chakra-ui/react';
 
@@ -15,11 +16,18 @@ export function LoginButton(props: ButtonProps) {
     try {
       setIsLoading(true);
       await handleLogin();
-    } catch {
+    } catch (error) {
+      console.error('error', error);
+
+      const description = getErrorMessage(
+        error,
+        'Não foi possível realizar login.'
+      );
+
       toast({
+        description,
         title: 'Aconteceu um erro',
-        description: 'Não foi possível realizar login.',
-        variant: 'error',
+        status: 'error',
       });
     } finally {
       setIsLoading(false);
