@@ -1,0 +1,49 @@
+<html>
+<head><title>Testing applixir</title>
+    <script type="text/javascript" src="https://cdn.applixir.com/applixir.sdk3.0m.js"></script>
+
+</head>
+<body>
+<div id="applixir_vanishing_div" hidden>
+    <iframe id="applixir_parent" allow="autoplay"></iframe>
+</div>
+<input type="button" value="press to invoke" onclick="watchit()">
+<script type="text/javascript">
+  function adStatusCallback(status) {
+    // This can contain whatever code you like. The err parameter will return the
+    // following values (please DO NOT block callback thread or ad will fail):
+    //	'ad-blocker' = an ad blocker was detected
+    //	'network-error' = network connection not available
+    //  'cors-error' = cross-origin error (try clearing browser cache)
+    //  'no-zoneId' = the required zoneId value is missing
+    //  'ad-started' = an ad has been loaded and is starting
+    //  'fb-started' = a fallback has been started by fallback mode
+    //	'ad-watched' = an ad was presented and ran successfully
+    //  'fb-watched' = a fallback ad was presented and ran successfully
+    //	'ad-interrupted' = ad was ended prior to 5 seconds (abnormal end)
+    //	'ads-unavailable' = no ads were returned to the player
+    //  'sys-closing' = the process has completed and the player is closing.
+
+      console.log('Applixir status: ' + status);
+  }
+
+  var options = {
+    zoneId: 2050, // the zone ID from the "Games" page
+    devId: 3228, // optional: your developer ID if using s2s callback
+    gameId: 4425, // optional: the ID for this game from the "Games" page for s2s callback
+    // custom1: nnnn, // optional: custom1 value for s2s callback
+    // custom2: nnnn, // optional: custom2 value for s2s callback
+    dMode: 0, // 0 for no MD5 checksum, 1 for MD5 checksum (recommended)
+    fallback: 0, // 0 for no fallbacks, 1 will show fallback ads when ads-unavailable
+    verbosity: 100,
+    adStatusCb: adStatusCallback, // optional: function to provide helpful user messages
+
+
+  };
+
+  function watchit() {
+    invokeApplixirVideoUnit(options);
+  }
+</script>
+</body>
+</html>

@@ -5,6 +5,7 @@ import { ServerMaintanceError } from '@/lib/ServerMaintanceError';
 import { newMatch } from '@/services/matches';
 import { getErrorMessage } from '@/utils/get-error-message';
 import { Button, Icon, VStack, useToast } from '@chakra-ui/react';
+import { FaYoutube } from 'react-icons/fa';
 import { MdExitToApp } from 'react-icons/md';
 import { RiPhoneFindFill } from 'react-icons/ri';
 import { RxCardStackPlus } from 'react-icons/rx';
@@ -77,6 +78,28 @@ export function Actions() {
     }
   }
 
+  function playAd() {
+    try {
+      const options = {
+        userId: user.uid,
+        zoneId: 2050,
+        accountId: 7968,
+        siteId: 8503,
+        adStatusCb: (status: string) => {
+          console.log('Ad Status: ' + status);
+        },
+      };
+
+      console.table(options);
+
+      invokeApplixirVideoUnit(options);
+
+      console.log('ads called');
+    } catch (error) {
+      console.log('error on ads: \n', error);
+    }
+  }
+
   return (
     <VStack flex="1">
       <Button
@@ -122,6 +145,17 @@ export function Actions() {
           variant="defaultOutlined"
         >
           Nova carta
+        </Button>
+      )}
+
+      {isAdmin && (
+        <Button
+          onClick={playAd}
+          leftIcon={<Icon as={FaYoutube} />}
+          w="full"
+          variant="defaultOutlined"
+        >
+          Mostrar Ad
         </Button>
       )}
 

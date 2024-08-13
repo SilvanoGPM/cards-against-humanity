@@ -40,10 +40,11 @@ export function Card({
   const animation = animations[animationType];
 
   function getFormatedMessage(): string {
-    const text = message.replaceAll(
-      CARD_TOKEN,
-      `<span class="${styles.question}"></span>`
-    );
+    const text =
+      message?.replaceAll(
+        CARD_TOKEN,
+        `<span class="${styles.question}"></span>`
+      ) || '';
 
     return `<p class="${styles.message} ${messageClassName}">${text}</p>`;
   }

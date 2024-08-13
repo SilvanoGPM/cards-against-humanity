@@ -3,10 +3,10 @@ import { Container, Flex } from '@chakra-ui/react';
 import { AddCardLink } from '@/components/add-card-link';
 import { Tags } from './tags';
 
-import { Header } from './header';
-import { Contribution } from './contribution';
-import { JoinMatch } from './join-match';
 import { Actions } from './actions';
+import { Contribution } from './contribution';
+import { Header } from './header';
+import { JoinMatch } from './join-match';
 
 export function Home(): JSX.Element {
   return (
