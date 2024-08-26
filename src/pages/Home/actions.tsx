@@ -6,6 +6,7 @@ import { ServerMaintanceError } from '@/lib/ServerMaintanceError';
 import { newMatch } from '@/services/matches';
 import { getErrorMessage } from '@/utils/get-error-message';
 import { Button, Icon, VStack, useToast } from '@chakra-ui/react';
+import { useCallback } from 'react';
 import { FaYoutube } from 'react-icons/fa';
 import { MdExitToApp } from 'react-icons/md';
 import { RiPhoneFindFill } from 'react-icons/ri';
@@ -20,8 +21,6 @@ export function Actions() {
   const toast = useToast();
 
   const [isCreating, startCreate, stopCreate] = useBoolean(false);
-
-  const playAd = useAds(startCreate);
 
   function handleShowLoginInfo() {
     toast({
@@ -41,7 +40,7 @@ export function Actions() {
     }
   }
 
-  async function handleNewMatch() {
+  const handleNewMatch = useCallback(async () => {
     if (!authenticated) {
       handleShowLoginInfo();
       return;
@@ -79,13 +78,17 @@ export function Actions() {
     } finally {
       stopCreate();
     }
-  }
+  }, [authenticated, isCreating, navigate, startCreate, stopCreate, toast, user]);
+
+  const { playAd, isPlayingAd } = useAds(handleNewMatch);
+
+  const isLoading = isCreating || isPlayingAd;
 
   return (
     <VStack flex="1">
       <Button
         onClick={handleNewMatch}
-        isLoading={isCreating}
+        isLoading={isLoading}
         leftIcon={<Icon as={RxCardStackPlus} transform="auto" rotate="90" />}
         w="full"
       >
@@ -96,7 +99,7 @@ export function Actions() {
         onClick={handleNavigateWithoutLogin}
         as={Link}
         to="/matches"
-        isLoading={isCreating}
+        isLoading={isLoading}
         leftIcon={<Icon as={RiPhoneFindFill} />}
         w="full"
         variant="defaultOutlined"
@@ -108,7 +111,7 @@ export function Actions() {
         onClick={handleNavigateWithoutLogin}
         as={Link}
         to="/cards"
-        isLoading={isCreating}
+        isLoading={isLoading}
         leftIcon={<Icon as={TbCards} />}
         w="full"
         variant="defaultOutlined"
@@ -120,7 +123,7 @@ export function Actions() {
         <Button
           as={Link}
           to="/new-card"
-          isLoading={isCreating}
+          isLoading={isLoading}
           leftIcon={<Icon as={RxCardStackPlus} transform="auto" rotate="90" />}
           w="full"
           variant="defaultOutlined"
@@ -142,7 +145,7 @@ export function Actions() {
 
       {authenticated ? (
         <Button
-          isLoading={isCreating}
+          isLoading={isLoading}
           onClick={handleLogout}
           leftIcon={<Icon as={MdExitToApp} />}
           w="full"
