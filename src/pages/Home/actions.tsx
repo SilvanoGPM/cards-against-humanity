@@ -1,5 +1,6 @@
 import { LoginButton } from '@/components/login-button';
 import { useAuth } from '@/contexts/AuthContext';
+import { useAds } from '@/hooks/use-ads';
 import { useBoolean } from '@/hooks/useBoolean';
 import { ServerMaintanceError } from '@/lib/ServerMaintanceError';
 import { newMatch } from '@/services/matches';
@@ -19,6 +20,8 @@ export function Actions() {
   const toast = useToast();
 
   const [isCreating, startCreate, stopCreate] = useBoolean(false);
+
+  const playAd = useAds(startCreate);
 
   function handleShowLoginInfo() {
     toast({
@@ -75,28 +78,6 @@ export function Actions() {
       });
     } finally {
       stopCreate();
-    }
-  }
-
-  function playAd() {
-    try {
-      const options = {
-        userId: user.uid,
-        zoneId: 2050,
-        accountId: 7968,
-        siteId: 8503,
-        adStatusCb: (status: string) => {
-          console.log('Ad Status: ' + status);
-        },
-      };
-
-      console.table(options);
-
-      invokeApplixirVideoUnit(options);
-
-      console.log('ads called');
-    } catch (error) {
-      console.log('error on ads: \n', error);
     }
   }
 
