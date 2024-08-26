@@ -3,17 +3,15 @@ import Repository from '@/lib/Repository';
 import { playAd } from '@/lib/ads';
 import { useToast } from '@chakra-ui/react';
 import { useCallback, useState } from 'react';
-import { v5 as uuidv5 } from 'uuid';
+import { v4 as uuid } from 'uuid';
 
-const NAMESPACE = '6ba7b810-9dad-11d1-80b4-00c04fd430c8';
-
-type AdsTimeout = { expiresIn: number };
+type AdsTimeout = { expiresIn: number; userUUID: string };
 
 const adsTimeoutKey = 'adsTimeout';
 
 export function useAds(onSuccess: () => void) {
   const toast = useToast();
-  const { user } = useAuth();
+  const { user, isAdmin } = useAuth();
 
   const [isPlayingAd, setIsPlayingAd] = useState(false);
 
@@ -34,7 +32,14 @@ export function useAds(onSuccess: () => void) {
 
     setIsPlayingAd(true);
 
-    Repository.save(adsTimeoutKey, { expiresIn: Date.now() + 1000 * 60 * 5 }); // 5 minutos
+    const userUUID = timeoutToAds?.userUUID || uuid();
+
+    Repository.save(adsTimeoutKey, {
+      userUUID,
+
+      // 5 minutos
+      expiresIn: Date.now() + 1000 * 60 * 5,
+    });
 
     toast({
       title: 'Assistir anúncio',
@@ -42,11 +47,13 @@ export function useAds(onSuccess: () => void) {
       status: 'info',
     });
 
-    const userId = uuidv5(NAMESPACE, user.uid);
-
     playAd({
-      userId,
+      userId: userUUID,
       onFinished: (status, message) => {
+        if (isAdmin) {
+          console.log(status, message);
+        }
+
         setIsPlayingAd(false);
 
         if (status === 'ok' || !message) {
@@ -65,7 +72,7 @@ export function useAds(onSuccess: () => void) {
         }
       },
     });
-  }, [onSuccess, user]);
+  }, [onSuccess, user, isAdmin]);
 
   return { isPlayingAd, playAd: handlePlayAd };
 }
