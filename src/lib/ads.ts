@@ -9,6 +9,7 @@ const possibleErrorsMessages: Record<string, string> = {
   'cors-error': 'Erro de CORS, por favor tente novamente',
   'ad-interrupted': 'Assista o vídeo até o final!',
   'ad-rejected': 'Por favor, assiste o anúncio antes de jogar',
+  'ad-violation': 'Por favor, assiste o anúncio antes de jogar',
 };
 
 export function playAd({ onFinished, userId }: PlayAdParams) {
@@ -28,6 +29,19 @@ export function playAd({ onFinished, userId }: PlayAdParams) {
 
           return onFinished('error', message);
         }
+
+        const skippedStatuses = [
+          'ad-started',
+          'sys-closing',
+          'ad-initready',
+          'ad-rewarded',
+        ];
+
+        if (skippedStatuses.includes(status)) {
+          return;
+        }
+
+        return onFinished('ok');
       },
     };
 

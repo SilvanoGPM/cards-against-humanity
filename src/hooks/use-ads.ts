@@ -34,13 +34,6 @@ export function useAds(onSuccess: () => void) {
 
     const userUUID = timeoutToAds?.userUUID || uuid();
 
-    Repository.save(adsTimeoutKey, {
-      userUUID,
-
-      // 5 minutos
-      expiresIn: Date.now() + 1000 * 60 * 5,
-    });
-
     toast({
       title: 'Assistir anúncio',
       description: 'Um anúncio será exibido, aguarde até o final para jogar!',
@@ -57,6 +50,13 @@ export function useAds(onSuccess: () => void) {
         setIsPlayingAd(false);
 
         if (status === 'ok' || !message) {
+          Repository.save(adsTimeoutKey, {
+            userUUID,
+
+            // 5 minutos
+            expiresIn: Date.now() + 1000 * 60 * 5,
+          });
+
           onSuccess();
           return;
         }
