@@ -20,7 +20,7 @@ export function playAd({ onFinished, userId }: PlayAdParams) {
       accountId: 7968,
       siteId: 8503,
       adStatusCb: (status: AdStatus) => {
-        if (status === 'ad-watched') {
+        if (status === 'ad-watched' || status === 'ad-rewarded') {
           return onFinished('ok');
         }
 
