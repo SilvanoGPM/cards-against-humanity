@@ -1,6 +1,6 @@
 import { Container, Flex } from '@chakra-ui/react';
 
-import { AddCardLink } from '@/components/add-card-link';
+import { AddCardLinkModal } from '@/components/add-card-link';
 import { Tags } from './tags';
 
 import { Actions } from './actions';
@@ -34,7 +34,7 @@ export function Home(): JSX.Element {
       </Flex>
 
       <Tags />
-      <AddCardLink />
+      <AddCardLinkModal />
     </Container>
   );
 }

@@ -1,4 +1,3 @@
-import { useAuth } from '@/contexts/AuthContext';
 import { useStorage } from '@/hooks/useStorage';
 import {
   Button,
@@ -19,8 +18,6 @@ import {
 import { CiWarning } from 'react-icons/ci';
 
 export function WarnModal() {
-  const { authenticated } = useAuth();
-
   const [isOpen, setIsOpen, isLoading] = useStorage(
     '@CARDS_AGAINST_HUMANITY/WARN_MODAL',
     true
@@ -28,10 +25,6 @@ export function WarnModal() {
 
   function handleCloseModal() {
     setIsOpen(false);
-  }
-
-  if (!authenticated) {
-    return null;
   }
 
   return (

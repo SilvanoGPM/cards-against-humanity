@@ -1,17 +1,16 @@
 import {
   Link,
   Modal,
-  ModalBody,
   ModalContent,
   ModalOverlay,
   keyframes,
 } from '@chakra-ui/react';
 
-import { useState } from 'react';
 import { checkMorningTime } from '@/utils/check-morning-time';
+import { useState } from 'react';
 import { Card } from '../Card';
 
-export function AddCardLink() {
+export function AddCardLinkModal() {
   const [isOpen, setIsOpen] = useState(checkMorningTime());
 
   const upAnimation = keyframes`
@@ -33,32 +32,30 @@ export function AddCardLink() {
     <Modal isOpen={isOpen} onClose={() => setIsOpen(false)} motionPreset="none">
       <ModalOverlay />
       <ModalContent mx="4" bg="transparent" overflow="hidden">
-        <ModalBody overflow="hidden">
-          <Link
-            href="/cards?add"
-            pos="fixed"
-            top="50%"
-            left="50%"
-            transform="auto"
-            translateX="-50%"
-            translateY="-50%"
-            zIndex="20"
-            animation={`${upAnimation} 2s ease-in-out`}
-            outline="none"
-            boxShadow="none"
-            _focus={{
-              boxShadow: 'none',
-              outline: 'none',
-            }}
-          >
-            <Card
-              message="Deseja adicionar uma nova carta? clique aqui."
-              type="BLACK"
-              animationType="auto"
-              animationDelay="2s"
-            />
-          </Link>
-        </ModalBody>
+        <Link
+          href="/cards?add"
+          pos="fixed"
+          top="50%"
+          left="50%"
+          transform="auto"
+          translateX="-50%"
+          translateY="-50%"
+          zIndex="20"
+          animation={`${upAnimation} 2s ease-in-out`}
+          outline="none"
+          boxShadow="none"
+          _focus={{
+            boxShadow: 'none',
+            outline: 'none',
+          }}
+        >
+          <Card
+            message="Deseja adicionar uma nova carta? clique aqui."
+            type="BLACK"
+            animationType="auto"
+            animationDelay="2s"
+          />
+        </Link>
       </ModalContent>
     </Modal>
   );

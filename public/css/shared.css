@@ -1,0 +1,133 @@
+html {
+  font-family: 'Roboto', sans-serif;
+}
+
+header {
+  background-color: black;
+  color: #fff;
+  padding: 1.25rem; /* 20px */
+  text-align: center;
+}
+
+main {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  padding: 1.5rem; /* 24px */
+  max-width: 50rem; /* 800px */
+  margin: 2rem auto; /* 32px */
+  background: #fff;
+  box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.1); /* 2px 8px */
+  border-radius: 0.5rem; /* 8px */
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+h1, h2, h3 {
+  font-weight: 600;
+}
+
+h1 {
+  font-size: 2.5rem; /* 40px */
+}
+
+h2 {
+  font-size: 2rem; /* 32px */
+}
+
+h3 {
+  font-size: 1.5rem; /* 24px */
+}
+
+p {
+  font-size: 1rem; /* 16px */
+}
+
+small {
+  font-size: 0.875rem; /* 14px */
+  color: #666;
+}
+
+a {
+  color: #007BFF;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+ul, ol {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding-left: 1.5rem;
+}
+
+ul {
+  list-style: outside;
+}
+
+ol {
+  list-style: decimal;
+}
+
+.button {
+  display: block;
+  text-align: center;
+  text-transform: uppercase;
+  text-decoration: none;
+  padding: 0.5rem 2rem;
+  border-radius: 0.5rem;
+  background-color: black;
+  color: white;
+  filter: brightness(1);
+  box-shadow: 0 0.2em #ddd !important;
+  position: relative;
+  overflow: hidden;
+}
+
+.button::after {
+  content: '';
+  background-color: white;
+  height: 155px;
+  left: -75px;
+  opacity: 0.2;
+  position: absolute;
+  top: -50px;
+  transform: rotate(35deg);
+  width: 50px;
+  transition: all 2s cubic-bezier(0.19, 1, 0.22, 1);
+  width: 50px;
+  z-index: 10;
+}
+
+.button:hover::after {
+  left: 120%;
+  transition: all 2s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+.button.outlined {
+  background-color: transparent;
+  color: black;
+  border: 2px solid black;
+}
+
+.button.outlined::after {
+  background-color: black;
+  opacity: 0.1;
+}
+
+.play-now {
+  width: 100%;
+  margin-top: 1rem;
+}
+
+.play-now .button {
+  width: 100%;
+  padding: 1rem 2rem;
+}

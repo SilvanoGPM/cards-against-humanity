@@ -7,7 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <link rel="icon" type="image/svg+xml" href="/src/favicon.png" />
-  <title>Cartas Contra Humanidade em português</title>
+  <title>Doações - Cartas Contra Humanidade em português</title>
 
   <meta name="description" content="Jogo cartas contra a humanidade online em português (Não oficial).">
   <meta name="keywords" content="Cards, Against, Humanity, Português, Cartas, Contra, Humanidade">
@@ -28,12 +28,63 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,400;0,700;1,400&display=swap"
     rel="stylesheet" />
+
+  <link rel="stylesheet" href="./css/reset.css" />
+  <link rel="stylesheet" href="./css/shared.css" />
+
+  <style>
+    .pix {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    .pix p {
+      font-weight: bold;
+    }
+
+    .or {
+      font-size: 1.5rem;
+      font-style: italic;
+      margin-bottom: 0.5rem;
+      opacity: 0.5;
+    }
+
+    .qrcode {
+      width: 200px;
+      height: 200px;
+    }
+  </style>
 </head>
 
 <body>
-  <div id="root"></div>
+  <header>
+    <h1>Doações</h1>
+  </header>
 
-  <script type="module" src="/src/main.tsx"></script>
+  <main>
+    <div class="group">
+      <h2>Como ajudar o jogo?</h2>
+      <p>
+        Atualmente utilizamos recursos gratuitos para manter o servidor do jogo online. Se você gostou do jogo e deseja
+        nos ajudar a manter o servidor online, você pode fazer uma doação para nos ajudar a cobrir os custos de
+        hospedagem.
+      </p>
+
+      <div class="pix">
+        <img src="./img/qrcode.png" class="qrcode" />
+        <span class="or">Ou então</span>
+        <p>Chave pix: 58fb39d7-aef5-4a02-b387-f746097ada43</p>
+      </div>
+    </div>
+
+    <div class="play-now">
+      <a class="button" href="/">
+        Jogar Agora
+      </a>
+    </div>
+  </main>
 </body>
 
 </html>

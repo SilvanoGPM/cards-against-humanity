@@ -2,8 +2,8 @@ import { ChakraProvider } from '@chakra-ui/react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 
-import { theme } from './styles/theme';
 import { App } from './App';
+import { theme } from './styles/theme';
 
 const root = createRoot(document.getElementById('root') as HTMLElement);
 

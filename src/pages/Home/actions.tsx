@@ -1,13 +1,24 @@
 import { LoginButton } from '@/components/login-button';
 import { useAuth } from '@/contexts/AuthContext';
-import { useAds } from '@/hooks/use-ads';
 import { useBoolean } from '@/hooks/useBoolean';
 import { ServerMaintanceError } from '@/lib/ServerMaintanceError';
 import { newMatch } from '@/services/matches';
 import { getErrorMessage } from '@/utils/get-error-message';
-import { Button, Icon, VStack, useToast } from '@chakra-ui/react';
+import {
+  Button,
+  Icon,
+  Popover,
+  PopoverArrow,
+  PopoverBody,
+  PopoverCloseButton,
+  PopoverContent,
+  PopoverHeader,
+  PopoverTrigger,
+  VStack,
+  useToast,
+} from '@chakra-ui/react';
 import { useCallback } from 'react';
-import { FaYoutube } from 'react-icons/fa';
+import { FaEllipsisH } from 'react-icons/fa';
 import { MdExitToApp } from 'react-icons/md';
 import { RiPhoneFindFill } from 'react-icons/ri';
 import { RxCardStackPlus } from 'react-icons/rx';
@@ -22,13 +33,13 @@ export function Actions() {
 
   const [isCreating, startCreate, stopCreate] = useBoolean(false);
 
-  function handleShowLoginInfo() {
+  const handleShowLoginInfo = useCallback(() => {
     toast({
       title: 'Faça login',
       description: 'Para jogar é necessário realizar login',
       status: 'info',
     });
-  }
+  }, [toast]);
 
   function handleNavigateWithoutLogin(
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>
@@ -78,11 +89,17 @@ export function Actions() {
     } finally {
       stopCreate();
     }
-  }, [authenticated, isCreating, navigate, startCreate, stopCreate, toast, user]);
+  }, [
+    authenticated,
+    navigate,
+    startCreate,
+    stopCreate,
+    toast,
+    user,
+    handleShowLoginInfo,
+  ]);
 
-  const { playAd, isPlayingAd } = useAds(handleNewMatch);
-
-  const isLoading = isCreating || isPlayingAd;
+  const isLoading = isCreating;
 
   return (
     <VStack flex="1">
@@ -132,16 +149,74 @@ export function Actions() {
         </Button>
       )}
 
-      {isAdmin && (
-        <Button
-          onClick={playAd}
-          leftIcon={<Icon as={FaYoutube} />}
-          w="full"
-          variant="defaultOutlined"
-        >
-          Mostrar Ad
-        </Button>
-      )}
+      <Popover>
+        <PopoverTrigger>
+          <Button
+            isLoading={isLoading}
+            leftIcon={<Icon as={FaEllipsisH} />}
+            w="full"
+            variant="defaultOutlined"
+          >
+            Mais opções
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent>
+          <PopoverArrow />
+          <PopoverCloseButton />
+          <PopoverHeader>Mais informações sobre o jogo</PopoverHeader>
+          <PopoverBody display="flex" flexDirection="column" gap="0.5rem">
+            <Button
+              as="a"
+              href="/sobre.html"
+              isLoading={isLoading}
+              w="full"
+              variant="defaultOutlined"
+            >
+              Sobre o jogo
+            </Button>
+
+            <Button
+              as="a"
+              href="/tutorial.html"
+              isLoading={isLoading}
+              w="full"
+              variant="defaultOutlined"
+            >
+              Tutorial
+            </Button>
+
+            <Button
+              as="a"
+              href="/faq.html"
+              isLoading={isLoading}
+              w="full"
+              variant="defaultOutlined"
+            >
+              Perguntas frequentes
+            </Button>
+
+            <Button
+              as="a"
+              href="/atualizacoes.html"
+              isLoading={isLoading}
+              w="full"
+              variant="defaultOutlined"
+            >
+              Atualizações
+            </Button>
+
+            <Button
+              as="a"
+              href="/doacoes.html"
+              isLoading={isLoading}
+              w="full"
+              variant="defaultOutlined"
+            >
+              Doações
+            </Button>
+          </PopoverBody>
+        </PopoverContent>
+      </Popover>
 
       {authenticated ? (
         <Button
