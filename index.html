@@ -40,7 +40,7 @@
 <body>
   <div id="root"></div>
 
-  <script async
+  <script async data-adbreak-test="on" data-ad-client="ca-pub-8489649559992587" data-ad-frequency-hint="30s"
     src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8489649559992587"
     crossorigin="anonymous">
     </script>
@@ -51,7 +51,8 @@
 
     setTimeout(() => {
       adConfig({
-        sound: 'on'
+        sound: 'on',
+        onReady: () => console.log('onReady')
       })
     }, 1000);
   </script>

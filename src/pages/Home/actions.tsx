@@ -143,7 +143,7 @@ export function Actions() {
               adBreak({
                 type: 'reward', // rewarded ad
                 name: 'reward-continue',
-                beforeReward: (showAdFn: () => Promise<void>) => {
+                beforeReward: (showAdFn) => {
                   console.log('beforeReward');
                   showAdFn();
                 },
