@@ -6,7 +6,10 @@ import { Button, ButtonProps, Icon, useToast } from '@chakra-ui/react';
 import { useState } from 'react';
 import { FcGoogle } from 'react-icons/fc';
 
-export function LoginButton(props: ButtonProps) {
+export function LoginButton({
+  onLoginError,
+  ...props
+}: ButtonProps & { onLoginError?: () => void }) {
   const toast = useToast();
   const { handleLogin } = useAuth();
 
@@ -29,6 +32,8 @@ export function LoginButton(props: ButtonProps) {
         title: 'Aconteceu um erro',
         status: 'error',
       });
+
+      onLoginError?.();
     } finally {
       setIsLoading(false);
     }

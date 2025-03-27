@@ -29,7 +29,7 @@ export function Header(): JSX.Element {
 
   const userName = getUserName(user);
 
-  const [showWarnModal, setShowWarnModal] = useState(true);
+  const [showWarnModal, setShowWarnModal] = useState(false);
 
   return (
     <>
@@ -109,7 +109,7 @@ export function Header(): JSX.Element {
           <LoginButton
             size="sm"
             fontSize={{ base: 'xx-small', sm: 'small' }}
-            onError={() => setShowWarnModal(true)}
+            onLoginError={() => setShowWarnModal(true)}
           />
         )}
       </Flex>
