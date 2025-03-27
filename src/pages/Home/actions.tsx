@@ -137,16 +137,50 @@ export function Actions() {
       </Button>
 
       {isAdmin && (
-        <Button
-          as={Link}
-          to="/new-card"
-          isLoading={isLoading}
-          leftIcon={<Icon as={RxCardStackPlus} transform="auto" rotate="90" />}
-          w="full"
-          variant="defaultOutlined"
-        >
-          Nova carta
-        </Button>
+        <>
+          <Button
+            onClick={() => {
+              adBreak({
+                type: 'reward', // rewarded ad
+                name: 'reward-continue',
+                beforeReward: (showAdFn: () => Promise<void>) => {
+                  console.log('beforeReward');
+                  showAdFn();
+                },
+                beforeAd: () => {
+                  console.log('beforeAd');
+                },
+                adDismissed: () => {
+                  console.log('adDismissed');
+                },
+                adViewed: () => {
+                  console.log('adViewed');
+                },
+                afterAd: () => {
+                  console.log('afterAd');
+                },
+              });
+            }}
+            isLoading={isLoading}
+            w="full"
+            variant="defaultOutlined"
+          >
+            Testar AD
+          </Button>
+
+          <Button
+            as={Link}
+            to="/new-card"
+            isLoading={isLoading}
+            leftIcon={
+              <Icon as={RxCardStackPlus} transform="auto" rotate="90" />
+            }
+            w="full"
+            variant="defaultOutlined"
+          >
+            Nova carta
+          </Button>
+        </>
       )}
 
       <Popover>

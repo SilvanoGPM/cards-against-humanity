@@ -28,10 +28,33 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,400;0,700;1,400&display=swap"
     rel="stylesheet" />
+
+  <!-- ## The Ad Placement tag ##
+  # Configure your monetisation settings here and place the standard
+  # boilerplate code for initialising the API functions. This code may change
+  # depending on where the game is being distributed (eg. a website, a super
+  # app, different publishers). -->
+
 </head>
 
 <body>
   <div id="root"></div>
+
+  <script async
+    src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8489649559992587"
+    crossorigin="anonymous">
+    </script>
+
+  <script>
+    window.adsbygoogle = window.adsbygoogle || [];
+    var adBreak = adConfig = function (o) { adsbygoogle.push(o); }
+
+    setTimeout(() => {
+      adConfig({
+        sound: 'on'
+      })
+    }, 1000);
+  </script>
 
   <script type="module" src="/src/main.tsx"></script>
 </body>
