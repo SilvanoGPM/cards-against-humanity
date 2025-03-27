@@ -3,7 +3,7 @@ import { Route, Routes } from 'react-router-dom';
 import { PrivateRoute } from '@/components/PrivateRoute';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { Cards } from '@/pages/Cards';
-import { Home } from '@/pages/home';
+import { Home } from '@/pages/Home';
 import { Match } from '@/pages/Match';
 import { Matches } from '@/pages/Matches';
 import { NewCard } from '@/pages/NewCard';
