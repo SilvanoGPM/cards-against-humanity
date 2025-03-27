@@ -20,6 +20,8 @@ import {
 } from '@chakra-ui/react';
 
 import { LoginButton } from '@/components/login-button';
+import { WarnModal } from '@/components/warn-modal';
+import { useState } from 'react';
 import avatar from '../../assets/avatar.png';
 
 export function Header(): JSX.Element {
@@ -27,80 +29,90 @@ export function Header(): JSX.Element {
 
   const userName = getUserName(user);
 
+  const [showWarnModal, setShowWarnModal] = useState(true);
+
   return (
-    <Flex align="center" justify="space-between" h="80px">
-      <Box w={{ base: '120px', sm: '200px' }}>
-        <WhiteLogo />
-      </Box>
+    <>
+      {showWarnModal && <WarnModal />}
 
-      {authenticated ? (
-        <Flex align="center" gap="2">
-          <Flex
-            gap="0"
-            direction="column"
-            textAlign="end"
-            display={{ base: 'none', md: 'flex' }}
-          >
-            <Text fontWeight="bold">{userName}</Text>
-            <Text fontSize="xx-small" color="gray.500">
-              {user.email}
-            </Text>
-          </Flex>
+      <Flex align="center" justify="space-between" h="80px">
+        <Box w={{ base: '120px', sm: '200px' }}>
+          <WhiteLogo />
+        </Box>
 
-          <Popover lazyBehavior="keepMounted" isLazy placement="bottom-start">
-            <>
-              <PopoverTrigger>
-                <Avatar
-                  cursor="pointer"
-                  bg="black"
-                  color="white"
-                  src={user.photoURL || avatar}
-                  name={userName}
-                />
-              </PopoverTrigger>
+        {authenticated ? (
+          <Flex align="center" gap="2">
+            <Flex
+              gap="0"
+              direction="column"
+              textAlign="end"
+              display={{ base: 'none', md: 'flex' }}
+            >
+              <Text fontWeight="bold">{userName}</Text>
+              <Text fontSize="xx-small" color="gray.500">
+                {user.email}
+              </Text>
+            </Flex>
 
-              <PopoverContent>
-                <PopoverHeader>
-                  <Flex gap="2">
-                    <Avatar
-                      bg="black"
-                      color="white"
-                      size="sm"
-                      name={userName}
-                      src={user.photoURL || avatar}
-                    />
+            <Popover lazyBehavior="keepMounted" isLazy placement="bottom-start">
+              <>
+                <PopoverTrigger>
+                  <Avatar
+                    cursor="pointer"
+                    bg="black"
+                    color="white"
+                    src={user.photoURL || avatar}
+                    name={userName}
+                  />
+                </PopoverTrigger>
 
-                    <Flex direction="column" color="secondary">
-                      <Text fontWeight="bold">{userName}</Text>
+                <PopoverContent>
+                  <PopoverHeader>
+                    <Flex gap="2">
+                      <Avatar
+                        bg="black"
+                        color="white"
+                        size="sm"
+                        name={userName}
+                        src={user.photoURL || avatar}
+                      />
 
-                      <Text fontSize="sm" mt="-1">
-                        {user.email}
-                      </Text>
+                      <Flex direction="column" color="secondary">
+                        <Text fontWeight="bold">{userName}</Text>
+
+                        <Text fontSize="sm" mt="-1">
+                          {user.email}
+                        </Text>
+                      </Flex>
                     </Flex>
-                  </Flex>
-                </PopoverHeader>
+                  </PopoverHeader>
 
-                <PopoverBody>
-                  <Flex direction="column" align="start" gap="2" w="full">
-                    <Button
-                      w="full"
-                      size="sm"
-                      leftIcon={<Icon as={MdExitToApp} />}
-                      variant="solid"
-                      colorScheme="red"
-                      onClick={handleLogout}
-                    >
-                      Sair
-                    </Button>
-                  </Flex>
-                </PopoverBody>
-              </PopoverContent>
-            </>
-          </Popover>
-        </Flex>
-      ) : (
-        <LoginButton size="sm" fontSize={{ base: 'xx-small', sm: 'small' }} />
-      )}
-    </Flex>
+                  <PopoverBody>
+                    <Flex direction="column" align="start" gap="2" w="full">
+                      <Button
+                        w="full"
+                        size="sm"
+                        leftIcon={<Icon as={MdExitToApp} />}
+                        variant="solid"
+                        colorScheme="red"
+                        onClick={handleLogout}
+                      >
+                        Sair
+                      </Button>
+                    </Flex>
+                  </PopoverBody>
+                </PopoverContent>
+              </>
+            </Popover>
+          </Flex>
+        ) : (
+          <LoginButton
+            size="sm"
+            fontSize={{ base: 'xx-small', sm: 'small' }}
+            onError={() => setShowWarnModal(true)}
+          />
+        )}
+      </Flex>
+    </>
   );
 }

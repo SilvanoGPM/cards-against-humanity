@@ -3,16 +3,13 @@ import { Route, Routes } from 'react-router-dom';
 import { PrivateRoute } from '@/components/PrivateRoute';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { Cards } from '@/pages/Cards';
-import { Home } from '@/pages/Home';
+import { Home } from '@/pages/home';
 import { Match } from '@/pages/Match';
 import { Matches } from '@/pages/Matches';
 import { NewCard } from '@/pages/NewCard';
 
 import { Maintance } from './components/Maintenance';
 import { IS_MAINTANCE } from './constants/globals';
-
-import { CookiesModal } from './components/cookies-modal';
-import { WarnModal } from './components/warn-modal';
 
 import '@fontsource/roboto/400.css';
 import '@fontsource/roboto/700.css';
@@ -24,9 +21,6 @@ export function App() {
 
   return (
     <AuthProvider>
-      <CookiesModal />
-      <WarnModal />
-
       <Routes>
         <Route path="/" element={<Home />} />
 
