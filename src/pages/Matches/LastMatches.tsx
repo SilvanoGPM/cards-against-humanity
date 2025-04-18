@@ -186,9 +186,9 @@ export function LastMatches({
             minChildWidth={{ base: '100%', md: '300px', lg: '250px' }}
             alignItems="center"
           >
-            {matches.map(({ id, owner, rounds }) => (
+            {matches.map(({ id, owner, rounds, createdAt }) => (
               <Card
-                h="190px"
+                h={isAdmin ? '200px' : '190px'}
                 key={id}
                 bg="white"
                 shadow="2xl"
@@ -219,6 +219,12 @@ export function LastMatches({
                     <Text color="gray.600" fontSize="small">
                       Rounds: {rounds}
                     </Text>
+
+                    {isAdmin && createdAt && (
+                      <Text color="gray.600" fontSize="small">
+                        Criado em: {createdAt.toDate().toLocaleString('pt-BR')}
+                      </Text>
+                    )}
                   </Box>
                 </Flex>
 

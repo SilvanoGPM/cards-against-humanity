@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import { convertMatch, getLastMatches } from '@/services/matches';
+import { convertMatch, getPublicLastMatches } from '@/services/matches';
 
 import { useBoolean } from '@/hooks/useBoolean';
 import { useToast } from '@chakra-ui/react';
@@ -20,7 +20,7 @@ export function useLastMatches(size = 10): UseLastMatchesReturn {
   useEffect(() => {
     async function loadMatches(): Promise<void> {
       try {
-        const matches = await getLastMatches(size);
+        const matches = await getPublicLastMatches(size);
 
         const convertedMatches = await Promise.all(matches.map(convertMatch));
 

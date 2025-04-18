@@ -15,7 +15,7 @@ import { useStorage } from '@/hooks/useStorage';
 import { newUser } from '@/services/users';
 
 export interface AuthContextProps {
-  user: User;
+  user: User & { wins?: number };
   authenticated: boolean;
   isAdmin: boolean;
   isLoading: boolean;

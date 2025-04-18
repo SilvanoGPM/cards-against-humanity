@@ -7,11 +7,31 @@ import {
 } from '@chakra-ui/react';
 
 import { checkMorningTime } from '@/utils/check-morning-time';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useStorage } from '@/hooks/useStorage';
 import { Card } from '../Card';
 
 export function AddCardLinkModal() {
-  const [isOpen, setIsOpen] = useState(checkMorningTime());
+  const [isOpen, setIsOpen] = useState(false);
+
+  const [closedAt, setClosedAt, loading] = useStorage<string | null>(
+    'add-card-link-modal-closed-at',
+    null
+  );
+
+  useEffect(() => {
+    const now = new Date();
+    const closedAtDate = closedAt ? new Date(closedAt) : null;
+
+    if (
+      closedAtDate &&
+      now.getTime() - closedAtDate.getTime() < 7 * 24 * 60 * 30 * 1000 // 7 dias
+    ) {
+      setIsOpen(false);
+    } else if (!loading) {
+      setIsOpen(checkMorningTime());
+    }
+  }, [closedAt, setIsOpen, loading]);
 
   const upAnimation = keyframes`
     0% {
@@ -29,7 +49,14 @@ export function AddCardLinkModal() {
   `;
 
   return (
-    <Modal isOpen={isOpen} onClose={() => setIsOpen(false)} motionPreset="none">
+    <Modal
+      isOpen={isOpen}
+      onClose={() => {
+        setIsOpen(false);
+        setClosedAt(new Date().toISOString());
+      }}
+      motionPreset="none"
+    >
       <ModalOverlay />
       <ModalContent mx="4" bg="transparent" overflow="hidden">
         <Link

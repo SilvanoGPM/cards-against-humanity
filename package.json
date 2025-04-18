@@ -1,7 +1,7 @@
 {
   "name": "cards-against-humanity",
   "private": true,
-  "version": "1.2.0",
+  "version": "2.0.0",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
@@ -18,6 +18,7 @@
     "@emotion/react": "^11.11.3",
     "@emotion/styled": "^11.11.0",
     "@fontsource/roboto": "^5.0.8",
+    "canvas-confetti": "^1.9.3",
     "dart-sass": "^1.25.0",
     "firebase": "^9.6.11",
     "framer-motion": "^10.17.9",
@@ -31,6 +32,7 @@
     "uuid": "^10.0.0"
   },
   "devDependencies": {
+    "@types/canvas-confetti": "^1.9.0",
     "@types/firebase": "^3.2.1",
     "@types/react": "^18.0.0",
     "@types/react-dom": "^18.0.0",

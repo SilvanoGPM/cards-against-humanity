@@ -7,8 +7,14 @@ export const fakeMatch = {
     photoURL: 'test',
     uid: 'test',
   },
+  pointsToWin: 20,
+  winner: null,
+  points: [],
+  createdAt: new Date(),
+  shouldShowCardOwner: false,
   rounds: 3,
   status: 'PLAYING',
+  type: 'PRIVATE',
   users: [],
   actualRound: {
     decks: [],
@@ -17,6 +23,7 @@ export const fakeMatch = {
       message: 'Teste',
       type: 'BLACK',
     },
+    usersWhoVoted: [],
     usersWhoPlayed: [
       {
         user: {

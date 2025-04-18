@@ -62,7 +62,8 @@ export function FinishMatchButton({
     <Popover>
       <PopoverTrigger>
         <Button
-          variant="defaultOutlined"
+          variant="solid"
+          colorScheme="red"
           leftIcon={<Icon as={FaTimes} />}
           isLoading={finishingMatch}
           {...props}

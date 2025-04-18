@@ -23,15 +23,16 @@ import {
 import { forwardRef, useImperativeHandle, useRef } from 'react';
 
 import { WhiteLogo } from '@/components/Card/Logos';
+import { FinishMatchButton } from '@/components/finish-match-button';
 import { PixQRCode } from '@/components/pix-qrcode';
 import { useAuth } from '@/contexts/AuthContext';
 import { useBoolean } from '@/hooks/useBoolean';
 import { addMessageToMatch } from '@/services/matches';
+import { getErrorMessage } from '@/utils/get-error-message';
 import { getUserName } from '@/utils/get-user-name';
 import { FaCrown } from 'react-icons/fa';
 import { FiSend } from 'react-icons/fi';
-import { getErrorMessage } from '@/utils/get-error-message';
-import { MatchIdInput } from './match-id-input';
+import { MatchLinkInput } from './match-link-input';
 
 interface SettingsDrawerProps {
   match: MatchConvertedType | null;
@@ -117,10 +118,10 @@ function SettingsDrawerBase(
           <Flex w="full" flexDir="column" gap="8">
             <Flex flexDir="column" gap="4">
               <Heading as="h3" fontSize="2xl">
-                Código da partida:
+                Link da partida:
               </Heading>
 
-              <MatchIdInput id={match?.id} />
+              <MatchLinkInput />
             </Flex>
 
             <Flex flexDir="column" gap="4">
@@ -202,9 +203,15 @@ function SettingsDrawerBase(
             </Flex>
 
             <Flex flexDir="column" gap="4">
-              <Heading as="h3" fontSize="2xl">
-                Jogadores:
-              </Heading>
+              <Flex flexDir="column" gap="1">
+                <Heading as="h3" fontSize="2xl">
+                  Jogadores:
+                </Heading>
+
+                <Text fontSize="sm" color="gray.500">
+                  Ganha quem fizer {match?.pointsToWin || 0} pontos
+                </Text>
+              </Flex>
 
               <SimpleGrid
                 pos="relative"
@@ -265,8 +272,11 @@ function SettingsDrawerBase(
                         <Flex direction="column" color="secondary">
                           <Text fontWeight="bold">{userName}</Text>
 
-                          <Text fontSize="sm" mt="-1">
-                            {user.email}
+                          <Text fontSize="sm" mt="-1" color="gray.500">
+                            Pontos:{' '}
+                            {match?.points.find(
+                              (point) => point.userId === user.uid
+                            )?.value || 0}
                           </Text>
                         </Flex>
                       </Center>
@@ -274,6 +284,8 @@ function SettingsDrawerBase(
                   })}
               </SimpleGrid>
             </Flex>
+
+            <FinishMatchButton matchId={match?.id || ''} />
 
             <Flex flexDir="column" textAlign="center">
               <Heading as="h3" fontSize="2xl">

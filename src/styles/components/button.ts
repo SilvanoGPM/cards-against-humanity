@@ -38,6 +38,14 @@ export const Button: ComponentStyleConfig = {
           left: '120%',
           transition: 'all 2s cubic-bezier(0.19, 1, 0.22, 1)',
         },
+
+        _disabled: {
+          bg: 'black',
+          color: 'white',
+          filter: 'auto',
+          brightness: '1',
+          boxShadow: '0 .2em #ddd !important',
+        },
       },
 
       _active: {

@@ -1,4 +1,6 @@
 export function checkMorningTime() {
+  return true;
+
   const now = new Date();
   const morningStart = new Date();
   const morningEnd = new Date();

@@ -11,9 +11,9 @@ import {
 
 import { useAuth } from '@/contexts/AuthContext';
 import { useBoolean } from '@/hooks/useBoolean';
-import { useToast } from '@chakra-ui/react';
-import { getUserName } from '@/utils/get-user-name';
 import { getErrorMessage } from '@/utils/get-error-message';
+import { getUserName } from '@/utils/get-user-name';
+import { useToast } from '@chakra-ui/react';
 
 export function useSetupMatch(id = '') {
   const navigate = useNavigate();
@@ -38,7 +38,11 @@ export function useSetupMatch(id = '') {
 
         const matchFinished = match?.status === 'FINISHED';
 
-        if (!match || Object.keys(match).length === 0 || matchFinished) {
+        if (
+          !match ||
+          Object.keys(match).length === 0 ||
+          (matchFinished && !match.winner)
+        ) {
           navigate('/');
 
           const message = !match
@@ -99,7 +103,7 @@ export function useSetupMatch(id = '') {
           id: newMatch.id,
         });
 
-        if (convertedMatch.status === 'FINISHED') {
+        if (convertedMatch.status === 'FINISHED' && !convertedMatch.winner) {
           navigate('/');
 
           toast({
