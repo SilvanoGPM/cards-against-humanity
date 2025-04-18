@@ -45,12 +45,15 @@ export function getMatches(): Promise<MatchType[]> {
   return getAll<MatchType>(matchesCollection);
 }
 
-export async function getPublicLastMatches(size = 10): Promise<MatchType[]> {
+export async function getLastMatches(
+  size = 10,
+  onlyPublics = true
+): Promise<MatchType[]> {
   const data = await getDocs(
     query(
       matchesCollection,
       where('status', '==', 'PLAYING'),
-      where('type', '==', 'PUBLIC'),
+      ...(onlyPublics ? [where('type', '==', 'PUBLIC')] : []),
       limit(size)
     )
   );

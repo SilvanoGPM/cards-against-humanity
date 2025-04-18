@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
 
-import { convertMatch, getPublicLastMatches } from '@/services/matches';
+import { convertMatch, getLastMatches } from '@/services/matches';
 
 import { useBoolean } from '@/hooks/useBoolean';
 import { useToast } from '@chakra-ui/react';
 import { getErrorMessage } from '@/utils/get-error-message';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface UseLastMatchesReturn {
   matches: MatchConvertedType[];
@@ -13,6 +14,7 @@ interface UseLastMatchesReturn {
 }
 
 export function useLastMatches(size = 10): UseLastMatchesReturn {
+  const { isAdmin } = useAuth();
   const [loading, , stopLoading] = useBoolean(true);
   const [matches, setMatches] = useState<MatchConvertedType[]>([]);
   const toast = useToast();
@@ -20,7 +22,7 @@ export function useLastMatches(size = 10): UseLastMatchesReturn {
   useEffect(() => {
     async function loadMatches(): Promise<void> {
       try {
-        const matches = await getPublicLastMatches(size);
+        const matches = await getLastMatches(size, !isAdmin);
 
         const convertedMatches = await Promise.all(matches.map(convertMatch));
 
@@ -48,7 +50,7 @@ export function useLastMatches(size = 10): UseLastMatchesReturn {
     }
 
     return () => stopLoading();
-  }, [size, loading, stopLoading, toast]);
+  }, [size, loading, stopLoading, toast, isAdmin]);
 
   // TODO: Ativiar o stream novamente
 
