@@ -252,7 +252,7 @@ export async function createNewActiveRoundToMatch(id: string): Promise<void> {
 
   const questions = cards.filter(({ type }) => type === 'BLACK');
 
-  function getNextQuestion() {
+  function getNextQuestion(): CardType {
     const percentQuestionsPicked = pickedQuestionsIds.size / questions.length;
     const isALotOfQuestionsPicked = percentQuestionsPicked >= 0.8;
 

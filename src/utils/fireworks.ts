@@ -10,7 +10,7 @@ export function fireworks() {
   const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
 
   // eslint-disable-next-line consistent-return
-  const interval = setInterval(() => {
+  const interval: NodeJS.Timeout = setInterval(() => {
     const timeLeft = animationEnd - Date.now();
 
     if (timeLeft <= 0) {
