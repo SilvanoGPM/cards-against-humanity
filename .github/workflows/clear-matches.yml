@@ -1,6 +1,7 @@
 name: Finalizar partidas todos os dias
 
 on:
+  workflow_dispatch:
   schedule:
     - cron: '0 11 * * *' # 11 da manhã UTC (Github) / 9 da manhã Brasil (Eu) / 4 horas Pacific Time (Firebase)
 
@@ -19,6 +20,9 @@ jobs:
 
       - name: Instalar dependências
         run: npm install
+
+      - name: Criar Service Account Key
+        run: echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT_KEY }}' > ./scripts/serviceAccountKey.json
 
       - name: Executar Script
         run: node ./scripts/finish-matches.js
