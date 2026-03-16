@@ -22,7 +22,9 @@ jobs:
         run: npm install
 
       - name: Criar Service Account Key
-        run: echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT_KEY }}' > ./scripts/serviceAccountKey.json
+        run: echo $FIREBASE_SERVICE_ACCOUNT_KEY > ./scripts/serviceAccountKey.json
+        env:
+          FIREBASE_SERVICE_ACCOUNT_KEY: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_KEY }}
 
       - name: Executar Script
         run: node ./scripts/finish-matches.js
