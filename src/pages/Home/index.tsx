@@ -7,12 +7,19 @@ import { WarnModal } from '@/components/warn-modal';
 import { useAuth } from '@/contexts/AuthContext';
 import { Actions } from './actions';
 import { Contribution } from './contribution';
+import { HackedAlert } from './hacked-alert';
 import { Header } from './header';
 import { JoinMatch } from './join-match';
 import { Tags } from './tags';
 
+const hacked = true;
+
 export function Home(): JSX.Element {
   const { authenticated } = useAuth();
+
+  if (hacked) {
+    return <HackedAlert />;
+  }
 
   return (
     <>
