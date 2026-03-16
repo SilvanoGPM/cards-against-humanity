@@ -22,7 +22,7 @@ jobs:
         run: npm install
 
       - name: Criar Service Account Key
-        run: echo $FIREBASE_SERVICE_ACCOUNT_KEY > ./scripts/serviceAccountKey.json
+        run: printenv FIREBASE_SERVICE_ACCOUNT_KEY > ./scripts/serviceAccountKey.json
         env:
           FIREBASE_SERVICE_ACCOUNT_KEY: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_KEY }}
 
