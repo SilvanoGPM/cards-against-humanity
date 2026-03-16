@@ -26,8 +26,5 @@ jobs:
         env:
           FIREBASE_SERVICE_ACCOUNT_KEY: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_KEY }}
 
-      - name: Verificar Service Account Key
-        run: cat ./scripts/serviceAccountKey.json
-
       - name: Executar Script
         run: node ./scripts/finish-matches.js
