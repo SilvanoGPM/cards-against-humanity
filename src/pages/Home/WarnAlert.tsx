@@ -6,7 +6,7 @@ import { useEffect } from 'react';
 export function WarnAlert(): JSX.Element {
   const [isOpen, setIsOpen] = useStorage(
     '@CARDS_AGAINST_HUMANITY/ALERT_PEN',
-    true
+    false
   );
 
   const [isOpenState, , close] = useBoolean(isOpen);

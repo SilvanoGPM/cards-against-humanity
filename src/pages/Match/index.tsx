@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 
+import { AdBanner } from '@/components/AdBanner';
 import { Card } from '@/components/Card';
 import { GoBack } from '@/components/GoBack';
 import { SomeLoading } from '@/components/SomeLoading';
@@ -312,6 +313,8 @@ export function Match() {
               </Button>
             </Flex>
           )}
+
+          <AdBanner zoneId="ZONE_ID" />
 
           <AlertDialog
             isOpen={isAlertOpen}
