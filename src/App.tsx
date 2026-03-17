@@ -42,14 +42,7 @@ export function App() {
           }
         />
 
-        <Route
-          path="/cards"
-          element={
-            <PrivateRoute>
-              <Cards />
-            </PrivateRoute>
-          }
-        />
+        <Route path="/cards" element={<Cards />} />
 
         <Route
           path="/new-card"

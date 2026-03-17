@@ -1,11 +1,8 @@
 import { Container, Flex } from '@chakra-ui/react';
 
 import { AdBanner } from '@/components/AdBanner';
-import { AddCardLinkModal } from '@/components/add-card-link';
 
 import { CookiesModal } from '@/components/cookies-modal';
-import { WarnModal } from '@/components/warn-modal';
-import { useAuth } from '@/contexts/AuthContext';
 import { Actions } from './actions';
 import { Contribution } from './contribution';
 import { Header } from './header';
@@ -13,13 +10,9 @@ import { JoinMatch } from './join-match';
 import { Tags } from './tags';
 
 export function Home(): JSX.Element {
-  const { authenticated } = useAuth();
-
   return (
     <>
       <CookiesModal />
-
-      {authenticated && <WarnModal />}
 
       <Container
         as={Flex}
@@ -46,7 +39,6 @@ export function Home(): JSX.Element {
 
         <Tags />
         <AdBanner zoneId="ZONE_ID" />
-        {authenticated && <AddCardLinkModal />}
       </Container>
     </>
   );
