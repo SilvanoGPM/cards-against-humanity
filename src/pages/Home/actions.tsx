@@ -60,8 +60,6 @@ export function Actions() {
     try {
       startCreate();
 
-      window.open('https://omg10.com/4/10743127', '_blank');
-
       const id = await newMatch(user.uid);
 
       navigate(`/match/${id}`);
