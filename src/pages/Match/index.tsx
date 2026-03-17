@@ -16,6 +16,12 @@ import { ShowCardsOwnerButton } from '@/components/show-cards-owner-button';
 import { fireworks } from '@/utils/fireworks';
 import { getUserName } from '@/utils/get-user-name';
 import {
+  AlertDialog,
+  AlertDialogBody,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogOverlay,
   Avatar,
   AvatarGroup,
   Box,
@@ -27,6 +33,7 @@ import {
   IconButton,
   Select,
   Tag,
+  useDisclosure,
 } from '@chakra-ui/react';
 import { FaArrowRight, FaBars, FaFlag, FaHome, FaPlay } from 'react-icons/fa';
 import { CardsPlayedList } from './CardsPlayedList';
@@ -51,6 +58,12 @@ export function Match() {
   } = useSetupMatch(id);
 
   const menuRef = useRef<UsersListHandles>(null);
+  const cancelRef = useRef<HTMLButtonElement>(null);
+  const {
+    isOpen: isAlertOpen,
+    onOpen: onAlertOpen,
+    onClose: onAlertClose,
+  } = useDisclosure();
 
   const round = match?.rounds || 0;
   const isOwner = match?.owner?.uid === user?.uid;
@@ -62,9 +75,32 @@ export function Match() {
     (otherUser) => otherUser.user.uid === user?.uid
   );
 
+  const allPlayersPlayed =
+    matchStarted &&
+    match?.users?.length > 0 &&
+    match?.users?.every((u) =>
+      match?.actualRound?.usersWhoPlayed.some(
+        (played) => played.user.uid === u.uid
+      )
+    );
+
   function handleOpenDrawer(): void {
     setHasNewMessases(false);
     menuRef.current?.openDrawer();
+  }
+
+  function handleNextRound(): void {
+    if (matchStarted && !allPlayersPlayed) {
+      onAlertOpen();
+      return;
+    }
+
+    nextRound();
+  }
+
+  function handleConfirmNextRound(): void {
+    onAlertClose();
+    nextRound();
   }
 
   useEffect(() => {
@@ -268,7 +304,7 @@ export function Match() {
 
               <Button
                 w={{ base: 'full', md: '200px' }}
-                onClick={nextRound}
+                onClick={handleNextRound}
                 isLoading={loadingNext}
                 rightIcon={<Icon as={matchStarted ? FaArrowRight : FaPlay} />}
               >
@@ -276,6 +312,34 @@ export function Match() {
               </Button>
             </Flex>
           )}
+
+          <AlertDialog
+            isOpen={isAlertOpen}
+            leastDestructiveRef={cancelRef}
+            onClose={onAlertClose}
+          >
+            <AlertDialogOverlay>
+              <AlertDialogContent mx="4">
+                <AlertDialogHeader fontSize="lg" fontWeight="bold">
+                  Nem todos jogaram
+                </AlertDialogHeader>
+
+                <AlertDialogBody>
+                  Alguns jogadores ainda não fizeram suas jogadas. Deseja
+                  avançar para o próximo round mesmo assim?
+                </AlertDialogBody>
+
+                <AlertDialogFooter gap="3">
+                  <Button ref={cancelRef} onClick={onAlertClose}>
+                    Cancelar
+                  </Button>
+                  <Button colorScheme="red" onClick={handleConfirmNextRound}>
+                    Avançar
+                  </Button>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialogOverlay>
+          </AlertDialog>
         </>
       )}
     </Container>

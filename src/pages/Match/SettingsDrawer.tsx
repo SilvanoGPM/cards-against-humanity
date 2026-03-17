@@ -20,7 +20,7 @@ import {
   useToast,
 } from '@chakra-ui/react';
 
-import { forwardRef, useImperativeHandle, useRef } from 'react';
+import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react';
 
 import { WhiteLogo } from '@/components/Card/Logos';
 import { FinishMatchButton } from '@/components/finish-match-button';
@@ -55,6 +55,7 @@ function SettingsDrawerBase(
   const { user } = useAuth();
 
   const inputRef = useRef<HTMLInputElement>(null);
+  const stackRef = useRef<HTMLDivElement>(null);
 
   useImperativeHandle(ref, () => ({
     openDrawer,
@@ -63,10 +64,10 @@ function SettingsDrawerBase(
   async function handleSendMessage() {
     const message = inputRef.current?.value.trim();
 
-    if (!message || message.length < 3 || !match) {
+    if (!message || !match) {
       toast({
         title: 'Mensagem muito curta',
-        description: 'Insira uma mensagem de pelo menos 3 caracteres.',
+        description: 'Insira uma mensagem de pelo menos 1 caractere.',
         status: 'info',
       });
 
@@ -102,6 +103,19 @@ function SettingsDrawerBase(
       stopSendingMessage();
     }
   }
+
+  const messagesLength = match?.messages?.length || 0;
+
+  useEffect(() => {
+    if (isOpen) {
+      setTimeout(() => {
+        stackRef.current?.scrollTo({
+          top: stackRef.current.scrollHeight,
+          behavior: 'smooth',
+        });
+      }, 100);
+    }
+  }, [isOpen, messagesLength]);
 
   return (
     <Drawer isOpen={isOpen} placement="right" size="lg" onClose={closeDrawer}>
@@ -140,6 +154,7 @@ function SettingsDrawerBase(
                 mb="2"
                 p="4"
                 overflowY="scroll"
+                ref={stackRef}
               >
                 {match?.messages
                   .sort((a, b) => {

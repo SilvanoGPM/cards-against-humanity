@@ -3,6 +3,7 @@ import {
   QuerySnapshot,
   Timestamp,
   Unsubscribe,
+  arrayUnion,
   doc,
   getDocs,
   limit,
@@ -112,11 +113,9 @@ export async function addUserToMatch(
 ): Promise<void> {
   const matchDoc = doc(matchesCollection, id);
 
-  const { users, points } = await getMatch(id);
-
   await updateDoc(matchDoc, {
-    users: [doc(usersCollection, userId), ...users],
-    points: [...points, { userId, value: 0 }],
+    users: arrayUnion(doc(usersCollection, userId)),
+    points: arrayUnion({ userId, value: 0 }),
   });
 }
 
@@ -326,18 +325,12 @@ export async function addMessageToMatch(
 ): Promise<void> {
   const matchDoc = doc(matchesCollection, id);
 
-  const { messages } = await getMatch(id);
-
   await updateDoc(matchDoc, {
-    messages: [
-      // FIXME: Arrumar isso
-      ...(messages as any),
-      {
-        id: crypto.randomUUID(),
-        createdAt: Timestamp.now(),
-        ...message,
-      },
-    ],
+    messages: arrayUnion({
+      id: crypto.randomUUID(),
+      createdAt: Timestamp.now(),
+      ...message,
+    }),
   });
 }
 
@@ -357,13 +350,6 @@ export async function setAnswerToActiveRound(
   { awnsers, user }: SetAwnserData
 ): Promise<void> {
   const matchDoc = doc(matchesCollection, id);
-
-  const { actualRound } = await getMatch(id);
-
-  if (!actualRound) {
-    return;
-  }
-
   const playedUser = doc(usersCollection, user);
 
   const newAnswers = awnsers.map((awnser) => ({
@@ -371,15 +357,10 @@ export async function setAnswerToActiveRound(
     card: doc(cardsCollection, awnser),
   }));
 
-  const answers = [...actualRound.answers, ...newAnswers];
-
-  const usersWhoPlayed = [...actualRound.usersWhoPlayed, { user: playedUser }];
-
-  const updatedActualRound = { ...actualRound, answers, usersWhoPlayed };
-
   await updateDoc(matchDoc, {
-    actualRound: updatedActualRound,
-  });
+    'actualRound.answers': arrayUnion(...newAnswers),
+    'actualRound.usersWhoPlayed': arrayUnion({ user: playedUser }),
+  } as any);
 }
 
 export async function setVoteToActiveRound(
@@ -387,29 +368,12 @@ export async function setVoteToActiveRound(
   data: SetVoteData
 ): Promise<void> {
   const matchDoc = doc(matchesCollection, id);
-
-  const { actualRound } = await getMatch(id);
-
-  if (!actualRound) {
-    return;
-  }
-
   const user = doc(usersCollection, data.user);
   const votedUser = doc(usersCollection, data.votedUser);
 
-  const usersWhoVoted = [
-    ...(actualRound?.usersWhoVoted || []),
-    {
-      user,
-      votedUser,
-    },
-  ];
-
-  const updatedActualRound = { ...actualRound, usersWhoVoted };
-
   await updateDoc(matchDoc, {
-    actualRound: updatedActualRound,
-  });
+    'actualRound.usersWhoVoted': arrayUnion({ user, votedUser }),
+  } as any);
 }
 
 export function streamMatch(
