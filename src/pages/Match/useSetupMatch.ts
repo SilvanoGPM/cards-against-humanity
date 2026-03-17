@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import {
@@ -26,6 +26,9 @@ export function useSetupMatch(id = '') {
 
   const [match, setMatch] = useState<MatchConvertedType | null>(null);
   const [hasNewMessages, setHasNewMessases] = useState(false);
+  const [newCardIds, setNewCardIds] = useState<Set<string>>(new Set());
+  const previousDeckRef = useRef<Map<string, Set<string>>>(new Map());
+  const previousRoundRef = useRef<number>(0);
 
   const reload = useCallback(() => {
     startLoading();
@@ -123,6 +126,31 @@ export function useSetupMatch(id = '') {
           setFalseFirstTime();
         }
 
+        // Detectar cartas novas quando a rodada muda
+        const currentRound = convertedMatch.rounds || 0;
+        if (currentRound !== previousRoundRef.current && currentRound > 0) {
+          const newIds = new Set<string>();
+
+          convertedMatch.actualRound?.decks?.forEach((deck) => {
+            const prevIds = previousDeckRef.current.get(deck.user.uid);
+            deck.cards.forEach((card) => {
+              if (!prevIds || !prevIds.has(card.id)) {
+                newIds.add(card.id);
+              }
+            });
+          });
+
+          setNewCardIds(newIds);
+          previousRoundRef.current = currentRound;
+        }
+
+        // Atualizar referência dos decks atuais
+        const deckMap = new Map<string, Set<string>>();
+        convertedMatch.actualRound?.decks?.forEach((deck) => {
+          deckMap.set(deck.user.uid, new Set(deck.cards.map((c) => c.id)));
+        });
+        previousDeckRef.current = deckMap;
+
         setMatch((match) => {
           if (
             (match?.messages?.length || 0) !==
@@ -200,5 +228,6 @@ export function useSetupMatch(id = '') {
     nextRound,
     hasNewMessages,
     setHasNewMessases,
+    newCardIds,
   };
 }

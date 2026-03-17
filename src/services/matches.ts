@@ -39,6 +39,8 @@ interface SetVoteData {
 interface SortPlayersDecksParams {
   users: UserType[];
   cards: CardType[];
+  previousDecks?: DeckType[];
+  playedCardIds?: Set<string>;
 }
 
 export function getMatches(): Promise<MatchType[]> {
@@ -196,6 +198,8 @@ export async function finishAllMatches(
 export async function sortPlayersDecks({
   users,
   cards,
+  previousDecks,
+  playedCardIds,
 }: SortPlayersDecksParams): Promise<DeckType[]> {
   const CARDS_IN_DECK = 4;
 
@@ -217,17 +221,32 @@ export async function sortPlayersDecks({
   }
 
   users.forEach((user) => {
-    const cards = Array(CARDS_IN_DECK)
+    const previousDeck = previousDecks?.find(
+      (d) => d.user.id === user.uid
+    );
+
+    // Manter cartas que não foram jogadas na rodada anterior
+    const keptCards = previousDeck
+      ? previousDeck.cards.filter((cardRef) => !playedCardIds?.has(cardRef.id))
+      : [];
+
+    const cardsNeeded = CARDS_IN_DECK - keptCards.length;
+
+    // Adicionar as cartas mantidas ao deck antes de sortear novas
+    // para que getRandomAwnser não sorteie duplicatas
+    const partialDeck: DeckType = {
+      user: doc(usersCollection, user.uid),
+      cards: [...keptCards],
+    };
+    decks.push(partialDeck);
+
+    // Sortear apenas as cartas necessárias para completar a mão
+    const newCards = Array(cardsNeeded)
       .fill('')
       .map(() => getRandomAwnser(user))
       .map(({ id }) => doc(cardsCollection, id));
 
-    const deck: DeckType = {
-      user: doc(usersCollection, user.uid),
-      cards,
-    };
-
-    decks.push(deck);
+    partialDeck.cards = [...keptCards, ...newCards];
   });
 
   return decks;
@@ -240,7 +259,7 @@ export async function createNewActiveRoundToMatch(id: string): Promise<void> {
 
   const matchDoc = doc(matchesCollection, id);
 
-  const { rounds, users: docUsers, status } = await getMatch(id);
+  const { rounds, users: docUsers, status, actualRound } = await getMatch(id);
 
   if (status === 'FINISHED') {
     return;
@@ -251,7 +270,18 @@ export async function createNewActiveRoundToMatch(id: string): Promise<void> {
   const usersPromises = docUsers.map(async ({ id }) => getUser(id));
   const users = await Promise.all(usersPromises);
 
-  const decks = await sortPlayersDecks({ users, cards });
+  // Coletar IDs das cartas que foram jogadas na rodada anterior
+  const playedCardIds = new Set<string>();
+  actualRound?.answers?.forEach(({ card }) => {
+    playedCardIds.add(card.id);
+  });
+
+  const decks = await sortPlayersDecks({
+    users,
+    cards,
+    previousDecks: actualRound?.decks,
+    playedCardIds,
+  });
 
   const questions = cards.filter(({ type }) => type === 'BLACK');
 

@@ -24,6 +24,7 @@
 
   &AnimationOff {
     transform: rotateY(180deg);
+    transition: none;
   }
 
   &AnimationRevert {

@@ -26,9 +26,14 @@ import styles from './styles.module.scss';
 interface CardsToPlayProps {
   match: MatchConvertedType;
   isFirstTime: boolean;
+  newCardIds: Set<string>;
 }
 
-export function CardsToPlay({ match, isFirstTime }: CardsToPlayProps) {
+export function CardsToPlay({
+  match,
+  isFirstTime,
+  newCardIds,
+}: CardsToPlayProps) {
   const { user } = useAuth();
   const toast = useToast();
 
@@ -120,15 +125,21 @@ export function CardsToPlay({ match, isFirstTime }: CardsToPlayProps) {
     }
   }
 
-  function renderCard(card: CardType, index: number): JSX.Element {
+  const newCardOrder = deck
+    .filter((card) => newCardIds.has(card.id))
+    .map((card) => card.id);
+
+  function renderCard(card: CardType): JSX.Element {
     const isSelected = selectedCardsId.includes(card.id);
+    const isNewCard = newCardIds.has(card.id);
+    const newCardIndex = newCardOrder.indexOf(card.id);
 
     return (
       <Box key={card.id} onClick={selectCard(card.id)}>
         <Card
           {...card}
-          animationType="auto"
-          animationDelay={`${(index + 2) * 500}ms`}
+          animationType={isNewCard ? 'auto' : 'off'}
+          animationDelay={isNewCard ? `${(newCardIndex + 2) * 500}ms` : '0ms'}
           className={`${styles.card} ${isSelected ? styles.isSelected : ''}`}
           frontClassName={styles.cardFront}
           backClassName={`${styles.cardBack} ${

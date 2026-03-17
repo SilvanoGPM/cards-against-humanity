@@ -35,8 +35,6 @@ import { SettingsDrawer } from './SettingsDrawer';
 import { UsersListHandles } from './UsersList';
 import { useSetupMatch } from './useSetupMatch';
 
-import { useDisableMatch } from './useDisableMatch';
-
 export function Match() {
   const { id } = useParams<{ id: string }>();
   const { user } = useAuth();
@@ -49,6 +47,7 @@ export function Match() {
     isFirstTime,
     hasNewMessages,
     setHasNewMessases,
+    newCardIds,
   } = useSetupMatch(id);
 
   const menuRef = useRef<UsersListHandles>(null);
@@ -67,8 +66,6 @@ export function Match() {
     setHasNewMessases(false);
     menuRef.current?.openDrawer();
   }
-
-  useDisableMatch(id, isOwner);
 
   useEffect(() => {
     if (hasWinner) {
@@ -127,7 +124,11 @@ export function Match() {
           </Box>
 
           {matchStarted && !userAlreadyPlayed && (
-            <CardsToPlay match={match!} isFirstTime={isFirstTime} />
+            <CardsToPlay
+              match={match!}
+              isFirstTime={isFirstTime}
+              newCardIds={newCardIds}
+            />
           )}
 
           {matchStarted && <CardsPlayedList match={match!} />}
