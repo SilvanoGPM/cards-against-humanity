@@ -125,7 +125,6 @@ export function Actions() {
       </Button>
 
       <Button
-        onClick={handleNavigateWithoutLogin}
         as={Link}
         to="/cards"
         isLoading={isLoading}
