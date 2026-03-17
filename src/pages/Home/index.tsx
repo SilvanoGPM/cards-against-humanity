@@ -1,5 +1,6 @@
 import { Container, Flex } from '@chakra-ui/react';
 
+import { AdBanner } from '@/components/AdBanner';
 import { AddCardLinkModal } from '@/components/add-card-link';
 
 import { CookiesModal } from '@/components/cookies-modal';
@@ -44,6 +45,7 @@ export function Home(): JSX.Element {
         </Flex>
 
         <Tags />
+        <AdBanner zoneId="ZONE_ID" />
         {authenticated && <AddCardLinkModal />}
       </Container>
     </>
