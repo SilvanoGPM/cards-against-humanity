@@ -7,6 +7,8 @@ import { GoBack } from '@/components/GoBack';
 import { SomeLoading } from '@/components/SomeLoading';
 import { useAuth } from '@/contexts/AuthContext';
 import {
+  changeCardsPerPlayer,
+  changeKeepCards,
   changePointsToWin,
   changeVisibility,
   finishMatch,
@@ -299,6 +301,32 @@ export function Match() {
                   >
                     <option value="PUBLIC">Pública</option>
                     <option value="PRIVATE">Privada</option>
+                  </Select>
+
+                  <Select
+                    w={{ base: 'full', md: '200px' }}
+                    defaultValue="4"
+                    onChange={(e) => {
+                      const value = Number(e.target.value) || 4;
+                      changeCardsPerPlayer(id!, value);
+                    }}
+                  >
+                    <option value="4">4 cartas por jogador</option>
+                    <option value="5">5 cartas por jogador</option>
+                    <option value="6">6 cartas por jogador</option>
+                  </Select>
+
+                  <Select
+                    w={{ base: 'full', md: '200px' }}
+                    defaultValue="keep"
+                    onChange={(e) => {
+                      changeKeepCards(id!, e.target.value === 'keep');
+                    }}
+                  >
+                    <option value="keep">Manter cartas entre rodadas</option>
+                    <option value="random">
+                      Cartas aleatórias toda rodada
+                    </option>
                   </Select>
                 </>
               )}

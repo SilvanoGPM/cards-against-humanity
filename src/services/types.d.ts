@@ -68,6 +68,8 @@ interface MatchType {
   winner?: import('firebase/firestore').DocumentReference<UserType>;
 
   pointsToWin: number;
+  cardsPerPlayer: number;
+  keepCards: boolean;
   shouldShowCardOwner?: boolean;
   createdAt?: Timestamp;
 }

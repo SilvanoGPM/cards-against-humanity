@@ -42,6 +42,8 @@ interface SortPlayersDecksParams {
   cards: CardType[];
   previousDecks?: DeckType[];
   playedCardIds?: Set<string>;
+  cardsPerPlayer?: number;
+  keepCards?: boolean;
 }
 
 export function getMatches(): Promise<MatchType[]> {
@@ -88,6 +90,8 @@ export async function newMatch(ownerId: string): Promise<string> {
     createdAt: Timestamp.now(),
     shouldShowCardOwner: false,
     pointsToWin: 20,
+    cardsPerPlayer: 4,
+    keepCards: true,
   });
 }
 
@@ -104,6 +108,22 @@ export async function changePointsToWin(id: string, points: number) {
 
   await updateDoc(matchDoc, {
     pointsToWin: points,
+  });
+}
+
+export async function changeCardsPerPlayer(id: string, cardsPerPlayer: number) {
+  const matchDoc = doc(matchesCollection, id);
+
+  await updateDoc(matchDoc, {
+    cardsPerPlayer,
+  });
+}
+
+export async function changeKeepCards(id: string, keepCards: boolean) {
+  const matchDoc = doc(matchesCollection, id);
+
+  await updateDoc(matchDoc, {
+    keepCards,
   });
 }
 
@@ -199,9 +219,9 @@ export async function sortPlayersDecks({
   cards,
   previousDecks,
   playedCardIds,
+  cardsPerPlayer = 4,
+  keepCards = true,
 }: SortPlayersDecksParams): Promise<DeckType[]> {
-  const CARDS_IN_DECK = 4;
-
   const awnsers = cards.filter(({ type }) => type === 'WHITE');
 
   const decks: DeckType[] = [];
@@ -224,12 +244,12 @@ export async function sortPlayersDecks({
       (d) => d.user.id === user.uid
     );
 
-    // Manter cartas que não foram jogadas na rodada anterior
-    const keptCards = previousDeck
+    // Manter cartas que não foram jogadas na rodada anterior (se keepCards ativo)
+    const keptCards = keepCards && previousDeck
       ? previousDeck.cards.filter((cardRef) => !playedCardIds?.has(cardRef.id))
       : [];
 
-    const cardsNeeded = CARDS_IN_DECK - keptCards.length;
+    const cardsNeeded = cardsPerPlayer - keptCards.length;
 
     // Adicionar as cartas mantidas ao deck antes de sortear novas
     // para que getRandomAwnser não sorteie duplicatas
@@ -258,7 +278,7 @@ export async function createNewActiveRoundToMatch(id: string): Promise<void> {
 
   const matchDoc = doc(matchesCollection, id);
 
-  const { rounds, users: docUsers, status, actualRound } = await getMatch(id);
+  const { rounds, users: docUsers, status, actualRound, cardsPerPlayer, keepCards } = await getMatch(id);
 
   if (status === 'FINISHED') {
     return;
@@ -280,6 +300,8 @@ export async function createNewActiveRoundToMatch(id: string): Promise<void> {
     cards,
     previousDecks: actualRound?.decks,
     playedCardIds,
+    cardsPerPlayer: cardsPerPlayer || 4,
+    keepCards: keepCards ?? true,
   });
 
   const questions = cards.filter(({ type }) => type === 'BLACK');

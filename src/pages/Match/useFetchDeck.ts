@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 
-import { MAX_OF_CARDS_IN_DECK } from '@/constants/globals';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@chakra-ui/react';
 
@@ -17,6 +16,8 @@ export function useFetchDeck(
 
   const [deck, setDeck] = useState<CardType[]>([]);
 
+  const cardsPerPlayer = match.cardsPerPlayer || 4;
+
   useEffect(() => {
     const deck = match.actualRound?.decks.find(
       (deck) => deck.user.uid === user.uid
@@ -30,8 +31,8 @@ export function useFetchDeck(
       });
     }
 
-    setDeck(deck?.cards.slice(0, MAX_OF_CARDS_IN_DECK) || []);
-  }, [match, user, isFirstTime, toast]);
+    setDeck(deck?.cards.slice(0, cardsPerPlayer) || []);
+  }, [match, user, isFirstTime, toast, cardsPerPlayer]);
 
   return { deck };
 }

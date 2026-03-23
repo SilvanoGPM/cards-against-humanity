@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { Card } from '@/components/Card';
 import { CARD_TOKEN } from '@/constants/globals';
@@ -15,9 +15,10 @@ import {
   HStack,
   Heading,
   Icon,
+  IconButton,
   useToast,
 } from '@chakra-ui/react';
-import { FaCheckCircle } from 'react-icons/fa';
+import { FaChevronLeft, FaChevronRight, FaCheckCircle } from 'react-icons/fa';
 import { getErrorMessage } from '@/utils/get-error-message';
 import { useFetchDeck } from './useFetchDeck';
 
@@ -41,6 +42,44 @@ export function CardsToPlay({
 
   const [selectedCardsId, setSelectedCardsId] = useState<string[]>([]);
   const [sending, setTrueSending, setFalseSending] = useBoolean(false);
+
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
+
+  const updateScrollButtons = useCallback(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    setCanScrollLeft(el.scrollLeft > 0);
+    setCanScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 1);
+  }, []);
+
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+
+    updateScrollButtons();
+
+    el.addEventListener('scroll', updateScrollButtons);
+    const observer = new ResizeObserver(() => updateScrollButtons());
+    observer.observe(el);
+
+    // eslint-disable-next-line consistent-return
+    return () => {
+      el.removeEventListener('scroll', updateScrollButtons);
+      observer.disconnect();
+    };
+  }, [updateScrollButtons, deck]);
+
+  function scroll(direction: 'left' | 'right') {
+    const el = scrollRef.current;
+    if (!el) return;
+    const amount = el.clientWidth * 0.6;
+    el.scrollBy({
+      left: direction === 'left' ? -amount : amount,
+      behavior: 'smooth',
+    });
+  }
 
   const { question } = match.actualRound!;
 
@@ -157,9 +196,43 @@ export function CardsToPlay({
 
   return (
     <Flex w="full" flexDir="column" gap="8">
-      <HStack justify={{ base: 'start', md: 'center' }} overflowX="auto" py="4">
-        {deck.map(renderCard)}
-      </HStack>
+      <Flex align="center" gap="2">
+        <IconButton
+          aria-label="Scroll para esquerda"
+          icon={<Icon as={FaChevronLeft} />}
+          onClick={() => scroll('left')}
+          variant="ghost"
+          size="sm"
+          height="280px"
+          flexShrink={0}
+          visibility={canScrollLeft ? 'visible' : 'hidden'}
+        />
+
+        <HStack
+          ref={scrollRef}
+          w="full"
+          overflowX="auto"
+          py="4"
+          px="8"
+          justifyContent={{
+            base: 'start',
+            md: deck.length >= 5 ? 'start' : 'center',
+          }}
+        >
+          {deck.map(renderCard)}
+        </HStack>
+
+        <IconButton
+          aria-label="Scroll para direita"
+          icon={<Icon as={FaChevronRight} />}
+          onClick={() => scroll('right')}
+          variant="ghost"
+          size="sm"
+          height="280px"
+          flexShrink={0}
+          visibility={canScrollRight ? 'visible' : 'hidden'}
+        />
+      </Flex>
 
       {isFirstTime && (
         <Heading as="h3" fontSize="xl" textAlign="center">
