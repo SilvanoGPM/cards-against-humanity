@@ -7,6 +7,8 @@ export const fakeMatch = {
     photoURL: 'test',
     uid: 'test',
   },
+  cardsPerPlayer: 4,
+  keepCards: false,
   pointsToWin: 20,
   winner: null,
   points: [],
