@@ -1,7 +1,8 @@
 interface UserType {
   uid: string;
   displayName: string | null;
-  email: string | null;
+  // Não é mais gravado (dado sensível); mantido opcional apenas para docs legados.
+  email?: string | null;
   photoURL: string | null;
   wins?: number;
 }

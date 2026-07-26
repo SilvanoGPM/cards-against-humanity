@@ -1,4 +1,3 @@
-import { AdBanner } from '@/components/AdBanner';
 import { GoBack } from '@/components/GoBack';
 import { SomeLoading } from '@/components/SomeLoading';
 
@@ -22,7 +21,6 @@ export function Matches(): JSX.Element {
 
       <Container as="main" maxW="1100px" mt="16" flexDir="column">
         <LastMatches matches={matches} onMatchesChange={setMatches} />
-        <AdBanner zoneId="ZONE_ID" />
       </Container>
     </>
   );

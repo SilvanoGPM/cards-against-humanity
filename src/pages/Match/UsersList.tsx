@@ -39,9 +39,7 @@ export function UsersList({ match }: UsersProps): JSX.Element {
           <Avatar alt={user.displayName || ''} src={user.photoURL} />
 
           <H3 className={`${styles.userName} ${isOwner ? styles.isOwner : ''}`}>
-            {getFirstString(user.displayName) ||
-              getFirstString(user.email, '@') ||
-              'Usuário'}
+            {getFirstString(user.displayName) || 'Usuário'}
           </H3>
         </Card>
       </li>

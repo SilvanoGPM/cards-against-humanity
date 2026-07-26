@@ -2,7 +2,6 @@ import { useRef, useState } from 'react';
 
 import { Card } from '@/components/Card';
 
-import { AdBanner } from '@/components/AdBanner';
 import { GoBack } from '@/components/GoBack';
 import { SomeLoading } from '@/components/SomeLoading';
 
@@ -172,8 +171,6 @@ export function Cards(): JSX.Element {
           </Center>
         )}
       </Flex>
-
-      <AdBanner zoneId="ZONE_ID" />
     </Flex>
   );
 }

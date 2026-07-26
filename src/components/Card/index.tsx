@@ -39,12 +39,24 @@ export function Card({
   const isBlack = type === 'BLACK';
   const animation = animations[animationType];
 
+  function escapeHtml(value: string): string {
+    return value
+      .replaceAll('&', '&amp;')
+      .replaceAll('<', '&lt;')
+      .replaceAll('>', '&gt;')
+      .replaceAll('"', '&quot;')
+      .replaceAll("'", '&#39;');
+  }
+
   function getFormatedMessage(): string {
-    const text =
-      message?.replaceAll(
-        CARD_TOKEN,
-        `<span class="${styles.question}"></span>`
-      ) || '';
+    // Escapamos o texto ANTES de inserir o único HTML confiável (o span do
+    // token). O message vem do banco, que já foi comprometido antes; sem escape
+    // isso seria um vetor de XSS armazenado. CARD_TOKEN é '[?]', não contém
+    // caracteres HTML, então o replace continua funcionando após o escape.
+    const text = escapeHtml(message || '').replaceAll(
+      CARD_TOKEN,
+      `<span class="${styles.question}"></span>`
+    );
 
     return `<p class="${styles.message} ${messageClassName}">${text}</p>`;
   }

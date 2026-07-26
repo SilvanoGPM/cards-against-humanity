@@ -1,7 +1,5 @@
 import { Container, Flex } from '@chakra-ui/react';
 
-import { AdBanner } from '@/components/AdBanner';
-
 import { CookiesModal } from '@/components/cookies-modal';
 import { Actions } from './actions';
 import { Contribution } from './contribution';
@@ -38,7 +36,6 @@ export function Home(): JSX.Element {
         </Flex>
 
         <Tags />
-        <AdBanner zoneId="ZONE_ID" />
       </Container>
     </>
   );

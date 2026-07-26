@@ -3,9 +3,7 @@ import { getFirstString } from './get-first-string';
 import { titleString } from './title-string';
 
 export function getUserName(user: User | UserType) {
-  return titleString(
-    getFirstString(user.displayName) ||
-      getFirstString(user.email, '@') ||
-      'User'
-  );
+  // Não usamos mais o email como fallback: emails de outros jogadores não
+  // ficam mais disponíveis (nem devem ser exibidos).
+  return titleString(getFirstString(user.displayName) || 'User');
 }

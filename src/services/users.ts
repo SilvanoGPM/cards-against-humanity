@@ -5,12 +5,14 @@ import { doc, setDoc } from 'firebase/firestore';
 import { getAny } from './core';
 
 export async function newUser(user: User): Promise<string> {
-  const { uid, displayName, email, photoURL } = user;
+  // Não gravamos o email no Firestore: ele não é necessário para o jogo
+  // (usamos displayName/photoURL) e é justamente o dado sensível que não deve
+  // ficar exposto na coleção `users`.
+  const { uid, displayName, photoURL } = user;
 
   await setDoc(doc(usersCollection, uid), {
     uid,
     displayName,
-    email,
     photoURL,
   });
 
