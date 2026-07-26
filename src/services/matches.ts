@@ -22,6 +22,7 @@ import {
 import { getRandomItem } from '@/utils/get-random-item';
 
 import { ServerMaintanceError } from '@/lib/ServerMaintanceError';
+import { withTimeout } from '@/utils/with-timeout';
 import { getCard, getCards } from './cards';
 import { createAny, getAll, getAny, mapValue, streamAny } from './core';
 import { getGeneral } from './general';
@@ -71,7 +72,7 @@ export async function getMatch(id: string): Promise<MatchType> {
 }
 
 export async function newMatch(ownerId: string): Promise<string> {
-  const { canPlay } = await getGeneral();
+  const { canPlay } = await withTimeout(getGeneral());
 
   if (!canPlay) {
     throw new ServerMaintanceError();
@@ -79,20 +80,22 @@ export async function newMatch(ownerId: string): Promise<string> {
 
   const ownerDoc = doc(usersCollection, ownerId);
 
-  return createAny<Omit<MatchType, 'id'>>(matchesCollection, {
-    rounds: 0,
-    status: 'PLAYING',
-    type: 'PRIVATE',
-    users: [ownerDoc],
-    owner: ownerDoc,
-    messages: [],
-    points: [{ userId: ownerId, value: 0 }],
-    createdAt: Timestamp.now(),
-    shouldShowCardOwner: false,
-    pointsToWin: 20,
-    cardsPerPlayer: 4,
-    keepCards: true,
-  });
+  return withTimeout(
+    createAny<Omit<MatchType, 'id'>>(matchesCollection, {
+      rounds: 0,
+      status: 'PLAYING',
+      type: 'PRIVATE',
+      users: [ownerDoc],
+      owner: ownerDoc,
+      messages: [],
+      points: [{ userId: ownerId, value: 0 }],
+      createdAt: Timestamp.now(),
+      shouldShowCardOwner: false,
+      pointsToWin: 20,
+      cardsPerPlayer: 4,
+      keepCards: true,
+    })
+  );
 }
 
 export async function changeVisibility(id: string, type: 'PUBLIC' | 'PRIVATE') {

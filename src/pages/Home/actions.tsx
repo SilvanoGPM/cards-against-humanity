@@ -1,6 +1,7 @@
 import { LoginButton } from '@/components/login-button';
 import { useAuth } from '@/contexts/AuthContext';
 import { useBoolean } from '@/hooks/useBoolean';
+import { QuotaExceededError } from '@/lib/QuotaExceededError';
 import { ServerMaintanceError } from '@/lib/ServerMaintanceError';
 import { newMatch } from '@/services/matches';
 import { getErrorMessage } from '@/utils/get-error-message';
@@ -25,7 +26,11 @@ import { RxCardStackPlus } from 'react-icons/rx';
 import { TbCards } from 'react-icons/tb';
 import { Link, useNavigate } from 'react-router-dom';
 
-export function Actions() {
+interface ActionsProps {
+  onQuotaExceeded: () => void;
+}
+
+export function Actions({ onQuotaExceeded }: ActionsProps) {
   const { isAdmin, user, handleLogout, authenticated } = useAuth();
 
   const navigate = useNavigate();
@@ -76,6 +81,15 @@ export function Actions() {
         return;
       }
 
+      if (
+        error instanceof QuotaExceededError ||
+        (error as { code?: string })?.code === 'resource-exhausted'
+      ) {
+        onQuotaExceeded();
+
+        return;
+      }
+
       const description = getErrorMessage(
         error,
         'Não foi possível criar a partida.'
@@ -97,6 +111,7 @@ export function Actions() {
     toast,
     user,
     handleShowLoginInfo,
+    onQuotaExceeded,
   ]);
 
   const isLoading = isCreating;
