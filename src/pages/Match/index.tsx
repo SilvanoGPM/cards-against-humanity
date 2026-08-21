@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 import { Card } from '@/components/Card';
 import { GoBack } from '@/components/GoBack';
@@ -59,12 +59,21 @@ export function Match() {
     newCardIds,
   } = useSetupMatch(id);
 
+  const navigate = useNavigate();
+
   const menuRef = useRef<UsersListHandles>(null);
   const cancelRef = useRef<HTMLButtonElement>(null);
+  const leaveCancelRef = useRef<HTMLButtonElement>(null);
   const {
     isOpen: isAlertOpen,
     onOpen: onAlertOpen,
     onClose: onAlertClose,
+  } = useDisclosure();
+
+  const {
+    isOpen: isLeaveOpen,
+    onOpen: onLeaveOpen,
+    onClose: onLeaveClose,
   } = useDisclosure();
 
   const round = match?.rounds || 0;
@@ -77,12 +86,18 @@ export function Match() {
     (otherUser) => otherUser.user.uid === user?.uid
   );
 
+  // Só faz sentido esperar por quem recebeu cartas nesta rodada. Quem entrou
+  // com a partida em andamento não tem deck e nunca vai jogar — comparar com
+  // `match.users` deixava `allPlayersPlayed` falso para sempre, e o alerta de
+  // "nem todos jogaram" aparecia em todo avanço de rodada.
+  const playersInRound = match?.actualRound?.decks || [];
+
   const allPlayersPlayed =
     matchStarted &&
-    match?.users?.length > 0 &&
-    match?.users?.every((u) =>
+    playersInRound.length > 0 &&
+    playersInRound.every((deck) =>
       match?.actualRound?.usersWhoPlayed.some(
-        (played) => played.user.uid === u.uid
+        (played) => played.user.uid === deck.user.uid
       )
     );
 
@@ -103,6 +118,19 @@ export function Match() {
   function handleConfirmNextRound(): void {
     onAlertClose();
     nextRound();
+  }
+
+  function handleLeaveWithoutFinishing(): void {
+    onLeaveClose();
+    navigate('/');
+  }
+
+  async function handleFinishMatch(): Promise<void> {
+    onLeaveClose();
+
+    await finishMatch(id!);
+
+    navigate('/');
   }
 
   useEffect(() => {
@@ -152,13 +180,10 @@ export function Match() {
             </Center>
           )}
 
-          <Box
-            pos="absolute"
-            top="4"
-            left="4"
-            onClick={isOwner ? () => finishMatch(id!) : undefined}
-          >
-            <GoBack />
+          {/* O anfitrião não encerra mais a partida de todo mundo só por
+              clicar na seta de voltar: agora escolhe explicitamente. */}
+          <Box pos="absolute" top="4" left="4">
+            {isOwner ? <GoBack onClick={onLeaveOpen} /> : <GoBack />}
           </Box>
 
           {matchStarted && !userAlreadyPlayed && (
@@ -340,6 +365,38 @@ export function Match() {
               </Button>
             </Flex>
           )}
+
+          <AlertDialog
+            isOpen={isLeaveOpen}
+            leastDestructiveRef={leaveCancelRef}
+            onClose={onLeaveClose}
+          >
+            <AlertDialogOverlay>
+              <AlertDialogContent mx="4">
+                <AlertDialogHeader fontSize="lg" fontWeight="bold">
+                  Sair da partida
+                </AlertDialogHeader>
+
+                <AlertDialogBody>
+                  Você é o anfitrião. Encerrar a partida tira todos os jogadores
+                  da mesa; sair sem encerrar mantém a partida aberta para quem
+                  ficou.
+                </AlertDialogBody>
+
+                <AlertDialogFooter gap="3" flexWrap="wrap">
+                  <Button ref={leaveCancelRef} onClick={onLeaveClose}>
+                    Cancelar
+                  </Button>
+                  <Button onClick={handleLeaveWithoutFinishing}>
+                    Sair sem encerrar
+                  </Button>
+                  <Button colorScheme="red" onClick={handleFinishMatch}>
+                    Encerrar partida
+                  </Button>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialogOverlay>
+          </AlertDialog>
 
           <AlertDialog
             isOpen={isAlertOpen}

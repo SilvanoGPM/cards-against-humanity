@@ -20,13 +20,14 @@ import {
 } from '@/firebase/config';
 
 import { getRandomItem } from '@/utils/get-random-item';
+import { shuffle } from '@/utils/shuffle';
 
 import { ServerMaintanceError } from '@/lib/ServerMaintanceError';
 import { withTimeout } from '@/utils/with-timeout';
 import { getCard, getCards } from './cards';
 import { createAny, getAll, getAny, mapValue, streamAny } from './core';
 import { getGeneral } from './general';
-import { getUser } from './users';
+import { getUser, getUserFresh } from './users';
 
 interface SetAwnserData {
   awnsers: string[];
@@ -185,7 +186,9 @@ export async function calculateMatchChanges(id: string): Promise<void> {
         winner: doc(usersCollection, winner.userId),
       });
 
-      const userWinner = await getUser(winner.userId);
+      // Leitura sem cache: este valor é a base de uma escrita, e um `wins`
+      // defasado gravaria o placar errado.
+      const userWinner = await getUserFresh(winner.userId);
 
       await updateDoc(doc(usersCollection, winner.userId), {
         wins: (userWinner.wins || 0) + 1,
@@ -229,47 +232,88 @@ export async function sortPlayersDecks({
 
   const decks: DeckType[] = [];
 
-  function getRandomAwnser(user: UserType): CardType {
-    const random = getRandomItem(awnsers);
-    const hasCard = decks.some(({ cards }) =>
-      cards.find(({ id }) => id === random.id)
-    );
+  // Pilha de compra: o baralho de respostas é embaralhado uma vez e as cartas
+  // saem de cima, sem reposição.
+  //
+  // A versão anterior sorteava com repetição e chamava a si mesma quando a
+  // carta já estava em algum deck — uma recursão sem condição de parada: se
+  // `cardsPerPlayer × jogadores` passasse do número de cartas disponíveis, ela
+  // nunca encontrava uma carta livre e travava a aba (loop infinito / estouro
+  // de pilha). Agora, quando o baralho acaba, o jogador simplesmente recebe uma
+  // mão menor e o jogo continua.
+  const drawPile = shuffle(awnsers);
+  const usedCardIds = new Set<string>();
 
-    if (hasCard) {
-      return getRandomAwnser(user);
+  let drawIndex = 0;
+
+  function drawAwnser(): CardType | null {
+    while (drawIndex < drawPile.length) {
+      const card = drawPile[drawIndex];
+      drawIndex += 1;
+
+      if (!usedCardIds.has(card.id)) {
+        usedCardIds.add(card.id);
+        return card;
+      }
     }
 
-    return random;
+    return null;
   }
 
+  // As cartas mantidas da rodada anterior são reservadas antes de qualquer
+  // sorteio, para que ninguém receba uma carta que já está na mão de outro.
+  const keptCardsByUser = new Map<string, DeckType['cards']>();
+
   users.forEach((user) => {
-    const previousDeck = previousDecks?.find(
-      (d) => d.user.id === user.uid
-    );
+    const previousDeck = previousDecks?.find((d) => d.user.id === user.uid);
 
-    // Manter cartas que não foram jogadas na rodada anterior (se keepCards ativo)
-    const keptCards = keepCards && previousDeck
-      ? previousDeck.cards.filter((cardRef) => !playedCardIds?.has(cardRef.id))
-      : [];
+    const keptCards =
+      keepCards && previousDeck
+        ? previousDeck.cards
+            .filter((cardRef) => !playedCardIds?.has(cardRef.id))
+            .slice(0, cardsPerPlayer)
+        : [];
 
-    const cardsNeeded = cardsPerPlayer - keptCards.length;
-
-    // Adicionar as cartas mantidas ao deck antes de sortear novas
-    // para que getRandomAwnser não sorteie duplicatas
-    const partialDeck: DeckType = {
-      user: doc(usersCollection, user.uid),
-      cards: [...keptCards],
-    };
-    decks.push(partialDeck);
-
-    // Sortear apenas as cartas necessárias para completar a mão
-    const newCards = Array(cardsNeeded)
-      .fill('')
-      .map(() => getRandomAwnser(user))
-      .map(({ id }) => doc(cardsCollection, id));
-
-    partialDeck.cards = [...keptCards, ...newCards];
+    keptCards.forEach(({ id }) => usedCardIds.add(id));
+    keptCardsByUser.set(user.uid, keptCards);
   });
+
+  let incompleteHands = 0;
+
+  users.forEach((user) => {
+    const keptCards = keptCardsByUser.get(user.uid) || [];
+
+    // `Math.max` protege o caso de a configuração da partida ter diminuído o
+    // tamanho da mão entre uma rodada e outra.
+    const cardsNeeded = Math.max(0, cardsPerPlayer - keptCards.length);
+
+    const newCards = [];
+
+    for (let i = 0; i < cardsNeeded; i += 1) {
+      const card = drawAwnser();
+
+      if (!card) {
+        incompleteHands += 1;
+        break;
+      }
+
+      newCards.push(doc(cardsCollection, card.id));
+    }
+
+    decks.push({
+      user: doc(usersCollection, user.uid),
+      cards: [...keptCards, ...newCards],
+    });
+  });
+
+  if (incompleteHands > 0) {
+    const needed = users.length * cardsPerPlayer;
+
+    console.warn(
+      `Cartas brancas insuficientes: ${incompleteHands} jogador(es) ficaram com a mão incompleta. ` +
+        `Disponíveis: ${awnsers.length}, necessárias: ${needed}.`
+    );
+  }
 
   return decks;
 }
@@ -281,7 +325,14 @@ export async function createNewActiveRoundToMatch(id: string): Promise<void> {
 
   const matchDoc = doc(matchesCollection, id);
 
-  const { rounds, users: docUsers, status, actualRound, cardsPerPlayer, keepCards } = await getMatch(id);
+  const {
+    rounds,
+    users: docUsers,
+    status,
+    actualRound,
+    cardsPerPlayer,
+    keepCards,
+  } = await getMatch(id);
 
   if (status === 'FINISHED') {
     return;
