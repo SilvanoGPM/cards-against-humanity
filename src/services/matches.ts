@@ -6,6 +6,7 @@ import {
   arrayUnion,
   doc,
   getDocs,
+  increment,
   limit,
   onSnapshot,
   query,
@@ -27,7 +28,7 @@ import { withTimeout } from '@/utils/with-timeout';
 import { getCard, getCards } from './cards';
 import { createAny, getAll, getAny, mapValue, streamAny } from './core';
 import { getGeneral } from './general';
-import { getUser, getUserFresh } from './users';
+import { getUser } from './users';
 
 interface SetAwnserData {
   awnsers: string[];
@@ -186,12 +187,11 @@ export async function calculateMatchChanges(id: string): Promise<void> {
         winner: doc(usersCollection, winner.userId),
       });
 
-      // Leitura sem cache: este valor é a base de uma escrita, e um `wins`
-      // defasado gravaria o placar errado.
-      const userWinner = await getUserFresh(winner.userId);
-
+      // `increment` em vez de ler-somar-gravar: é atômico (dois clientes
+      // calculando a mesma rodada não se sobrescrevem), dispensa uma leitura, e
+      // é aceito pela regra que só permite `wins` subir de 1 em 1.
       await updateDoc(doc(usersCollection, winner.userId), {
-        wins: (userWinner.wins || 0) + 1,
+        wins: increment(1),
       });
 
       return;

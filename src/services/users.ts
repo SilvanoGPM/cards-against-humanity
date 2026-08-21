@@ -1,6 +1,6 @@
 import { adminsCollection, usersCollection } from '@/firebase/config';
 import { User } from 'firebase/auth';
-import { doc, setDoc } from 'firebase/firestore';
+import { deleteField, doc, setDoc } from 'firebase/firestore';
 
 import Repository from '@/lib/Repository';
 import { getAny } from './core';
@@ -56,16 +56,34 @@ function putOnCache(id: string, user: UserType): void {
 export async function newUser(user: User): Promise<string> {
   // Não gravamos o email no Firestore: ele não é necessário para o jogo
   // (usamos displayName/photoURL) e é justamente o dado sensível que não deve
-  // ficar exposto na coleção `users`.
+  // ficar exposto na coleção `users`. O `deleteField` remove o campo dos
+  // documentos legados que ainda o tenham.
+  //
+  // `merge: true` é essencial: sem ele o setDoc substitui o documento inteiro e
+  // apaga `wins` a cada login — o contador de vitórias nunca sobrevivia a uma
+  // sessão. É também o que permite à regra do Firestore restringir o dono aos
+  // campos de perfil.
   const { uid, displayName, photoURL } = user;
 
-  await setDoc(doc(usersCollection, uid), {
+  await setDoc(
+    doc(usersCollection, uid),
+    {
+      uid,
+      displayName,
+      photoURL,
+      email: deleteField(),
+    },
+    { merge: true }
+  );
+
+  // Preserva o que já estava em cache (como `wins`) em vez de sobrescrever o
+  // usuário com um objeto só de perfil.
+  putOnCache(uid, {
+    ...(CACHE[uid]?.user || {}),
     uid,
     displayName,
     photoURL,
   });
-
-  putOnCache(uid, { uid, displayName, photoURL });
 
   return uid;
 }
@@ -99,18 +117,6 @@ export async function getUser(id: string): Promise<UserType> {
   PENDING.set(id, promise);
 
   return promise;
-}
-
-/**
- * Leitura sem cache. Necessária onde o valor lido vira base de uma escrita —
- * hoje só no incremento de `wins`, que ficaria errado se partisse de um valor
- * defasado.
- */
-export function getUserFresh(id: string): Promise<UserType> {
-  return getAny<UserType>(usersCollection, id).then((user) => {
-    putOnCache(id, user);
-    return user;
-  });
 }
 
 export function clearUsersCache(): void {

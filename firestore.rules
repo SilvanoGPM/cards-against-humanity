@@ -40,20 +40,28 @@ service cloud.firestore {
         && request.resource.data.wins == resource.data.get('wins', 0) + 1;
     }
 
+    // O dono só mexe no próprio perfil — e nunca no placar. `email` aparece na
+    // lista de campos permitidos apenas para poder ser REMOVIDO (documentos
+    // legados ainda têm o campo, e o login o apaga); gravar um valor é proibido.
+    function isProfileWrite() {
+      return changedKeys().hasOnly(['uid', 'displayName', 'photoURL', 'email'])
+        && !('email' in request.resource.data);
+    }
+
     // Usuários: perfil (uid/displayName/photoURL). NÃO é legível publicamente
     // (evita dump de toda a lista de perfis). Cada um cria/edita o próprio
-    // documento. E-mail não é mais gravado aqui.
-    //
-    // LIMITAÇÃO CONHECIDA: o próprio dono ainda consegue gravar `wins` à
-    // vontade no seu documento. Fechar isso exige antes trocar o `setDoc` de
-    // `newUser` por `setDoc(..., { merge: true })` — hoje o setDoc sobrescreve
-    // o documento inteiro e apagaria `wins` a cada login, então uma regra
-    // `hasOnly(['uid','displayName','photoURL'])` quebraria o login.
+    // documento, mas `wins` só muda de 1 em 1 e nunca pela própria conta.
     match /users/{userId} {
       allow read: if isSignedIn();
-      allow create: if isSignedIn() && request.auth.uid == userId;
+      allow create: if isSignedIn()
+        && request.auth.uid == userId
+        && !('wins' in request.resource.data)
+        && !('email' in request.resource.data);
       allow update: if isSignedIn()
-        && (request.auth.uid == userId || incrementsWinsByOne());
+        && (
+          (request.auth.uid == userId && isProfileWrite())
+          || incrementsWinsByOne()
+        );
       allow delete: if false;
     }
 
