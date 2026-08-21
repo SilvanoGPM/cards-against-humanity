@@ -9,8 +9,10 @@ export function fireworks() {
   const animationEnd = Date.now() + duration;
   const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
 
+  // `ReturnType<typeof setInterval>` em vez de `NodeJS.Timeout`: este código
+  // roda no browser, e é o mesmo padrão já usado em `utils/with-timeout.ts`.
   // eslint-disable-next-line consistent-return
-  const interval: NodeJS.Timeout = setInterval(() => {
+  const interval: ReturnType<typeof setInterval> = setInterval(() => {
     const timeLeft = animationEnd - Date.now();
 
     if (timeLeft <= 0) {

@@ -9,6 +9,11 @@
     ],
     "allowJs": false,
     "skipLibCheck": true,
+    // Sem isto, o tsc carrega TODOS os pacotes de node_modules/@types — hoje
+    // isso inclui um @types/node moderno (trazido por dependência transitiva)
+    // que o TypeScript 4.6 deste projeto nem consegue parsear. O código de
+    // `src` é browser-only e não precisa das tipagens do Node.
+    "types": ["vite/client"],
     "esModuleInterop": false,
     "allowSyntheticDefaultImports": true,
     "strict": true,

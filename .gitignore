@@ -26,3 +26,12 @@ dist-ssr
 scripts/serviceAccountKey.json
 
 scripts/recoveries
+
+# Documentacao interna de planejamento (nao versionada)
+docs/internal/
+
+# Firebase CLI
+.firebase/
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
