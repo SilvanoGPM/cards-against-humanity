@@ -11,7 +11,8 @@
     "check-types": "tsc --noEmit",
     "emulators": "node scripts/with-java.js npx firebase emulators:start --only firestore,auth --project demo-cah",
     "validate:rules": "node scripts/with-java.js npx firebase emulators:exec --only firestore --project demo-cah \"node scripts/validate-rules.js\"",
-    "deploy:rules": "npx firebase deploy --only firestore:rules"
+    "deploy:rules": "npx firebase deploy --only firestore:rules",
+    "test:rules": "node scripts/with-java.js npx firebase emulators:exec --only firestore --project demo-cah \"node scripts/test-rules.js\""
   },
   "dependencies": {
     "@blueprintjs/core": "^4.2.1",
@@ -36,6 +37,7 @@
     "uuid": "^10.0.0"
   },
   "devDependencies": {
+    "@firebase/rules-unit-testing": "^2.0.7",
     "@types/canvas-confetti": "^1.9.0",
     "@types/firebase": "^3.2.1",
     "@types/react": "^18.0.0",
