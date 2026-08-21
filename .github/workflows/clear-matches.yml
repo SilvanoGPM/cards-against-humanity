@@ -2,8 +2,17 @@ name: Finalizar partidas todos os dias
 
 on:
   workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Apenas contar, sem escrever nada'
+        type: boolean
+        default: false
+      max_age_hours:
+        description: 'Idade mínima da partida para encerrar (0 = todas)'
+        type: string
+        default: '6'
   schedule:
-    - cron: '0 11 * * *' # 11 da manhã UTC (Github) / 9 da manhã Brasil (Eu) / 4 horas Pacific Time (Firebase)
+    - cron: '0 11 * * *' # 11h UTC / 8h Brasil / 4h Pacific Time (fuso da quota do Firebase)
 
 jobs:
   executar-script:
@@ -11,15 +20,18 @@ jobs:
 
     steps:
       - name: Checkout do repositório
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Configurar Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version-file: '.nvmrc'
+          cache: 'npm'
 
       - name: Instalar dependências
-        run: npm install
+        # O script usa apenas firebase-admin (dependency); as devDependencies
+        # (incluindo o firebase-tools) não fazem falta aqui e pesariam no job.
+        run: npm ci --omit=dev
 
       - name: Criar Service Account Key
         run: printenv FIREBASE_SERVICE_ACCOUNT_KEY > ./scripts/serviceAccountKey.json
@@ -28,3 +40,10 @@ jobs:
 
       - name: Executar Script
         run: node ./scripts/finish-matches.js
+        env:
+          DRY_RUN: ${{ inputs.dry_run }}
+          MAX_AGE_HOURS: ${{ inputs.max_age_hours || '6' }}
+
+      - name: Remover Service Account Key
+        if: always()
+        run: rm -f ./scripts/serviceAccountKey.json
