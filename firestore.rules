@@ -1,0 +1,127 @@
+rules_version = '2';
+
+// Regras do Firestore versionadas no repositório.
+//
+// Deploy:  npx firebase deploy --only firestore:rules
+//
+// Estas regras são a ÚNICA camada de autorização do projeto: não há Cloud
+// Functions (plano Spark), então tudo o que não for barrado aqui é permitido a
+// qualquer cliente. Alterar com cuidado e sempre com a suíte de testes de rules
+// verde antes do deploy.
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // Admin = existe um documento com o uid do usuário na coleção `admins`.
+    function isAdmin() {
+      return isSignedIn()
+        && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+
+    function userRef(uid) {
+      return /databases/$(database)/documents/users/$(uid);
+    }
+
+    function changedKeys() {
+      return request.resource.data.diff(resource.data).affectedKeys();
+    }
+
+    // Terceiros só podem incrementar `wins` de 1 em 1 (o vencedor da partida
+    // pode não ser quem dispara o cálculo da rodada). Antes desta regra,
+    // qualquer autenticado gravava QUALQUER valor em `wins` de QUALQUER conta.
+    // `get('wins', 0)` cobre os documentos que ainda não têm o campo.
+    function incrementsWinsByOne() {
+      return changedKeys().hasOnly(['wins'])
+        && request.resource.data.wins is int
+        && request.resource.data.wins == resource.data.get('wins', 0) + 1;
+    }
+
+    // Usuários: perfil (uid/displayName/photoURL). NÃO é legível publicamente
+    // (evita dump de toda a lista de perfis). Cada um cria/edita o próprio
+    // documento. E-mail não é mais gravado aqui.
+    //
+    // LIMITAÇÃO CONHECIDA: o próprio dono ainda consegue gravar `wins` à
+    // vontade no seu documento. Fechar isso exige antes trocar o `setDoc` de
+    // `newUser` por `setDoc(..., { merge: true })` — hoje o setDoc sobrescreve
+    // o documento inteiro e apagaria `wins` a cada login, então uma regra
+    // `hasOnly(['uid','displayName','photoURL'])` quebraria o login.
+    match /users/{userId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && request.auth.uid == userId;
+      allow update: if isSignedIn()
+        && (request.auth.uid == userId || incrementsWinsByOne());
+      allow delete: if false;
+    }
+
+    // Cartas: conteúdo do jogo, leitura pública (a tela /cards é pública).
+    // Escrita SOMENTE admin — foi por escrita não autorizada aqui que o banco
+    // foi adulterado ("o sul").
+    match /cards/{cardId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Configuração geral (canPlay/totalCards): leitura pública, escrita admin
+    // (só é alterada ao criar carta, na página admin).
+    match /general/{docId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Partidas.
+    //
+    // ATENÇÃO — estado intencionalmente permissivo, a ser fechado por etapas:
+    // hoje qualquer autenticado lê e escreve qualquer partida, sem restrição de
+    // campo. Isso é o que sustenta os vetores V1-V6 (mãos e jogadas visíveis,
+    // placar e vencedor graváveis, partida alheia encerrável).
+    //
+    // Não dá para fechar aqui sem antes mudar o modelo de dados, porque:
+    //   - restringir `read` a participantes quebra a entrada na sala (o cliente
+    //     precisa ler a partida ANTES de se adicionar a `users`);
+    //   - bloquear `list` quebra a tela "Encontrar partidas" enquanto não
+    //     existir a coleção-índice `lobbies`;
+    //   - travar `points`/`status`/`winner` quebra o jogo, que hoje calcula
+    //     tudo no cliente.
+    // Ver docs/internal/01-problemas-criticos.md (P2) e o roadmap, fases 0.7 e 2.
+    //
+    // O que já dá para garantir sem quebrar nada: quem cria uma partida cria
+    // como dono dela.
+    match /matches/{matchId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn()
+        && request.resource.data.owner == userRef(request.auth.uid);
+      allow update: if isSignedIn();
+      allow delete: if false;
+    }
+
+    // Recuperação de cartas (formulário HackedAlert): pode ser criada por
+    // usuário não autenticado (o formulário funciona deslogado), mas com o
+    // formato validado — antes, `create: if true` aceitava qualquer documento,
+    // de qualquer tamanho, de qualquer origem. A leitura continua bloqueada no
+    // client (só via Admin SDK/console).
+    match /recovery/{docId} {
+      allow create: if request.resource.data.keys()
+                      .hasOnly(['cards', 'sentAt', 'userAgent', 'userId', 'userEmail'])
+                    && request.resource.data.cards is list
+                    && request.resource.data.cards.size() > 0
+                    && request.resource.data.cards.size() <= 3000;
+      allow read, update, delete: if false;
+    }
+
+    // Admins: leitura por autenticados (checagem de permissão no app);
+    // escrita apenas fora do client (console/Admin SDK).
+    match /admins/{adminId} {
+      allow read: if isSignedIn();
+      allow write: if false;
+    }
+
+    // Nega tudo o que não estiver explicitamente liberado acima.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
