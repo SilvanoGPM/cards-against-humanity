@@ -1,6 +1,5 @@
 import {
   DocumentSnapshot,
-  QuerySnapshot,
   Timestamp,
   Unsubscribe,
   arrayUnion,
@@ -8,7 +7,6 @@ import {
   getDocs,
   increment,
   limit,
-  onSnapshot,
   query,
   updateDoc,
   where,
@@ -26,7 +24,7 @@ import { shuffle } from '@/utils/shuffle';
 import { ServerMaintanceError } from '@/lib/ServerMaintanceError';
 import { withTimeout } from '@/utils/with-timeout';
 import { getCard, getCards } from './cards';
-import { createAny, getAll, getAny, mapValue, streamAny } from './core';
+import { createAny, getAny, mapValue, streamAny } from './core';
 import { getGeneral } from './general';
 import { getUser } from './users';
 
@@ -47,10 +45,6 @@ interface SortPlayersDecksParams {
   playedCardIds?: Set<string>;
   cardsPerPlayer?: number;
   keepCards?: boolean;
-}
-
-export function getMatches(): Promise<MatchType[]> {
-  return getAll<MatchType>(matchesCollection);
 }
 
 export async function getLastMatches(
@@ -459,17 +453,6 @@ export function streamMatch(
   return streamAny<MatchType>(matchesCollection, id, callback);
 }
 
-export async function streamMatches(
-  callback: (snapshot: QuerySnapshot<MatchType>) => void
-): Promise<Unsubscribe> {
-  const unsubscribe = onSnapshot(
-    query(matchesCollection, where('status', '!=', 'FINISHED')),
-    callback
-  );
-
-  return unsubscribe;
-}
-
 export async function getActualRound(
   round?: RoundType | null
 ): Promise<RoundConvertedType | null> {
@@ -510,6 +493,33 @@ export async function getActualRound(
     question,
     decks,
   };
+}
+
+/**
+ * Versão enxuta da conversão, para LISTAGENS de partida.
+ *
+ * A tela "Encontrar partidas" só mostra o dono, o número de rodadas e a data —
+ * mas passava cada partida por `convertMatch`, que resolve a rodada inteira:
+ * a carta-pergunta, todas as respostas com seus autores, todos os votos e o
+ * deck (mão) de cada jogador. Para as 10 partidas da listagem isso são
+ * centenas de resoluções de referência a cada visita à tela, para renderizar
+ * um avatar e um contador.
+ *
+ * Aqui só o dono é resolvido — e via cache de `getUser`, então na prática é
+ * uma leitura por dono novo.
+ */
+export async function convertMatchSummary(
+  match: MatchType
+): Promise<MatchConvertedType> {
+  const convertedOwner = await getUser(match.owner.id);
+
+  return {
+    ...match,
+    owner: convertedOwner,
+    winner: null,
+    users: [],
+    actualRound: null,
+  } as unknown as MatchConvertedType;
 }
 
 export async function convertMatch(

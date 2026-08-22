@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import { convertMatch, getLastMatches } from '@/services/matches';
+import { convertMatchSummary, getLastMatches } from '@/services/matches';
 
 import { useBoolean } from '@/hooks/useBoolean';
 import { useToast } from '@chakra-ui/react';
@@ -24,7 +24,9 @@ export function useLastMatches(size = 10): UseLastMatchesReturn {
       try {
         const matches = await getLastMatches(size, !isAdmin);
 
-        const convertedMatches = await Promise.all(matches.map(convertMatch));
+        const convertedMatches = await Promise.all(
+          matches.map(convertMatchSummary)
+        );
 
         setMatches(convertedMatches);
       } catch (error) {
@@ -52,38 +54,11 @@ export function useLastMatches(size = 10): UseLastMatchesReturn {
     return () => stopLoading();
   }, [size, loading, stopLoading, toast, isAdmin]);
 
-  // TODO: Ativiar o stream novamente
-
-  // useEffect(() => {
-  //   const unsubscribePromise = streamMatches(async (snapshot) => {
-  //     const newMatchesPromises = snapshot
-  //       .docChanges()
-  //       .filter(({ type }) => type === 'added')
-  //       .map(({ doc }) => convertMatch(toValue(doc)));
-
-  //     const newMatches = await Promise.all(newMatchesPromises);
-
-  //     const removedMatches = snapshot
-  //       .docChanges()
-  //       .filter(({ type }) => type === 'removed')
-  //       .map(({ doc }) => toValue(doc).id);
-
-  //     if (newMatches.length !== 0 || removedMatches.length !== 0) {
-  //       setMatches((matches) => {
-  //         const matchesId = matches.map(({ id }) => id);
-
-  //         return [
-  //           ...newMatches.filter(({ id }) => !matchesId.includes(id)),
-  //           ...matches.filter(({ id }) => !removedMatches.includes(id)),
-  //         ];
-  //       });
-  //     }
-  //   });
-
-  //   return () => {
-  //     unsubscribePromise.then((unsbscribe) => unsbscribe());
-  //   };
-  // }, [isFirstStream, setFalseFirstStream]);
+  // O stream em tempo real desta tela foi REMOVIDO junto com `streamMatches`.
+  // Ele abria um listener sobre todas as partidas não finalizadas: a cada
+  // jogada de qualquer partida do site, todo cliente parado nesta tela recebia
+  // (e pagava) uma atualização. Se voltar, precisa ser sobre a coleção-índice
+  // `lobbies`, não sobre `matches`.
 
   return { matches, setMatches, loading };
 }
