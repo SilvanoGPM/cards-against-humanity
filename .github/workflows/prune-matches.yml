@@ -1,0 +1,59 @@
+name: Apagar partidas antigas
+
+# Só roda quando disparado à mão (Actions -> Run workflow). Exclusão não tem
+# volta, e o passivo atual (~143 mil partidas encerradas) precisa de ~10
+# execuções para acabar, por causa do teto de 20k exclusões/dia do plano Spark.
+#
+# Para automatizar depois de confirmar que o comportamento está certo, basta
+# adicionar aqui um bloco `schedule:` como o do clear-matches.yml — mas note
+# que o padrão de `dry_run` abaixo é `true`, e um agendamento precisa passar
+# `false` para apagar de verdade.
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Apenas contar, sem apagar nada'
+        type: boolean
+        default: true
+      max_age_days:
+        description: 'Idade mínima da partida encerrada para ser apagada'
+        type: string
+        default: '7'
+      max_deletes:
+        description: 'Teto de exclusões nesta execução (Spark: 20k/dia)'
+        type: string
+        default: '15000'
+
+jobs:
+  executar-script:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout do repositório
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+
+      - name: Instalar dependências
+        run: npm ci --omit=dev
+
+      - name: Criar Service Account Key
+        run: printenv FIREBASE_SERVICE_ACCOUNT_KEY > ./scripts/serviceAccountKey.json
+        env:
+          FIREBASE_SERVICE_ACCOUNT_KEY: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_KEY }}
+
+      - name: Executar Script
+        run: node ./scripts/prune-matches.js
+        env:
+          # O script só apaga com DRY_RUN=false explícito.
+          DRY_RUN: ${{ inputs.dry_run }}
+          MAX_AGE_DAYS: ${{ inputs.max_age_days || '7' }}
+          MAX_DELETES: ${{ inputs.max_deletes || '15000' }}
+
+      - name: Remover Service Account Key
+        if: always()
+        run: rm -f ./scripts/serviceAccountKey.json
