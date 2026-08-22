@@ -208,32 +208,29 @@ async function main() {
   await test('não-admin NÃO desliga o jogo (general.canPlay)', () =>
     assertFails(updateDoc(doc(bob, 'general', 'g1'), { canPlay: false })));
 
-  // --- recovery --------------------------------------------------------------
+  // --- recovery ---------------------------------------------------------------
+  // Coleção encerrada: o formulário de recuperação saiu do ar. Nenhuma escrita
+  // deve passar, autenticada ou não.
   console.log('\nrecovery');
   await seed();
 
-  await test('formulário de recuperação aceita envio deslogado', () =>
-    assertSucceeds(
+  await test('recovery NÃO aceita mais envio anônimo', () =>
+    assertFails(
       setDoc(doc(anon, 'recovery', 'r1'), {
         cards: [{ id: '1', type: 'WHITE', message: 'x' }],
         sentAt: 'agora',
         userAgent: 'teste',
         userId: null,
-        userEmail: null,
       })
     ));
 
-  await test('recovery NÃO aceita documento fora do formato', () =>
-    assertFails(setDoc(doc(anon, 'recovery', 'r2'), { qualquerCoisa: 'x' })));
-
-  await test('recovery NÃO aceita lista vazia', () =>
+  await test('recovery NÃO aceita envio autenticado', () =>
     assertFails(
-      setDoc(doc(anon, 'recovery', 'r3'), {
-        cards: [],
+      setDoc(doc(bob, 'recovery', 'r2'), {
+        cards: [{ id: '1', type: 'WHITE', message: 'x' }],
         sentAt: 'agora',
         userAgent: 'teste',
-        userId: null,
-        userEmail: null,
+        userId: BOB,
       })
     ));
 

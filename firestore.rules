@@ -106,18 +106,21 @@ service cloud.firestore {
       allow delete: if false;
     }
 
-    // Recuperação de cartas (formulário HackedAlert): pode ser criada por
-    // usuário não autenticado (o formulário funciona deslogado), mas com o
-    // formato validado — antes, `create: if true` aceitava qualquer documento,
-    // de qualquer tamanho, de qualquer origem. A leitura continua bloqueada no
-    // client (só via Admin SDK/console).
+    // Recuperação de cartas: coleção ENCERRADA.
+    //
+    // Era alimentada pelo formulário do `HackedAlert`, que pedia ao jogador o
+    // cache de cartas do navegador para reconstruir o baralho depois da
+    // invasão. O baralho foi recuperado e o componente saiu do código, então
+    // não há mais cliente legítimo escrevendo aqui.
+    //
+    // Enquanto `create` ficava aberto (mesmo com formato validado), qualquer
+    // anônimo podia despejar documentos de até 3000 cartas na base — escrita
+    // não autenticada, contra uma quota de 20k escritas/dia. Fechado.
+    //
+    // Se um dia for preciso reabrir, o histórico da validação de formato está
+    // no commit que fechou esta regra.
     match /recovery/{docId} {
-      allow create: if request.resource.data.keys()
-                      .hasOnly(['cards', 'sentAt', 'userAgent', 'userId', 'userEmail'])
-                    && request.resource.data.cards is list
-                    && request.resource.data.cards.size() > 0
-                    && request.resource.data.cards.size() <= 3000;
-      allow read, update, delete: if false;
+      allow read, write: if false;
     }
 
     // Admins: leitura por autenticados (checagem de permissão no app);
